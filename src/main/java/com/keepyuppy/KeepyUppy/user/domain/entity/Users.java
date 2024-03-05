@@ -1,15 +1,19 @@
 package com.keepyuppy.KeepyUppy.user.domain.entity;
 
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
+import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Getter(AccessLevel.PROTECTED)
+@Getter
 @NoArgsConstructor
 @ToString
 public class Users extends BaseTimeEntity {
@@ -26,8 +30,8 @@ public class Users extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-//    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-//    private Set<Member> members = new HashSet<>();
+    @OneToMany(mappedBy = "users")
+    private Set<Member> members = new HashSet<>();
 
     @Builder
     public Users(String name, String imageUrl, String oauthId, Provider provider) {
@@ -35,6 +39,11 @@ public class Users extends BaseTimeEntity {
         this.imageUrl = imageUrl;
         this.oauthId = oauthId;
         this.provider = provider;
+    }
+
+    public void addMember(Member member) {
+        member.setUsers(this);
+        this.members.add(member);
     }
 
 }
