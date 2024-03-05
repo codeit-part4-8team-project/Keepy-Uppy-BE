@@ -15,7 +15,7 @@ import java.util.List;
 public class TeamRepositoryImpl {
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<Team> getTeam(Long id) {
+    public List<Team> findTeamByUsersId(Long id) {
         return jpaQueryFactory.select(QTeam.team)
                 .from(QMember.member)
                 .join(QMember.member.users, QUsers.users)
