@@ -1,5 +1,6 @@
 package com.keepyuppy.KeepyUppy.security.jwt;
 
+import com.keepyuppy.KeepyUppy.user.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -20,7 +21,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtils {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret}") //TODO
     private String secret;
     private Key key;
 
@@ -30,6 +31,7 @@ public class JwtUtils {
     private static final String BEARER = "Bearer ";
 
     private final CustomUserDetailsService userPrincipalService;
+    private final UserRepository userRepository;
 
     @PostConstruct
     protected void init() {
@@ -93,5 +95,13 @@ public class JwtUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void updateRefreshToken(String oauthId, String refreshToken) {
+        userRepository.findByOauthId(oauthId)
+                .ifPresentOrElse(
+                        user -> user.updateRefreshToken(refreshToken),
+                        () -> new Exception("일치하는 회원이 없습니다.")
+                );
     }
 }

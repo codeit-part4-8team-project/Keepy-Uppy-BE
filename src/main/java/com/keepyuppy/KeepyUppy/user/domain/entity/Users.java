@@ -34,11 +34,19 @@ public class Users extends BaseTimeEntity {
 
     private String bio;
 
+    private String refreshToken;
+
 //    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 //    private Set<Member> members = new HashSet<>();
 
     @Builder
-    public Users(String name, String imageUrl, String email, String oauthId, Provider provider, Role role, String bio) {
+    public Users(String name,
+                 String imageUrl,
+                 String email,
+                 String oauthId,
+                 Provider provider,
+                 Role role,
+                 String bio) {
         this.name = name;
         this.imageUrl = imageUrl;
         this.email = email;
@@ -46,6 +54,10 @@ public class Users extends BaseTimeEntity {
         this.provider = provider;
         this.role = role;
         this.bio = bio;
+    }
+
+    public void updateRefreshToken(String token){
+        this.refreshToken = token;
     }
 
 }
