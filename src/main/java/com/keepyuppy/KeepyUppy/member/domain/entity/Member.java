@@ -35,10 +35,11 @@ public class Member {
         this.team = team;
     }
 
-    public Member(Users users, Team team, Grade grade) {
+    public Member(Users users, Team team, Grade grade, Role role) {
         this.users = users;
         this.team = team;
         this.grade = grade;
+        this.role = role;
     }
 
     public void changeRole(String role) {

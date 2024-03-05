@@ -6,12 +6,7 @@ import com.keepyuppy.KeepyUppy.team.communication.resopnse.TeamResponse;
 import com.keepyuppy.KeepyUppy.team.service.TeamService;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,13 +23,13 @@ public class TeamController {
     }
 
     // @AuthenticationPrincipal UserDetails userDetails 로 변경
-    @GetMapping("/user/team")
-    public TeamResponse getTeamById(Long teamId) {
-        return teamService.getTeamById(teamId);
+    @GetMapping("/user/team/{id}")
+    public TeamResponse getTeamById(@PathVariable Long id) {
+        return teamService.getTeamById(id);
     }
 
-    @GetMapping("/user/myteam")
-    public List<TeamByUserIdResponse> getMyTeam(@AuthenticationPrincipal UserDetails userDetails) {
-        return teamService.getTeamByUser(userDetails);
+    @GetMapping("/user/myteam/{userId}")
+    public List<TeamByUserIdResponse> getMyTeam(@PathVariable Long userId) {
+        return teamService.getTeamByUser(userId);
     }
 }

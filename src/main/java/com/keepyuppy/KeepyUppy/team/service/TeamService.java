@@ -7,10 +7,8 @@ import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import com.keepyuppy.KeepyUppy.team.repository.TeamJpaRepository;
 import com.keepyuppy.KeepyUppy.team.repository.TeamRepositoryImpl;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
-import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
 import com.keepyuppy.KeepyUppy.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,10 +51,8 @@ public class TeamService {
         return new TeamResponse(team);
     }
 
-    public List<TeamByUserIdResponse> getTeamByUser(UserDetails userDetails) {
-        // 유저 가져오기.
-        Users users = new Users("test", "null", "123123", Provider.GOOGLE);
+    public List<TeamByUserIdResponse> getTeamByUser(Long userId) {
 
-        return teamRepositoryImpl.findTeamByUsersId(users.getId()).stream().map(TeamByUserIdResponse::new).toList();
+        return teamRepositoryImpl.findTeamByUsersId(userId).stream().map(TeamByUserIdResponse::new).toList();
     }
 }
