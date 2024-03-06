@@ -15,4 +15,9 @@ public class UserController {
         return "Hello User";
     }
 
+    @PostMapping("/user/create")
+    public void createUser() {
+        userService.create();
+    }
+
 }
