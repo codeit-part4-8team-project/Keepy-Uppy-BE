@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class AddMemberRequest {
-    private Long usersId;
+    private Long userId;
     private String grade;
     private String role;
 }

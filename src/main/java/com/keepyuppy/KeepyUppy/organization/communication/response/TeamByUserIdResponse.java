@@ -1,4 +1,4 @@
-package com.keepyuppy.KeepyUppy.organization.communication.resopnse;
+package com.keepyuppy.KeepyUppy.organization.communication.response;
 
 
 import com.keepyuppy.KeepyUppy.organization.domain.entity.Organization;

@@ -1,6 +1,6 @@
-package com.keepyuppy.KeepyUppy.organization.communication.resopnse;
+package com.keepyuppy.KeepyUppy.organization.communication.response;
 
-import com.keepyuppy.KeepyUppy.member.communication.resopnse.MemberResponse;
+import com.keepyuppy.KeepyUppy.member.communication.response.MemberResponse;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
 import com.keepyuppy.KeepyUppy.organization.domain.entity.Organization;
 import lombok.Data;

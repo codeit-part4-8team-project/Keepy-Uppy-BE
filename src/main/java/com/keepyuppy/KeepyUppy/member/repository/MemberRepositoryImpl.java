@@ -17,8 +17,8 @@ public class MemberRepositoryImpl {
 
     public Optional<Member> findByUserId(Long userId) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(member)
-                .join(member.users, QUsers.users)
-                .where(member.users.id.eq(userId))
+                .join(member.user, QUsers.users)
+                .where(member.user.id.eq(userId))
                 .fetchOne());
     }
 }

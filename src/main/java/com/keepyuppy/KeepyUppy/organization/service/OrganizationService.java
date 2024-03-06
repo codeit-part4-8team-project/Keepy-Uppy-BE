@@ -2,11 +2,12 @@ package com.keepyuppy.KeepyUppy.organization.service;
 
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
+import com.keepyuppy.KeepyUppy.member.domain.enums.Role;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
 import com.keepyuppy.KeepyUppy.organization.communication.request.CreateTeamRequest;
 import com.keepyuppy.KeepyUppy.organization.communication.request.UpdateTeamLinks;
-import com.keepyuppy.KeepyUppy.organization.communication.resopnse.TeamByUserIdResponse;
-import com.keepyuppy.KeepyUppy.organization.communication.resopnse.TeamResponse;
+import com.keepyuppy.KeepyUppy.organization.communication.response.TeamByUserIdResponse;
+import com.keepyuppy.KeepyUppy.organization.communication.response.TeamResponse;
 import com.keepyuppy.KeepyUppy.organization.domain.entity.Organization;
 import com.keepyuppy.KeepyUppy.organization.repository.OrganizationJpaRepository;
 import com.keepyuppy.KeepyUppy.organization.repository.OrganizationRepositoryImpl;
@@ -20,7 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class GroupService {
+public class OrganizationService {
     private final OrganizationJpaRepository organizationJpaRepository;
     private final UserRepository userRepository;
     private final OrganizationRepositoryImpl organizationRepository;
@@ -29,7 +30,7 @@ public class GroupService {
     // 팀을 생성하는 유저 = 소유자
     // 팀을 생성하는 유저는 그팀의 멤버가 된다.
     @Transactional
-    public Long createTeam(Users users, CreateTeamRequest createTeamRequest) {
+    public Long createTeam(Users user, CreateTeamRequest createTeamRequest) {
 
         // todo
         // UserDetails 구현방식에 따라 변경 예정.
@@ -49,7 +50,7 @@ public class GroupService {
 
         organizationJpaRepository.save(organization);
 
-        new Member(users, organization, Grade.OWNER, users.getRole(), Status.ACCEPTED);
+        new Member(user, organization, Grade.OWNER, Role.BACKEND ,Status.ACCEPTED);
 
         return organization.getId();
     }
@@ -76,7 +77,7 @@ public class GroupService {
     // 팀을 삭제한다.
     // 팀 삭제를 신청한 유저의 정보가 팀 소유자 일경우만 실행.
     @Transactional
-    public boolean removeTeam(Users users, Long teamId) {
+    public boolean removeTeam(Users user, Long teamId) {
         return false;
     }
 

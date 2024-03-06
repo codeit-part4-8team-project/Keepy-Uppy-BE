@@ -20,7 +20,7 @@ public class OrganizationRepositoryImpl {
     public List<Organization> findTeamByUsersId(Long id) {
         return jpaQueryFactory.select(QOrganization.organization)
                 .from(QMember.member)
-                .join(QMember.member.users, QUsers.users)
+                .join(QMember.member.user, QUsers.users)
                 .join(QMember.member.organization, QOrganization.organization)
                 .where(QUsers.users.id.eq(id))
                 .where(QMember.member.status.eq(Status.ACCEPTED))
@@ -31,7 +31,7 @@ public class OrganizationRepositoryImpl {
     public List<Organization> findInvitedTeamByUsersId(Long id) {
         return jpaQueryFactory.select(QOrganization.organization)
                 .from(QMember.member)
-                .join(QMember.member.users, QUsers.users)
+                .join(QMember.member.user, QUsers.users)
                 .join(QMember.member.organization, QOrganization.organization)
                 .where(QUsers.users.id.eq(id))
                 .where(QMember.member.status.eq(Status.PENDING))

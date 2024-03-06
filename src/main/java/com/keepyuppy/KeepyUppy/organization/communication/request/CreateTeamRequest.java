@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateTeamRequest {
     private String name;
+    private String role;
     private String description;
     private String startDate;
     private String endDate;
@@ -14,14 +15,14 @@ public class CreateTeamRequest {
     private String githubLink = "https://github.com/";
     private String discordLink = "https://discord.com/";
 
-    public CreateTeamRequest(String name, String description, String startDate, String endDate) {
+    public CreateTeamRequest(String name, String role, String description, String startDate, String endDate) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public CreateTeamRequest(String name, String description, String startDate, String endDate, String figmaLink, String githubLink, String discordLink) {
+    public CreateTeamRequest(String name, String role, String description, String startDate, String endDate, String figmaLink, String githubLink, String discordLink) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;

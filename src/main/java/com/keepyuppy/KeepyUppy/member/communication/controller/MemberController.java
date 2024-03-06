@@ -17,7 +17,7 @@ public class MemberController {
 
     // todo
     // 요청 유저가 매니저 이상의 권한을 가졌는지 확인 로직 추가
-    @Operation(summary = "organizatino 에 멤버 초대")
+    @Operation(summary = "organization 에 멤버 초대")
     @PostMapping("/add/{teamId}")
     public boolean addMember(@PathVariable Long teamId, @RequestBody AddMemberRequest addMemberRequest) {
         return memberService.addMember(teamId,addMemberRequest);

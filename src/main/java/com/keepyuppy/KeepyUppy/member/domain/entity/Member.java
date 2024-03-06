@@ -20,7 +20,7 @@ public class Member {
 
     @ManyToOne
     @JoinColumn(name = "users_id")
-    private Users users;
+    private Users user;
 
     @ManyToOne
     @JoinColumn(name = "organization_id")
@@ -39,8 +39,10 @@ public class Member {
         this.organization = organization;
     }
 
-    public Member(Users users, Organization organization, Grade grade, Role role, Status status) {
-        this.users = users;
+
+
+    public Member(Users user, Organization organization, Grade grade, Role role, Status status) {
+        this.user = user;
         this.organization = organization;
         this.grade = grade;
         this.role = role;
@@ -51,8 +53,8 @@ public class Member {
         this.role = Role.getInstance(role);
     }
 
-    public void setUsers(Users users) {
-        this.users = users;
+    public void setUsers(Users user) {
+        this.user = user;
     }
 
     public void setStatus(Status status) {

@@ -27,12 +27,12 @@ public class MemberService {
     @Transactional
     public boolean addMember(Long teamId, AddMemberRequest addMemberRequest) {
         Organization organization = organizationJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException(teamId + " 는 존재하지 않는 팀 아이디 입니다."));
-        Users users = userRepository.findById(addMemberRequest.getUsersId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Users user = userRepository.findById(addMemberRequest.getUserId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        Member member = new Member(users, organization, Grade.getInstance(addMemberRequest.getGrade()), Role.getInstance(addMemberRequest.getRole()), Status.PENDING);
+        Member member = new Member(user, organization, Grade.getInstance(addMemberRequest.getGrade()), Role.getInstance(addMemberRequest.getRole()), Status.PENDING);
 
         organization.addMember(member);
-        users.addMember(member);
+        user.addMember(member);
 
         memberJpaRepoisitory.save(member);
 
@@ -42,9 +42,9 @@ public class MemberService {
     @Transactional
     public boolean removeMember(Long teamId, RemoveMemberRequest removeMemberRequest) {
         Organization organization = organizationJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException(teamId + " 는 존재하지 않는 팀 아이디 입니다."));
-        Users users = userRepository.findById(removeMemberRequest.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Users user = userRepository.findById(removeMemberRequest.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        Member member = memberRepository.findByUserId(users.getId()).orElseThrow(() -> new IllegalArgumentException(removeMemberRequest.getMemberId() + " 를 찾을수 없습니다."));
+        Member member = memberRepository.findByUserId(user.getId()).orElseThrow(() -> new IllegalArgumentException(removeMemberRequest.getMemberId() + " 를 찾을수 없습니다."));
         organization.removeMember(member);
 
         return true;
