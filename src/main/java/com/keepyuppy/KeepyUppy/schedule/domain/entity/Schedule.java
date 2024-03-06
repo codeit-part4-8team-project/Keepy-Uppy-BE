@@ -1,6 +1,6 @@
 package com.keepyuppy.KeepyUppy.schedule.domain.entity;
 
-import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
+import com.keepyuppy.KeepyUppy.organization.domain.entity.Organization;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -15,10 +15,10 @@ public class Schedule {
     private LocalDate endDate;
 
     @ManyToOne
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 }

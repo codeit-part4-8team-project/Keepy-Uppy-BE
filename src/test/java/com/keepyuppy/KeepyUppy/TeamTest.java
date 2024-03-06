@@ -1,11 +1,11 @@
 package com.keepyuppy.KeepyUppy;
 
 
-import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
-import com.keepyuppy.KeepyUppy.team.communication.resopnse.TeamResponse;
-import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
-import com.keepyuppy.KeepyUppy.team.repository.TeamJpaRepository;
-import com.keepyuppy.KeepyUppy.team.service.TeamService;
+import com.keepyuppy.KeepyUppy.organization.communication.request.CreateTeamRequest;
+import com.keepyuppy.KeepyUppy.organization.communication.resopnse.TeamResponse;
+import com.keepyuppy.KeepyUppy.organization.domain.entity.Team;
+import com.keepyuppy.KeepyUppy.organization.repository.TeamJpaRepository;
+import com.keepyuppy.KeepyUppy.organization.service.GroupService;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 class TeamTest {
 
     @Autowired
-    TeamService teamService;
+    GroupService groupService;
 
     @Autowired
     TeamJpaRepository teamJpaRepository;
@@ -41,7 +41,7 @@ class TeamTest {
 
 
         //when
-        Long teamId = teamService.createTeam(users, createTeamRequest);
+        Long teamId = groupService.createTeam(users, createTeamRequest);
 
         //then
         Assertions.assertEquals(1L, teamId);
@@ -62,7 +62,7 @@ class TeamTest {
                 "2024-03-01"
         );
 
-        Long teamId = teamService.createTeam(users, createTeamRequest);
+        Long teamId = groupService.createTeam(users, createTeamRequest);
 
         //when
         Team teamById = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException());
@@ -87,7 +87,7 @@ class TeamTest {
                 "2024-03-01"
         );
 
-        Long teamId = teamService.createTeam(users, createTeamRequest);
+        Long teamId = groupService.createTeam(users, createTeamRequest);
 
         //when
         Team teamById = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException());
@@ -114,10 +114,10 @@ class TeamTest {
                 "2024-03-01"
         );
 
-        Long teamId = teamService.createTeam(users, createTeamRequest);
+        Long teamId = groupService.createTeam(users, createTeamRequest);
 
         //when
-        TeamResponse teamById = teamService.getTeamById(teamId);
+        TeamResponse teamById = groupService.getTeamById(teamId);
 
         //then
         Assertions.assertEquals(1L, teamById.getId());

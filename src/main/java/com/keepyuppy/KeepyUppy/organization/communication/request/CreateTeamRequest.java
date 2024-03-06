@@ -1,4 +1,4 @@
-package com.keepyuppy.KeepyUppy.team.communication.request;
+package com.keepyuppy.KeepyUppy.organization.communication.request;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
