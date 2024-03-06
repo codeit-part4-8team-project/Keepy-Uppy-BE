@@ -2,49 +2,34 @@ package com.keepyuppy.KeepyUppy.security.jwt;
 
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
-import com.keepyuppy.KeepyUppy.user.domain.enums.Role;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
 @RequiredArgsConstructor
 @Getter
-@Builder
 public class CustomUserDetails implements UserDetails {
 
-    private Map<String, Object> attributes;
+    private long userId;
     private Provider provider;
     private String oauthId;
-    private String email;
+    private String username;
     private String name;
     private String imageUrl;
     private Collection<? extends GrantedAuthority> authorities;
 
 
     public CustomUserDetails(Users user) {
+        this.userId = user.getId();
         this.provider = user.getProvider();
         this.oauthId = user.getOauthId();
-        this.email = user.getEmail();
+        this.username = user.getUsername();
         this.name = user.getName();
         this.imageUrl = user.getImageUrl();
-        this.authorities = Collections.singleton(new SimpleGrantedAuthority(user.getRole().getName()));
-    }
-
-    public Users toEntity(){
-        // TODO: Check emails & profile pics?
-        return Users.builder()
-                .provider(provider)
-                .oauthId(oauthId)
-                .email(email)
-                .name(name)
-                .role(Role.USER)
-                .imageUrl(imageUrl)
-                .build();
+        this.authorities = Collections.emptyList();
     }
 
     @Override

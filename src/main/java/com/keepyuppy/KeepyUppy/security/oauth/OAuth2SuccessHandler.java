@@ -1,9 +1,10 @@
 package com.keepyuppy.KeepyUppy.security.oauth;
 
-import com.keepyuppy.KeepyUppy.security.communication.response.TokenResponse;
+import com.keepyuppy.KeepyUppy.security.communication.response.LoginResponse;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
-import com.keepyuppy.KeepyUppy.user.repository.UserRepository;
+import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
+import com.keepyuppy.KeepyUppy.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import java.io.IOException;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtUtils jwtUtils;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -31,28 +32,44 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String oauthId = oAuth2User.getAttribute("oauthId");
 
-        Users user = userRepository.findByOauthId(oauthId).orElse(null);
+        Users user = userService.findByOauthId(oauthId);
 
-        if (user == null){
-            // register new user
-            // TODO: 새 유저 정보 받기 및 저장
-
+        if (user == null) {
+            // user is saved in repo within setTokens method
+            user = toUserEntity(oAuth2User);
+            setTokens(oauthId, user, response, true);
+            log.info("새 계정 생성에 성공했습니다.");
         } else {
-            String accessToken = jwtUtils.generateAccessToken(oauthId);
-            response.addHeader("Authorization", "Bearer " + accessToken);
-
-            String refreshToken = jwtUtils.generateRefreshToken();
-            jwtUtils.updateRefreshToken(oauthId, refreshToken);
-
-            TokenResponse tokens = new TokenResponse(accessToken, refreshToken);
-            String tokensJson = tokens.toString();
-
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json");
-            response.getWriter().write(tokensJson);
-
+            setTokens(oauthId, user, response, false);
             log.info("소셜 로그인에 성공했습니다.");
         }
+
+
+    }
+
+    public Users toUserEntity(OAuth2User oAuth2User){
+        //todo random username, 중복 확인
+        String username = "user-23";
+        return Users.builder()
+                .oauthId(oAuth2User.getAttribute("oauthId"))
+                .username(username)
+                .provider(Provider.valueOf(oAuth2User.getAttribute("provider")))
+                .name(oAuth2User.getAttribute("name"))
+                .imageUrl(oAuth2User.getAttribute("imageUrl"))
+                .build();
+    }
+
+    public void setTokens(String oauthId, Users user, HttpServletResponse response, boolean newAccount) throws IOException {
+        String accessToken = jwtUtils.generateAccessToken(oauthId);
+        String refreshToken = jwtUtils.generateRefreshToken();
+        userService.updateRefreshToken(user, refreshToken);
+
+        LoginResponse loginResponse = LoginResponse.of(user, accessToken, refreshToken, newAccount);
+
+        response.addHeader(accessToken, "Bearer " + accessToken);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.getWriter().write(loginResponse.toString());
     }
 
 }

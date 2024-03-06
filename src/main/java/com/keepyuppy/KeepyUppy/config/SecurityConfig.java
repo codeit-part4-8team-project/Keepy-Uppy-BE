@@ -3,11 +3,13 @@ package com.keepyuppy.KeepyUppy.config;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtAuthenticationFilter;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;
 import com.keepyuppy.KeepyUppy.security.oauth.CustomOAuth2UserService;
+import com.keepyuppy.KeepyUppy.security.oauth.CustomOidcUserService;
 import com.keepyuppy.KeepyUppy.security.oauth.OAuth2FailureHandler;
 import com.keepyuppy.KeepyUppy.security.oauth.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -27,6 +29,7 @@ public class SecurityConfig {
 
     private final JwtUtils jwtUtils;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOidcUserService customOidcUserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
 
@@ -55,21 +58,24 @@ public class SecurityConfig {
                 .authorizeHttpRequests((request -> request
                         .requestMatchers(new AntPathRequestMatcher("/test/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/swagger**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/signin/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/signup")).permitAll()
-                        // TODO: Roles?
-                        // .requestMatchers(new AntPathRequestMatcher("/user")).hasRole("USER")
+                        .requestMatchers(new AntPathRequestMatcher("/login/**")).permitAll()
                         .requestMatchers("/", "/css/**","/images/**","/js/**","/favicon.ico","/h2-console/**").permitAll()
                         .anyRequest().authenticated()))
 
-                .oauth2Login((oauth2Login) -> oauth2Login.userInfoEndpoint(userInfoEndpointConfig ->
-                                userInfoEndpointConfig.userService(customOAuth2UserService))
+                // current url for triggering login /oauth2/authorization/{google}
+                .oauth2Login((oauth2Login) -> oauth2Login
+                        .userInfoEndpoint(userInfoEndpointConfig ->
+                                userInfoEndpointConfig.userService(customOAuth2UserService)
+                                        .oidcUserService(customOidcUserService))
                         .successHandler(oAuth2SuccessHandler)
                         .failureHandler(oAuth2FailureHandler))
 
-                // TODO: add all relevant filters
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtils) , UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class)
+                    .exceptionHandling(config->config
+                            .authenticationEntryPoint(((request, response, authException) -> {
+                                response.setContentType("application/json");
+                                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            })));
 
         return httpSecurity.build();
     }

@@ -2,12 +2,8 @@ package com.keepyuppy.KeepyUppy.user.domain.entity;
 
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
-import com.keepyuppy.KeepyUppy.user.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -22,15 +18,12 @@ public class Users extends BaseTimeEntity {
 
     private String imageUrl;
 
-    private String email;
+    private String username;
 
     private String oauthId;
 
     @Enumerated(EnumType.STRING)
     private Provider provider;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
 
     private String bio;
 
@@ -42,17 +35,15 @@ public class Users extends BaseTimeEntity {
     @Builder
     public Users(String name,
                  String imageUrl,
-                 String email,
+                 String username,
                  String oauthId,
                  Provider provider,
-                 Role role,
                  String bio) {
         this.name = name;
         this.imageUrl = imageUrl;
-        this.email = email;
+        this.username = username;
         this.oauthId = oauthId;
         this.provider = provider;
-        this.role = role;
         this.bio = bio;
     }
 

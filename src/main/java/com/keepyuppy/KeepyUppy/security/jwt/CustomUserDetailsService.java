@@ -1,8 +1,8 @@
 package com.keepyuppy.KeepyUppy.security.jwt;
 
+import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
-import com.keepyuppy.KeepyUppy.user.exception.UserException;
-import com.keepyuppy.KeepyUppy.user.repository.UserRepository;
+import com.keepyuppy.KeepyUppy.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,12 +13,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String oauthId) throws UsernameNotFoundException {
-        Users user = userRepository.findByOauthId(oauthId)
-                .orElseThrow(() -> new UserException.UserNotFoundException("회원을 찾을수 없습니다."));
+        Users user = userService.findByOauthId(oauthId);
+
+        if (user == null) throw new NotFoundException.UserNotFoundException("회원을 찾을수 없습니다.");
 
         return new CustomUserDetails(user);
     }
