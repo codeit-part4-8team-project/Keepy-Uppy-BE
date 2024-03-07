@@ -49,9 +49,17 @@ public class MemberService {
         return true;
     }
 
-    public void changeRole() {
-
+    @Transactional
+    public void accept(Long teamId) {
+        Member member = memberRepository.findInviteByUserId(1L, teamId).orElseThrow(IllegalArgumentException::new);
+        member.setStatus(Status.ACCEPTED);
     }
 
-
+    @Transactional
+    public void reject(Long teamId) {
+        Member member = memberRepository.findInviteByUserId(1L, teamId).orElseThrow(IllegalArgumentException::new);
+        member.getTeam().removeMember(member);
+        memberJpaRepoisitory.delete(member);
+    }
 }
+
