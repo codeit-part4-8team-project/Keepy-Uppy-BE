@@ -15,6 +15,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 @Slf4j
 @Component
@@ -47,18 +49,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     }
 
-    public Users toUserEntity(OAuth2User oAuth2User){
-        //todo random username, 중복 확인
-        String username = "user-23";
-        return Users.builder()
-                .oauthId(oAuth2User.getAttribute("oauthId"))
-                .username(username)
-                .provider(Provider.valueOf(oAuth2User.getAttribute("provider")))
-                .name(oAuth2User.getAttribute("name"))
-                .imageUrl(oAuth2User.getAttribute("imageUrl"))
-                .build();
-    }
-
     public void setTokens(String oauthId, Users user, HttpServletResponse response, boolean newAccount) throws IOException {
         String accessToken = jwtUtils.generateAccessToken(oauthId);
         String refreshToken = jwtUtils.generateRefreshToken();
@@ -70,6 +60,29 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.getWriter().write(loginResponse.toString());
+    }
+
+    public Users toUserEntity(OAuth2User oAuth2User){
+        String username = generateUsername();
+        return Users.builder()
+                .oauthId(oAuth2User.getAttribute("oauthId"))
+                .username(username)
+                .provider(Provider.valueOf(oAuth2User.getAttribute("provider")))
+                .name(oAuth2User.getAttribute("name"))
+                .imageUrl(oAuth2User.getAttribute("imageUrl"))
+                .build();
+    }
+
+    public static String generateUsername() {
+        int length = 10;
+
+        byte[] randomBytes = new byte[length];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(randomBytes);
+        String randomString = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+        randomString = randomString.replaceAll("[^a-zA-Z0-9]", "");
+
+        return "user-" + randomString.substring(0, Math.min(length, randomString.length()));
     }
 
 }

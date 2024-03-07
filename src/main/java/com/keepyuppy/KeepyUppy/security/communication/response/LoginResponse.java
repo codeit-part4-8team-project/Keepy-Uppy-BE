@@ -1,5 +1,7 @@
 package com.keepyuppy.KeepyUppy.security.communication.response;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -26,5 +28,15 @@ public class LoginResponse {
                 accessToken,
                 refreshToken,
                 newAccount);
+    }
+
+    @Override
+    public String toString(){
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return "{}";
+        }
     }
 }

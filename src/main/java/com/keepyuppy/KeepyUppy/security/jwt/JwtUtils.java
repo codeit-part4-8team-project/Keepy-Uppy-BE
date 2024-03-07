@@ -87,8 +87,13 @@ public class JwtUtils {
 
     public Authentication getAuthentication(String token) {
         String oauthId = this.parseClaims(token);
-        CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(oauthId);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        try {
+            CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(oauthId);
+            return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        } catch (Exception e){
+            log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
+            return null;
+        }
     }
 
     public String parseClaims(String token) {

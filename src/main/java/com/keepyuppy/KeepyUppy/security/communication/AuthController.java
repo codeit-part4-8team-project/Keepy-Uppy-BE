@@ -4,6 +4,7 @@ import com.keepyuppy.KeepyUppy.security.communication.response.TokenResponse;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import com.keepyuppy.KeepyUppy.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -40,9 +41,10 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refresh(@RequestHeader("Authorization") final String refreshToken) {
+    public ResponseEntity<TokenResponse> refresh(final HttpServletRequest request) {
 
         // generate new access token if refresh token is valid
+        String refreshToken = jwtUtils.resolveToken(request);
         Users user = userService.findByRefreshToken(refreshToken);
         if (user != null && jwtUtils.verifyToken(refreshToken, false) && refreshToken.equals(user.getRefreshToken())) {
             String newAccessToken = jwtUtils.generateAccessToken(user.getOauthId());

@@ -59,10 +59,12 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/test/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/swagger**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/login/**")).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/api/user/test/**")).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/api/auth/refresh")).permitAll()
                         .requestMatchers("/", "/css/**","/images/**","/js/**","/favicon.ico","/h2-console/**").permitAll()
                         .anyRequest().authenticated()))
 
-                // current url for triggering login /oauth2/authorization/{google}
+                // current url for triggering login /oauth2/authorization/{provider}
                 .oauth2Login((oauth2Login) -> oauth2Login
                         .userInfoEndpoint(userInfoEndpointConfig ->
                                 userInfoEndpointConfig.userService(customOAuth2UserService)
@@ -75,6 +77,7 @@ public class SecurityConfig {
                             .authenticationEntryPoint(((request, response, authException) -> {
                                 response.setContentType("application/json");
                                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                                response.getWriter().print("Invalid access token");
                             })));
 
         return httpSecurity.build();
