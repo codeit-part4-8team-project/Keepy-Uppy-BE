@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/user")
@@ -25,17 +23,9 @@ public class UserController {
         return UserResponse.of(user);
     }
 
-    @PutMapping({ "/"})
+    @PutMapping( "/")
     public UserResponse updateUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Users user = userService.findByOauthId(userDetails.getOauthId());
         return UserResponse.of(user);
-    }
-
-    @GetMapping("/test/getUsers")
-    public String getUsers() {
-        List<Users> users = userRepository.findAll();
-        String res = "";
-        for (Users u : users) res += UserResponse.of(u) + "\n";
-        return res;
     }
 }

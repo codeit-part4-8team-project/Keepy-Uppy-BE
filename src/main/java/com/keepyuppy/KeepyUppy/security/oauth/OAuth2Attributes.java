@@ -45,7 +45,7 @@ public class OAuth2Attributes {
 
         return OAuth2Attributes.builder()
                 .provider("KAKAO")
-                .oauthId((String) attributes.get("id"))
+                .oauthId(String.valueOf(attributes.get("id")))
                 .name((String) profile.get("nickname"))
                 .imageUrl((String) properties.get("profile_image"))
                 .attributes(account)

@@ -12,7 +12,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -34,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private static String[] skipUrls = {
-            "/api/user/test/**",
+            "test/**",
             "/api/auth/refresh",
             "/login/**",
             "/swagger**", "/", "/*.html", "/favicon.ico",

@@ -1,6 +1,5 @@
 package com.keepyuppy.KeepyUppy.security.jwt;
 
-import com.keepyuppy.KeepyUppy.user.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -29,7 +28,7 @@ public class JwtUtils {
     private String refreshSecret;
     private Key refreshKey;
 
-    private static final long accessExp = 1000L * 60 * 30; // 30 minutes
+    private static final long accessExp = 1000L * 60 * 60; // 1 hour
     private static final long refreshExp = 1000L * 60 * 60 * 24 * 7 ; // 7 days
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER = "Bearer ";

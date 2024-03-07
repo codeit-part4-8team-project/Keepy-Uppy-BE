@@ -7,7 +7,6 @@ import com.keepyuppy.KeepyUppy.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -23,20 +22,19 @@ public class AuthController {
     private final UserService userService;
     private final JwtUtils jwtUtils;
 
-    //TODO: Deal with exceptions
-
-    @PostMapping("/signout")
-    public ResponseEntity<String> signout(@RequestHeader("Authorization") final String accessToken) {
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(final HttpServletRequest request) {
 
         // delete refresh token saved in repo
+        String accessToken = jwtUtils.resolveToken(request);
         String oauthId = jwtUtils.parseClaims(accessToken);
         Users user = userService.findByOauthId(oauthId);
 
-        if ( user != null){
+        if (user != null){
             userService.updateRefreshToken(user, "");
             return ResponseEntity.ok("로그아웃 성공");
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 
