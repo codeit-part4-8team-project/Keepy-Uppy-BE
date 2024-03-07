@@ -1,9 +1,13 @@
 package com.keepyuppy.KeepyUppy.user.domain.entity;
 
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
+import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -29,8 +33,8 @@ public class Users extends BaseTimeEntity {
 
     private String refreshToken;
 
-//    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-//    private Set<Member> members = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private Set<Member> members = new HashSet<>();
 
     @Builder
     public Users(String name,
@@ -49,6 +53,11 @@ public class Users extends BaseTimeEntity {
 
     public void updateRefreshToken(String token){
         this.refreshToken = token;
+    }
+
+    public void addMember(Member member) {
+        member.setUsers(this);
+        this.members.add(member);
     }
 
 }
