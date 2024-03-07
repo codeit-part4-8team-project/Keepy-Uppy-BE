@@ -1,6 +1,6 @@
 package com.keepyuppy.KeepyUppy.schedule.domain.entity;
 
-import com.keepyuppy.KeepyUppy.organization.domain.entity.Organization;
+import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -16,9 +16,9 @@ public class Schedule {
 
     @ManyToOne
     @JoinColumn(name = "organization_id")
-    private Organization organization;
+    private Team team;
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setOrganization(Team team) {
+        this.team = team;
     }
 }

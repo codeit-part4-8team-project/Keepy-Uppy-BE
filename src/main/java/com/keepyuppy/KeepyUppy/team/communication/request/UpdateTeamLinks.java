@@ -1,4 +1,4 @@
-package com.keepyuppy.KeepyUppy.organization.communication.request;
+package com.keepyuppy.KeepyUppy.team.communication.request;
 
 import lombok.Data;
 
