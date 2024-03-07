@@ -25,20 +25,37 @@ public class Users extends BaseTimeEntity {
 
     private String imageUrl;
 
+    private String username;
+
     private String oauthId;
 
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
+    private String bio;
+
+    private String refreshToken;
+
     @OneToMany(mappedBy = "user")
     private Set<Member> members = new HashSet<>();
 
     @Builder
-    public Users(String name, String imageUrl, String oauthId, Provider provider) {
+    public Users(String name,
+                 String imageUrl,
+                 String username,
+                 String oauthId,
+                 Provider provider,
+                 String bio) {
         this.name = name;
         this.imageUrl = imageUrl;
+        this.username = username;
         this.oauthId = oauthId;
         this.provider = provider;
+        this.bio = bio;
+    }
+
+    public void updateRefreshToken(String token){
+        this.refreshToken = token;
     }
 
     public void addMember(Member member) {
