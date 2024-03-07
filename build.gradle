@@ -28,9 +28,6 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	// H2 (for testing)
-	runtimeOnly 'com.h2database:h2'
-
 	// MySQL
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
