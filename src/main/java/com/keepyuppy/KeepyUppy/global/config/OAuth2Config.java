@@ -1,4 +1,4 @@
-package com.keepyuppy.KeepyUppy.config;
+package com.keepyuppy.KeepyUppy.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

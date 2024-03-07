@@ -1,4 +1,4 @@
-package com.keepyuppy.KeepyUppy.config;
+package com.keepyuppy.KeepyUppy.global.config;
 
 import com.keepyuppy.KeepyUppy.security.jwt.JwtAuthenticationFilter;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;
