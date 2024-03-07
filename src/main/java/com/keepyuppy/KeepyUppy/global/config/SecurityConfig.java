@@ -2,10 +2,10 @@ package com.keepyuppy.KeepyUppy.global.config;
 
 import com.keepyuppy.KeepyUppy.security.jwt.JwtAuthenticationFilter;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;
-import com.keepyuppy.KeepyUppy.security.oauth.CustomOAuth2UserService;
-import com.keepyuppy.KeepyUppy.security.oauth.CustomOidcUserService;
-import com.keepyuppy.KeepyUppy.security.oauth.OAuth2FailureHandler;
-import com.keepyuppy.KeepyUppy.security.oauth.OAuth2SuccessHandler;
+import com.keepyuppy.KeepyUppy.security.oauth.service.CustomOAuth2UserService;
+import com.keepyuppy.KeepyUppy.security.oauth.service.CustomOidcUserService;
+import com.keepyuppy.KeepyUppy.security.oauth.handler.OAuth2FailureHandler;
+import com.keepyuppy.KeepyUppy.security.oauth.handler.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

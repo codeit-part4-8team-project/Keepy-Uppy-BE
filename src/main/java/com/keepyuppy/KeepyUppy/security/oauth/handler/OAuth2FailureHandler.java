@@ -1,4 +1,4 @@
-package com.keepyuppy.KeepyUppy.security.oauth;
+package com.keepyuppy.KeepyUppy.security.oauth.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

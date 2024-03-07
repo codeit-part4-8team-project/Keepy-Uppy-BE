@@ -1,5 +1,6 @@
-package com.keepyuppy.KeepyUppy.security.oauth;
+package com.keepyuppy.KeepyUppy.security.oauth.service;
 
+import com.keepyuppy.KeepyUppy.security.oauth.OAuth2Attributes;
 import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;

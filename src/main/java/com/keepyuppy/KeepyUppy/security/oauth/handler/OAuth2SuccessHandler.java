@@ -1,4 +1,4 @@
-package com.keepyuppy.KeepyUppy.security.oauth;
+package com.keepyuppy.KeepyUppy.security.oauth.handler;
 
 import com.keepyuppy.KeepyUppy.security.communication.response.LoginResponse;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;

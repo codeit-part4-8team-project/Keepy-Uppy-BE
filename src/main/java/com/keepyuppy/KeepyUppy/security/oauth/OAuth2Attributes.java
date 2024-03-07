@@ -62,7 +62,7 @@ public class OAuth2Attributes {
                 .build();
     }
 
-    Map<String, Object> convertToMap() {
+    public Map<String, Object> convertToMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("id", nameAttributeKey);
         map.put("key", nameAttributeKey);

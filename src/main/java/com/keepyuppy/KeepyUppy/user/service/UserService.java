@@ -31,7 +31,7 @@ public class UserService {
 
     public void create() {
         for (int i = 0; i < 5; i++) {
-            Users users = new Users("user" + i, "null", "null", Provider.GITHUB);
+            Users users = new Users("user" + i, "null", "null", "", Provider.GITHUB, "");
             userRepository.save(users);
         }
     }
