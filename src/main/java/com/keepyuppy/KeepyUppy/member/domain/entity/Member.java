@@ -40,7 +40,6 @@ public class Member {
     }
 
 
-
     public Member(Users user, Team team, Grade grade, String role, Status status) {
         this.user = user;
         this.team = team;
@@ -60,4 +59,6 @@ public class Member {
     public void setStatus(Status status) {
         this.status = status;
     }
+
 }
+
