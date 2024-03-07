@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
-@RequiredArgsConstructor
 @Getter
 public class CustomUserDetails implements UserDetails {
 
