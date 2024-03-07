@@ -1,4 +1,4 @@
-package com.keepyuppy.KeepyUppy.organization.communication.request;
+package com.keepyuppy.KeepyUppy.team.communication.request;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CreateTeamRequest {
+    private String type;
     private String name;
     private String role;
     private String description;
@@ -15,15 +16,19 @@ public class CreateTeamRequest {
     private String githubLink = "https://github.com/";
     private String discordLink = "https://discord.com/";
 
-    public CreateTeamRequest(String name, String role, String description, String startDate, String endDate) {
+    public CreateTeamRequest(String type,String name, String role, String description, String startDate, String endDate) {
+        this.type = type;
         this.name = name;
+        this.role = role;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public CreateTeamRequest(String name, String role, String description, String startDate, String endDate, String figmaLink, String githubLink, String discordLink) {
+    public CreateTeamRequest(String type, String name, String role, String description, String startDate, String endDate, String figmaLink, String githubLink, String discordLink) {
+        this.type = type;
         this.name = name;
+        this.role = role;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;

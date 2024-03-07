@@ -1,16 +1,15 @@
-package com.keepyuppy.KeepyUppy.organization.service;
+package com.keepyuppy.KeepyUppy.team.service;
 
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
-import com.keepyuppy.KeepyUppy.member.domain.enums.Role;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
-import com.keepyuppy.KeepyUppy.organization.communication.request.CreateTeamRequest;
-import com.keepyuppy.KeepyUppy.organization.communication.request.UpdateTeamLinks;
-import com.keepyuppy.KeepyUppy.organization.communication.response.TeamByUserIdResponse;
-import com.keepyuppy.KeepyUppy.organization.communication.response.TeamResponse;
-import com.keepyuppy.KeepyUppy.organization.domain.entity.Organization;
-import com.keepyuppy.KeepyUppy.organization.repository.OrganizationJpaRepository;
-import com.keepyuppy.KeepyUppy.organization.repository.OrganizationRepositoryImpl;
+import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
+import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamLinks;
+import com.keepyuppy.KeepyUppy.team.communication.response.TeamByUserIdResponse;
+import com.keepyuppy.KeepyUppy.team.communication.response.TeamResponse;
+import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
+import com.keepyuppy.KeepyUppy.team.repository.TeamJpaRepository;
+import com.keepyuppy.KeepyUppy.team.repository.TeamRepositoryImpl;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import com.keepyuppy.KeepyUppy.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +20,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OrganizationService {
-    private final OrganizationJpaRepository organizationJpaRepository;
+public class TeamService {
+    private final TeamJpaRepository teamJpaRepository;
     private final UserRepository userRepository;
-    private final OrganizationRepositoryImpl organizationRepository;
+    private final TeamRepositoryImpl teamRepository;
 
     // 팀 생성
     // 팀을 생성하는 유저 = 소유자
@@ -35,7 +34,8 @@ public class OrganizationService {
         // todo
         // UserDetails 구현방식에 따라 변경 예정.
 
-        Organization organization = Organization.builder()
+        Team team = Team.builder()
+                .type(createTeamRequest.getType())
                 .name(createTeamRequest.getName())
                 .description(createTeamRequest.getDescription())
                 .startDate(createTeamRequest.getStartDate())
@@ -48,11 +48,11 @@ public class OrganizationService {
         // todo
         // team.addMember(소유자);
 
-        organizationJpaRepository.save(organization);
+        teamJpaRepository.save(team);
 
-        new Member(user, organization, Grade.OWNER, Role.BACKEND ,Status.ACCEPTED);
+        new Member(user, team, Grade.OWNER, createTeamRequest.getRole() ,Status.ACCEPTED);
 
-        return organization.getId();
+        return team.getId();
     }
 
     // todo
@@ -60,7 +60,7 @@ public class OrganizationService {
     // teamId 로 팀을 조회한다.
     // 이때 멤버는 Status ACCEPTED 인 멤버만. (초대에 수락한 멤버만)
     public TeamResponse getTeamById(Long teamId) {
-        Organization team = organizationJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 teamId 입니다."));
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 teamId 입니다."));
 
         return new TeamResponse(team);
     }
@@ -71,7 +71,7 @@ public class OrganizationService {
     // 이때 조회되는 팀은 초대에 수락한 팀원.
     public List<TeamByUserIdResponse> getTeamByUser(Long userId) {
 
-        return organizationRepository.findTeamByUsersId(userId).stream().map(TeamByUserIdResponse::new).toList();
+        return teamRepository.findProjectByUsersId(userId).stream().map(TeamByUserIdResponse::new).toList();
     }
 
     // 팀을 삭제한다.
@@ -90,6 +90,6 @@ public class OrganizationService {
     // @Authentication
     // 초대받은 팀 목록 조회
     public List<TeamByUserIdResponse> getPendingTeams(Long userId) {
-        return organizationRepository.findInvitedTeamByUsersId(userId).stream().map(TeamByUserIdResponse::new).toList();
+        return teamRepository.findInvitedTeamByUsersId(userId).stream().map(TeamByUserIdResponse::new).toList();
     }
 }
