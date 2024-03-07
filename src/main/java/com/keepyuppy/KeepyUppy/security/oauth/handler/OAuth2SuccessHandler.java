@@ -1,5 +1,6 @@
 package com.keepyuppy.KeepyUppy.security.oauth.handler;
 
+import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
 import com.keepyuppy.KeepyUppy.security.communication.response.LoginResponse;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
@@ -34,19 +35,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String oauthId = oAuth2User.getAttribute("oauthId");
 
-        Users user = userService.findByOauthId(oauthId);
-
-        if (user == null) {
-            // user is saved in repo within setTokens method
-            user = toUserEntity(oAuth2User);
-            setTokens(oauthId, user, response, true);
-            log.info("새 계정 생성에 성공했습니다.");
-        } else {
+        try {
+            Users user = userService.findByOauthId(oauthId);
             setTokens(oauthId, user, response, false);
             log.info("소셜 로그인에 성공했습니다.");
+        } catch (NotFoundException e){
+            // user is saved in repo within setTokens method
+            Users user = toUserEntity(oAuth2User);
+            setTokens(oauthId, user, response, true);
+            log.info("새 계정 생성에 성공했습니다.");
         }
-
-
     }
 
     public void setTokens(String oauthId, Users user, HttpServletResponse response, boolean newAccount) throws IOException {

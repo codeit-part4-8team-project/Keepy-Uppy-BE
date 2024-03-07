@@ -30,12 +30,8 @@ public class AuthController {
         String oauthId = jwtUtils.parseClaims(accessToken);
         Users user = userService.findByOauthId(oauthId);
 
-        if (user != null){
-            userService.updateRefreshToken(user, "");
-            return ResponseEntity.ok("로그아웃 성공");
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+        userService.updateRefreshToken(user, "");
+        return ResponseEntity.ok("로그아웃 성공");
     }
 
     @PostMapping("/refresh")
@@ -44,7 +40,7 @@ public class AuthController {
         // generate new access token if refresh token is valid
         String refreshToken = jwtUtils.resolveToken(request);
         Users user = userService.findByRefreshToken(refreshToken);
-        if (user != null && jwtUtils.verifyToken(refreshToken, false) && refreshToken.equals(user.getRefreshToken())) {
+        if (jwtUtils.verifyToken(refreshToken, false) && refreshToken.equals(user.getRefreshToken())) {
             String newAccessToken = jwtUtils.generateAccessToken(user.getOauthId());
             return ResponseEntity.ok(new TokenResponse(newAccessToken));
         }

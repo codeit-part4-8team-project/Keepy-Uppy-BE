@@ -1,6 +1,5 @@
 package com.keepyuppy.KeepyUppy.security.jwt;
 
-import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import com.keepyuppy.KeepyUppy.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +17,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String oauthId) throws UsernameNotFoundException {
         Users user = userService.findByOauthId(oauthId);
-
-        if (user == null) throw new NotFoundException.UserNotFoundException("회원을 찾을수 없습니다.");
-
         return new CustomUserDetails(user);
     }
 
