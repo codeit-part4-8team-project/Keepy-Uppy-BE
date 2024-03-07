@@ -30,7 +30,7 @@ public class MemberController {
     }
 
     @Operation(summary = "팀 초대 수락")
-    @PutMapping("/{teamId}")
+    @PutMapping("/invite/{teamId}")
     public void acceptInvite(
             // 로그인한 유저 정보
             @PathVariable Long teamId
@@ -40,7 +40,7 @@ public class MemberController {
     }
 
     @Operation(summary = "팀 초대 거절")
-    @DeleteMapping("/{teamId}")
+    @DeleteMapping("/invite/{teamId}")
     public void rejectInvite(
             // 로그인한 유저정보
             @PathVariable Long teamId
