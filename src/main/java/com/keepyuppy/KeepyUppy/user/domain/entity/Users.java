@@ -37,7 +37,7 @@ public class Users extends BaseTimeEntity {
 
     private String refreshToken;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Member> members = new HashSet<>();
 
     @Builder
