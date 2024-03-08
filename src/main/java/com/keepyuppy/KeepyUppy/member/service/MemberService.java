@@ -39,28 +39,17 @@ public class MemberService {
     @Transactional
     public boolean addMember(CustomUserDetails userDetails, Long teamId, AddMemberRequest addMemberRequest) {
 
-        log.info("MemberService.addMember()");
-
-        log.info(String.valueOf(userDetails.getUserId()));
-
         Member loginMember = memberRepository.findMemberInTeamByUserId(userDetails.getUserId(), teamId).orElseThrow(IllegalArgumentException::new);
 
-        log.info(loginMember.getGrade().getName());
-
         if (isManagerOrOwner(loginMember)) {
-            log.info("소유자 or 매니저 맞음");
+
             Team team = teamJpaRepository.findById(teamId)
                     .orElseThrow(() -> new IllegalArgumentException(teamId + " 는 존재하지 않는 팀 아이디 입니다."));
 
-            log.info("팀 찾음");
             Users user = userRepository.findById(addMemberRequest.getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-            log.info("유저 찾음");
-
             Member member = new Member(user, team, Grade.TEAM_MEMBER, Status.PENDING);
-
-            log.info("멤버 생성함");
 
             team.addMember(member);
             user.addMember(member);
@@ -113,7 +102,7 @@ public class MemberService {
 
 
     private boolean isManagerOrOwner(Member member) {
-        log.info(member.getGrade().getName());
+
         return member.getGrade().equals(Grade.OWNER) || member.getGrade().equals(Grade.MANAGER);
     }
 
