@@ -3,6 +3,7 @@ package com.keepyuppy.KeepyUppy.team.service;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
+import com.keepyuppy.KeepyUppy.member.repository.MemberJpaRepoisitory;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
 import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamLinks;
@@ -24,6 +25,7 @@ public class TeamService {
     private final TeamJpaRepository teamJpaRepository;
     private final UserRepository userRepository;
     private final TeamRepositoryImpl teamRepository;
+    private final MemberJpaRepoisitory memberJpaRepoisitory;
 
 
     // 팀 생성
@@ -49,6 +51,8 @@ public class TeamService {
         team.addMember(member);
 
         teamJpaRepository.save(team);
+
+        memberJpaRepoisitory.save(member);
 
         return TeamResponse.of(team);
     }
@@ -86,8 +90,6 @@ public class TeamService {
         return false;
     }
 
-    // todo
-    // searchCondition 받아서 Project or Study
     public List<TeamResponse> getPendingTeams(CustomUserDetails userDetails) {
         return teamRepository.findInvitedTeamByUsersId(userDetails.getUserId()).stream().map(TeamResponse::of).toList();
     }

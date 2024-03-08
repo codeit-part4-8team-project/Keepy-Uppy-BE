@@ -1,8 +1,11 @@
 package com.keepyuppy.KeepyUppy.team.domain.entity;
 
+import com.keepyuppy.KeepyUppy.content.domain.entity.Content;
+import com.keepyuppy.KeepyUppy.content.domain.entity.Issue;
+import com.keepyuppy.KeepyUppy.content.domain.entity.Schedule;
+import com.keepyuppy.KeepyUppy.content.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
-import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamLinks;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -27,18 +30,32 @@ public class Team extends BaseTimeEntity {
     private String name;
     private String description;
     private String color;
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Member> members = new HashSet<>();
     private LocalDate startDate;
     private LocalDate endDate;
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
-    private List<Schedule> schedules = new ArrayList<>();
     private String figma;
     private String github;
     private String discord;
 
+    // fetch is lazy by default
+    @OneToMany(mappedBy = "team")
+    private Set<Member> members = new HashSet<>();
+
+    @OneToMany(mappedBy = "team")
+    private List<Content> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "team")
+    private List<Content> announcements = new ArrayList<>();
+
+    @OneToMany(mappedBy = "team")
+    private List<Issue> issues = new ArrayList<>();
+
+    @OneToMany(mappedBy = "team")
+    private List<Schedule> schedules = new ArrayList<>();
+
+
+
     @Builder
-    public Team(String name, String description, String color, String startDate, String endDate, String figma, String github, String discord) {
+    public Team(String name, String description,String color, String startDate, String endDate, String figma, String github, String discord) {
         this.name = name;
         this.description = description;
         this.color = color;
@@ -59,9 +76,15 @@ public class Team extends BaseTimeEntity {
         this.members.remove(member);
     }
 
-    public void addSchedules(Schedule schedule) {
-        schedule.setOrganization(this);
-        this.schedules.add(schedule);
+    public void addContent(Content content) {
+        content.setTeam(this);
+        ContentType type = content.getType();
+        switch (type) {
+            case POST -> this.posts.add(content);
+            case ANNOUNCEMENT -> this.announcements.add(content);
+            case ISSUE -> this.issues.add((Issue) content);
+            case SCHEDULE -> this.schedules.add((Schedule) content);
+        }
     }
 
     public void updateLinks(UpdateTeamLinks updateTeamLinks) {
@@ -73,9 +96,5 @@ public class Team extends BaseTimeEntity {
     private LocalDate stringToLocalDate(String dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return LocalDate.parse(dateTime, formatter);
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 }

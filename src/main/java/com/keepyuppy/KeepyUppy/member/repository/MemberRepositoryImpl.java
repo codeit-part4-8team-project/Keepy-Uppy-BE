@@ -39,12 +39,14 @@ public class MemberRepositoryImpl {
     public Optional<Member> findMemberInTeamByUserId(Long userId, Long teamId) {
         return Optional.ofNullable(
                 jpaQueryFactory.selectFrom(member)
-                        .join(member.user, QUsers.users)
-                        .where(member.user.id.eq(userId))
-                        .where(member.team.id.eq(teamId))
+                        .where(
+                                member.user.id.eq(userId)
+                                        .and(member.team.id.eq(teamId))
+                        )
                         .fetchOne()
         );
     }
+
 
     public Optional<List<Member>> findMembersByTeamId(Long teamId) {
         return Optional.ofNullable(

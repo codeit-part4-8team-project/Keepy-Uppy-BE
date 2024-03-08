@@ -6,6 +6,7 @@ import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamLinks;
 import com.keepyuppy.KeepyUppy.team.communication.response.TeamResponse;
 import com.keepyuppy.KeepyUppy.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/team")
-@Tag(name = "TeamController",description = "Team (팀 , 스터디) 컨트롤러 입니다.")
+@Tag(name = "TeamController",description = "Team 관련 컨트롤러 입니다.")
+@SecurityRequirement(name = "Bearer Authentication")
 public class TeamController {
     private final TeamService teamService;
 

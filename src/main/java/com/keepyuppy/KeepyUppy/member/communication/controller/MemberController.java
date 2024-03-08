@@ -7,6 +7,7 @@ import com.keepyuppy.KeepyUppy.member.communication.response.MemberResponse;
 import com.keepyuppy.KeepyUppy.member.service.MemberService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
-@Tag(name = "MemberController", description = "팀, 스터디 멤버 관리 컨트롤러 입니다.")
+@Tag(name = "MemberController", description = "Member 관련 컨트롤러 입니다.")
+@SecurityRequirement(name = "Bearer Authentication")
 public class MemberController {
     private final MemberService memberService;
 
