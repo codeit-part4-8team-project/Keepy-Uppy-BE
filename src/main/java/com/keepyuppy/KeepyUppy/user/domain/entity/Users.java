@@ -2,6 +2,7 @@ package com.keepyuppy.KeepyUppy.user.domain.entity;
 
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
+import com.keepyuppy.KeepyUppy.user.communication.request.UpdateUserRequest;
 import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -52,6 +53,13 @@ public class Users extends BaseTimeEntity {
         this.oauthId = oauthId;
         this.provider = provider;
         this.bio = bio;
+    }
+
+    public void update(UpdateUserRequest request){
+        if (request.getName() != null) this.name = request.getName();
+        if (request.getImageUrl() != null) this.imageUrl = request.getImageUrl();
+        if (request.getUsername() != null) this.username = request.getUsername();
+        if (request.getBio() != null) this.bio = request.getBio();
     }
 
     public void updateRefreshToken(String token){
