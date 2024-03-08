@@ -1,5 +1,6 @@
 package com.keepyuppy.KeepyUppy.member.domain.entity;
 
+import com.keepyuppy.KeepyUppy.member.communication.request.UpdateMemberRequest;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Role;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
@@ -40,16 +41,36 @@ public class Member {
     }
 
 
-    public Member(Users user, Team team, Grade grade, String role, Status status) {
+    public Member(Users user, Team team, Grade grade, Status status) {
         this.user = user;
         this.team = team;
         this.grade = grade;
-        this.role = Role.getInstance(role);
         this.status = status;
     }
 
-    public void changeRole(String role) {
-        this.role = Role.getInstance(role);
+    public boolean update(Member updater, UpdateMemberRequest updateMemberRequest) {
+        if (canUpdate(updater)) {
+            this.grade = Grade.getInstance(updateMemberRequest.getGrade());
+            this.role = Role.getInstance(updateMemberRequest.getRole());
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean canUpdate(Member updater) {
+        if (updater.getGrade().equals(Grade.OWNER)) {
+            return true;
+        }
+
+        if (updater.getGrade().equals(Grade.MANAGER) && this.getGrade().equals(Grade.TEAM_MEMBER)) {
+            return true;
+        }
+        if (updater.equals(this)) {
+            return true;
+        }
+
+        return false;
     }
 
     public void setUsers(Users user) {
@@ -61,4 +82,5 @@ public class Member {
     }
 
 }
+
 

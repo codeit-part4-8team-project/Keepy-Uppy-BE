@@ -12,12 +12,19 @@ public class TeamResponse {
     private Long id;
     private String name;
     private String description;
+    private String color;
     private List<MemberResponse> members;
 
     public TeamResponse(Team team) {
         this.id = team.getId();
         this.name = team.getName();
         this.description = team.getDescription();
+        this.color = team.getColor();
         this.members = team.getMembers().isEmpty() ? null : team.getMembers().stream().filter(member -> member.getStatus().equals(Status.ACCEPTED)).map(MemberResponse::new).toList();
     }
+
+    public static TeamResponse of(Team team) {
+        return new TeamResponse(team);
+    }
 }
+

@@ -4,7 +4,6 @@ import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamLinks;
-import com.keepyuppy.KeepyUppy.team.domain.enums.Type;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,28 +24,24 @@ public class Team extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Enumerated(EnumType.STRING)
-    private Type type;
     private String name;
     private String description;
-    @OneToMany(mappedBy = "team",fetch = FetchType.LAZY)
+    private String color;
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Member> members = new HashSet<>();
     private LocalDate startDate;
     private LocalDate endDate;
-    // todo
-    // @OneToMany(mappedBy = "group")
-//    private List<Issue> issues = new ArrayList<>();
-    @OneToMany(mappedBy = "team",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private List<Schedule> schedules = new ArrayList<>();
     private String figma;
     private String github;
     private String discord;
 
     @Builder
-    public Team(String type,String name, String description, String startDate, String endDate, String figma, String github, String discord) {
-        this.type = Type.getInstance(type);
+    public Team(String name, String description, String color, String startDate, String endDate, String figma, String github, String discord) {
         this.name = name;
         this.description = description;
+        this.color = color;
         this.startDate = stringToLocalDate(startDate);
         this.endDate = stringToLocalDate(endDate);
         this.figma = figma;
@@ -64,12 +59,6 @@ public class Team extends BaseTimeEntity {
         this.members.remove(member);
     }
 
-// todo
-//    public void addIssue(Issue issue) {
-//        issue.setTeam(this);
-//        this.issues.add(issue);
-//    }
-
     public void addSchedules(Schedule schedule) {
         schedule.setOrganization(this);
         this.schedules.add(schedule);
@@ -84,5 +73,9 @@ public class Team extends BaseTimeEntity {
     private LocalDate stringToLocalDate(String dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return LocalDate.parse(dateTime, formatter);
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

@@ -3,9 +3,9 @@ package com.keepyuppy.KeepyUppy.team.service;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
+import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
 import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamLinks;
-import com.keepyuppy.KeepyUppy.team.communication.response.TeamByUserIdResponse;
 import com.keepyuppy.KeepyUppy.team.communication.response.TeamResponse;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import com.keepyuppy.KeepyUppy.team.repository.TeamJpaRepository;
@@ -25,19 +25,16 @@ public class TeamService {
     private final UserRepository userRepository;
     private final TeamRepositoryImpl teamRepository;
 
+
     // 팀 생성
     // 팀을 생성하는 유저 = 소유자
     // 팀을 생성하는 유저는 그팀의 멤버가 된다.
     @Transactional
-    public Long createTeam(Users user, CreateTeamRequest createTeamRequest) {
-
-        // todo
-        // UserDetails 구현방식에 따라 변경 예정.
-
+    public TeamResponse createTeam(CustomUserDetails userDetails, CreateTeamRequest createTeamRequest) {
         Team team = Team.builder()
-                .type(createTeamRequest.getType())
                 .name(createTeamRequest.getName())
                 .description(createTeamRequest.getDescription())
+                .color(createTeamRequest.getColor())
                 .startDate(createTeamRequest.getStartDate())
                 .endDate(createTeamRequest.getEndDate())
                 .figma(createTeamRequest.getFigmaLink())
@@ -45,51 +42,54 @@ public class TeamService {
                 .discord(createTeamRequest.getDiscordLink())
                 .build();
 
-        // todo
-        // team.addMember(소유자);
+        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
+
+        Member member = new Member(user, team, Grade.OWNER, Status.ACCEPTED);
+
+        team.addMember(member);
 
         teamJpaRepository.save(team);
 
-        new Member(user, team, Grade.OWNER, createTeamRequest.getRole() ,Status.ACCEPTED);
-
-        return team.getId();
+        return TeamResponse.of(team);
     }
 
-    // todo
-    // @Authentication 으로 가져온 UserDetails 로 변경예정.
-    // teamId 로 팀을 조회한다.
-    // 이때 멤버는 Status ACCEPTED 인 멤버만. (초대에 수락한 멤버만)
-    public TeamResponse getTeamById(Long teamId) {
-        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 teamId 입니다."));
+    public List<TeamResponse> getTeamByUser(CustomUserDetails userDetails) {
 
-        return new TeamResponse(team);
-    }
-
-    // todo
-    // @Authentication 으로 가져온 UserDetails 로 변경예정.
-    // userId 로 유저가 속한 팀을 조회한다.
-    // 이때 조회되는 팀은 초대에 수락한 팀원.
-    public List<TeamByUserIdResponse> getTeamByUser(Long userId) {
-
-        return teamRepository.findProjectByUsersId(userId).stream().map(TeamByUserIdResponse::new).toList();
+        return teamRepository.findTeamByUsersId(userDetails.getUserId()).stream().map(TeamResponse::of).toList();
     }
 
     // 팀을 삭제한다.
     // 팀 삭제를 신청한 유저의 정보가 팀 소유자 일경우만 실행.
     @Transactional
-    public boolean removeTeam(Users user, Long teamId) {
+    public boolean removeTeam(CustomUserDetails userDetails, Long teamId) {
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException(teamId + " 는 없는 아이디 입니다."));
+        // todo
+        // 뭔가 개선할수 있을거같음
+        Member teamOwner = team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(() -> new IllegalStateException("팀 소유자가 존재하지 않습니다."));
+        if (teamOwner.getUser().getId().equals(userDetails.getUserId())) {
+            teamJpaRepository.delete(team);
+            return true;
+        }
         return false;
     }
 
     @Transactional
-    public void updateLinks(Long teamId, UpdateTeamLinks updateTeamLinks) {
+    public boolean updateLinks(CustomUserDetails userDetails, Long teamId, UpdateTeamLinks updateTeamLinks) {
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException(teamId + " 는 없는 아이디 입니다."));
 
+        Member teamOwner = team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(() -> new IllegalStateException("팀 소유자가 존재하지 않습니다."));
+
+        if (teamOwner.getUser().getId().equals(userDetails.getUserId())) {
+            team.updateLinks(updateTeamLinks);
+            return true;
+        }
+        return false;
     }
 
     // todo
-    // @Authentication
-    // 초대받은 팀 목록 조회
-    public List<TeamByUserIdResponse> getPendingTeams(Long userId) {
-        return teamRepository.findInvitedTeamByUsersId(userId).stream().map(TeamByUserIdResponse::new).toList();
+    // searchCondition 받아서 Project or Study
+    public List<TeamResponse> getPendingTeams(CustomUserDetails userDetails) {
+        return teamRepository.findInvitedTeamByUsersId(userDetails.getUserId()).stream().map(TeamResponse::of).toList();
     }
 }
+
