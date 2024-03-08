@@ -1,8 +1,11 @@
 package com.keepyuppy.KeepyUppy.team.domain.entity;
 
+import com.keepyuppy.KeepyUppy.content.domain.entity.Issue;
+import com.keepyuppy.KeepyUppy.content.domain.entity.Content;
+import com.keepyuppy.KeepyUppy.content.domain.entity.Schedule;
+import com.keepyuppy.KeepyUppy.content.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
-import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamLinks;
 import com.keepyuppy.KeepyUppy.team.domain.enums.Type;
 import jakarta.persistence.*;
@@ -25,22 +28,35 @@ public class Team extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Enumerated(EnumType.STRING)
     private Type type;
+
     private String name;
     private String description;
-    @OneToMany(mappedBy = "team",fetch = FetchType.LAZY)
-    private Set<Member> members = new HashSet<>();
     private LocalDate startDate;
     private LocalDate endDate;
-    // todo
-    // @OneToMany(mappedBy = "group")
-//    private List<Issue> issues = new ArrayList<>();
-    @OneToMany(mappedBy = "team",fetch = FetchType.LAZY)
-    private List<Schedule> schedules = new ArrayList<>();
     private String figma;
     private String github;
     private String discord;
+
+    // fetch is lazy by default
+    @OneToMany(mappedBy = "team")
+    private Set<Member> members = new HashSet<>();
+
+    @OneToMany(mappedBy = "team")
+    private List<Content> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "team")
+    private List<Content> announcements = new ArrayList<>();
+
+    @OneToMany(mappedBy = "team")
+    private List<Issue> issues = new ArrayList<>();
+
+    @OneToMany(mappedBy = "team")
+    private List<Schedule> schedules = new ArrayList<>();
+
+
 
     @Builder
     public Team(String type,String name, String description, String startDate, String endDate, String figma, String github, String discord) {
@@ -64,15 +80,15 @@ public class Team extends BaseTimeEntity {
         this.members.remove(member);
     }
 
-// todo
-//    public void addIssue(Issue issue) {
-//        issue.setTeam(this);
-//        this.issues.add(issue);
-//    }
-
-    public void addSchedules(Schedule schedule) {
-        schedule.setOrganization(this);
-        this.schedules.add(schedule);
+    public void addContent(Content content) {
+        content.setTeam(this);
+        ContentType type = content.getType();
+        switch (type) {
+            case POST -> this.posts.add(content);
+            case ANNOUNCEMENT -> this.announcements.add(content);
+            case ISSUE -> this.issues.add((Issue) content);
+            case SCHEDULE -> this.schedules.add((Schedule) content);
+        }
     }
 
     public void updateLinks(UpdateTeamLinks updateTeamLinks) {
