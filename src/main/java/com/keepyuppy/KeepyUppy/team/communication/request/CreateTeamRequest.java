@@ -13,9 +13,9 @@ public class CreateTeamRequest {
     private String color;
     private String startDate;
     private String endDate;
-    private String figmaLink = "https://www.figma.com/";
-    private String githubLink = "https://github.com/";
-    private String discordLink = "https://discord.com/";
+    private String figmaLink;
+    private String githubLink;
+    private String discordLink;
 
     public CreateTeamRequest(String name, String description, String color, String startDate, String endDate) {
         this.name = name;

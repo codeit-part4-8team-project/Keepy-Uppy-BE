@@ -6,12 +6,13 @@ import com.keepyuppy.KeepyUppy.content.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.content.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
-import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamLinks;
+import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeam;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -32,8 +33,11 @@ public class Team extends BaseTimeEntity {
     private String color;
     private LocalDate startDate;
     private LocalDate endDate;
+    @ColumnDefault("https://www.figma.com/")
     private String figma;
+    @ColumnDefault("https://github.com/")
     private String github;
+    @ColumnDefault("https://discord.com/")
     private String discord;
 
     // fetch is lazy by default
@@ -87,10 +91,15 @@ public class Team extends BaseTimeEntity {
         }
     }
 
-    public void updateLinks(UpdateTeamLinks updateTeamLinks) {
-        this.figma = updateTeamLinks.getFigma();
-        this.github = updateTeamLinks.getGithub();
-        this.discord = updateTeamLinks.getDiscord();
+    public void update(UpdateTeam updateTeam) {
+        this.name = updateTeam.getName();
+        this.description = updateTeam.getDescription();
+        this.color = updateTeam.getColor();
+        this.startDate = stringToLocalDate(updateTeam.getStartDate());
+        this.endDate = stringToLocalDate(updateTeam.getEndDate());
+        this.figma = updateTeam.getFigma();
+        this.github = updateTeam.getGithub();
+        this.discord = updateTeam.getDiscord();
     }
 
     private LocalDate stringToLocalDate(String dateTime) {

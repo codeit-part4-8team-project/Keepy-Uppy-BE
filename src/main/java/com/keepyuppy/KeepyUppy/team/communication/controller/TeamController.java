@@ -2,7 +2,7 @@ package com.keepyuppy.KeepyUppy.team.communication.controller;
 
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
-import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamLinks;
+import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeam;
 import com.keepyuppy.KeepyUppy.team.communication.response.TeamResponse;
 import com.keepyuppy.KeepyUppy.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,10 +41,10 @@ public class TeamController {
         return ResponseEntity.ok(teamService.removeTeam(userDetails, teamId));
     }
 
-    @Operation(summary = "팀 소유자 일경우 링크 업데이트")
-    @PutMapping("/{teamId}/link")
-    public ResponseEntity<Boolean> updateLinks(@AuthenticationPrincipal CustomUserDetails userDetails,@PathVariable Long teamId , @RequestBody UpdateTeamLinks updateTeamLinks) {
-        return ResponseEntity.ok(teamService.updateLinks(userDetails,teamId,updateTeamLinks));
+    @Operation(summary = "팀 소유자 일경우 정보 변경")
+    @PutMapping("/{teamId}")
+    public ResponseEntity<Boolean> updateLinks(@AuthenticationPrincipal CustomUserDetails userDetails,@PathVariable Long teamId , @RequestBody UpdateTeam updateTeam) {
+        return ResponseEntity.ok(teamService.updateTeam(userDetails,teamId, updateTeam));
     }
 
     @Operation(summary = "로그인한 유저가 초대받은 응답 대기중인 팀 목록 조회")

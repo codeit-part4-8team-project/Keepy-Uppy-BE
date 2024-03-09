@@ -6,7 +6,7 @@ import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
 import com.keepyuppy.KeepyUppy.member.repository.MemberJpaRepoisitory;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
-import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamLinks;
+import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeam;
 import com.keepyuppy.KeepyUppy.team.communication.response.TeamResponse;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import com.keepyuppy.KeepyUppy.team.repository.TeamJpaRepository;
@@ -78,13 +78,13 @@ public class TeamService {
     }
 
     @Transactional
-    public boolean updateLinks(CustomUserDetails userDetails, Long teamId, UpdateTeamLinks updateTeamLinks) {
+    public boolean updateTeam(CustomUserDetails userDetails, Long teamId, UpdateTeam updateTeam) {
         Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException(teamId + " 는 없는 아이디 입니다."));
 
         Member teamOwner = team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(() -> new IllegalStateException("팀 소유자가 존재하지 않습니다."));
 
         if (teamOwner.getUser().getId().equals(userDetails.getUserId())) {
-            team.updateLinks(updateTeamLinks);
+            team.update(updateTeam);
             return true;
         }
         return false;
