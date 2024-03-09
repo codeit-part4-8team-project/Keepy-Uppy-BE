@@ -33,11 +33,11 @@ public class Team extends BaseTimeEntity {
     private String color;
     private LocalDate startDate;
     private LocalDate endDate;
-    @ColumnDefault("https://www.figma.com/")
+    @ColumnDefault("www.figma.com/")
     private String figma;
-    @ColumnDefault("https://github.com/")
+    @ColumnDefault("www.github.com/")
     private String github;
-    @ColumnDefault("https://discord.com/")
+    @ColumnDefault("discord.com/")
     private String discord;
 
     // fetch is lazy by default
