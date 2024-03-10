@@ -15,15 +15,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Schedule extends Post {
 
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
 
     @Builder(builderMethodName = "scheduleBuilder")
     public Schedule(Team team, String title, Member author, String content, ContentType type,
-                 LocalDateTime startDate, LocalDateTime endDate) {
+                    LocalDateTime startDateTime, LocalDateTime endDateTime) {
         super(team, title, author, content, type);
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
     }
 
 }

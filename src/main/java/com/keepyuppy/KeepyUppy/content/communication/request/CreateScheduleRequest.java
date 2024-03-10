@@ -4,11 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @Schema(name = "스케줄 생성 요청")
 public class CreateScheduleRequest extends CreatePostRequest {
-    
-    private String startTime;
-    private String endTime;
+
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
 }
