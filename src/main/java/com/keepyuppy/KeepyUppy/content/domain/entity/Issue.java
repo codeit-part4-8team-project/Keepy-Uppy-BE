@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -17,8 +18,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class Issue extends Post {
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private Set<Member> assignedMembers;
+    @OneToMany(mappedBy = "issue")
+    private Set<IssueAssignment> issueAssignments = new HashSet<>();
 
     private LocalDateTime dueDate;
 
@@ -27,9 +28,9 @@ public class Issue extends Post {
 
     @Builder
     public Issue(Team team, String title, Member author, String content, ContentType type,
-                 Set<Member> assignedMembers, LocalDateTime dueDate, IssueStatus status) {
+                 Set<IssueAssignment> issueAssignments, LocalDateTime dueDate, IssueStatus status) {
         super(team, title, author, content, type);
-        this.assignedMembers = assignedMembers;
+        this.issueAssignments = issueAssignments;
         this.dueDate = dueDate;
         this.status = status;
     }

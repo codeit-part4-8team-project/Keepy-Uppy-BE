@@ -1,5 +1,6 @@
 package com.keepyuppy.KeepyUppy.member.domain.entity;
 
+import com.keepyuppy.KeepyUppy.content.domain.entity.IssueAssignment;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Role;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
@@ -9,6 +10,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -34,6 +38,9 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @OneToMany(mappedBy = "member")
+    private Set<IssueAssignment> issueAssignments = new HashSet<>();
 
     public void setTeam(Team team) {
         this.team = team;
