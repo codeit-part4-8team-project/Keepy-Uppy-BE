@@ -31,6 +31,7 @@ public class Team extends BaseTimeEntity {
     private String name;
     private String description;
     private String color;
+    private Long ownerId;
     private LocalDate startDate;
     private LocalDate endDate;
     @ColumnDefault("www.figma.com/")
@@ -105,5 +106,9 @@ public class Team extends BaseTimeEntity {
     private LocalDate stringToLocalDate(String dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return LocalDate.parse(dateTime, formatter);
+    }
+
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
     }
 }

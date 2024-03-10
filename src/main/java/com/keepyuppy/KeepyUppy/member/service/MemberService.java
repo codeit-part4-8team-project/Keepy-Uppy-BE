@@ -7,7 +7,7 @@ import com.keepyuppy.KeepyUppy.member.communication.response.MemberResponse;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
-import com.keepyuppy.KeepyUppy.member.repository.MemberJpaRepoisitory;
+import com.keepyuppy.KeepyUppy.member.repository.MemberJpaRepository;
 import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
@@ -26,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class MemberService {
-    private final MemberJpaRepoisitory memberJpaRepoisitory;
+    private final MemberJpaRepository memberJpaRepository;
     private final TeamJpaRepository teamJpaRepository;
     private final UserRepository userRepository;
     private final MemberRepositoryImpl memberRepository;
@@ -53,7 +53,7 @@ public class MemberService {
 
             team.addMember(member);
             user.addMember(member);
-            memberJpaRepoisitory.save(member);
+            memberJpaRepository.save(member);
             return true;
         } else {
             throw new IllegalStateException("팀원 초대는 매니저 이상의 권한이 필요합니다.");
@@ -67,24 +67,12 @@ public class MemberService {
         Users user = userRepository.findById(removeMemberRequest.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         Member member = memberRepository.findMemberInTeamByUserId(user.getId(),teamId).orElseThrow(() -> new IllegalArgumentException(removeMemberRequest.getMemberId() + " 를 찾을수 없습니다."));
 
-        if (isManagerOrOwner(loginMember) && canRemoveMember(loginMember, member)) {
-            memberJpaRepoisitory.delete(member);
+        if (member.canUpdate(loginMember)) {
+            memberJpaRepository.delete(member);
             return true;
         } else {
             throw new IllegalStateException();
         }
-    }
-
-    public boolean canRemoveMember(Member updater , Member member) {
-        if (updater.getGrade().equals(Grade.OWNER)) {
-            return true;
-        }
-
-        if (updater.getGrade().equals(Grade.MANAGER) && member.getGrade().equals(Grade.TEAM_MEMBER)) {
-            return true;
-        }
-
-        return false;
     }
 
     @Transactional
@@ -97,7 +85,7 @@ public class MemberService {
     public void reject(@AuthenticationPrincipal CustomUserDetails userDetails, Long teamId) {
         Member member = memberRepository.findInviteByUserId(userDetails.getUserId(), teamId).orElseThrow(IllegalArgumentException::new);
         member.getTeam().removeMember(member);
-        memberJpaRepoisitory.delete(member);
+        memberJpaRepository.delete(member);
     }
 
 
@@ -110,7 +98,7 @@ public class MemberService {
     public boolean updateMember(CustomUserDetails customUserDetails, Long memberId, UpdateMemberRequest updateMemberRequest) {
 
         // 수정될 member
-        Member member = memberJpaRepoisitory.findById(memberId).orElseThrow(() -> new IllegalArgumentException(memberId + " 를 찾을수 없습니다."));
+        Member member = memberJpaRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException(memberId + " 를 찾을수 없습니다."));
 
         // 수정하는 사람
         Member updater = memberRepository.findByUserId(customUserDetails.getUserId()).orElseThrow(IllegalArgumentException::new);

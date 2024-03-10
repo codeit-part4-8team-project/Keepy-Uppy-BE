@@ -59,7 +59,7 @@ public class Member extends BaseTimeEntity {
         return false;
     }
 
-    private boolean canUpdate(Member updater) {
+    public boolean canUpdate(Member updater) {
         if (updater.getGrade().equals(Grade.OWNER)) {
             return true;
         }
@@ -67,7 +67,7 @@ public class Member extends BaseTimeEntity {
         if (updater.getGrade().equals(Grade.MANAGER) && this.getGrade().equals(Grade.TEAM_MEMBER)) {
             return true;
         }
-        if (updater.equals(this)) {
+        if (updater.getId().equals(this.id)) {
             return true;
         }
 
@@ -82,6 +82,9 @@ public class Member extends BaseTimeEntity {
         this.status = status;
     }
 
+    public void setGrade(Grade grade) {
+        this.grade = grade;
+    }
 }
 
 
