@@ -5,6 +5,7 @@ import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import com.keepyuppy.KeepyUppy.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class AuthController {
 
     @Operation(summary = "회원 로그아웃")
     @PostMapping("/logout")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<String> logout(final HttpServletRequest request) {
 
         // delete refresh token saved in repo
