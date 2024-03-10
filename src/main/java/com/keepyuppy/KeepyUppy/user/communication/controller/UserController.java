@@ -6,6 +6,7 @@ import com.keepyuppy.KeepyUppy.user.communication.response.UserResponse;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import com.keepyuppy.KeepyUppy.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 @Tag(name = "UserController",description = "User 관련 컨트롤러 입니다.")
+@SecurityRequirement(name = "Bearer Authentication")
 public class UserController {
 
     private final UserService userService;

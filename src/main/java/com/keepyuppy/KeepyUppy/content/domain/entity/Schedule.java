@@ -18,7 +18,7 @@ public class Schedule extends Content {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
-    @Builder
+    @Builder(builderMethodName = "scheduleBuilder")
     public Schedule(Team team, String title, Member author, String content, ContentType type,
                  LocalDateTime startDate, LocalDateTime endDate) {
         super(team, title, author, content, type);

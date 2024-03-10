@@ -25,7 +25,7 @@ public class Issue extends Content {
     @Enumerated(EnumType.STRING)
     private IssueStatus status;
 
-    @Builder
+    @Builder(builderMethodName = "issueBuilder")
     public Issue(Team team, String title, Member author, String content, ContentType type,
                  Set<Member> assignedMembers, LocalDateTime dueDate, IssueStatus status) {
         super(team, title, author, content, type);
