@@ -4,7 +4,6 @@ import com.keepyuppy.KeepyUppy.member.domain.entity.QMember;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
 import com.keepyuppy.KeepyUppy.team.domain.entity.QTeam;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
-import com.keepyuppy.KeepyUppy.team.domain.enums.Type;
 import com.keepyuppy.KeepyUppy.user.domain.entity.QUsers;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +16,13 @@ import java.util.List;
 public class TeamRepositoryImpl {
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<Team> findProjectByUsersId(Long id) {
+    public List<Team> findTeamByUsersId(Long id) {
         return jpaQueryFactory.select(QTeam.team)
                 .from(QMember.member)
                 .join(QMember.member.user, QUsers.users)
                 .join(QMember.member.team, QTeam.team)
                 .where(QUsers.users.id.eq(id))
                 .where(QMember.member.status.eq(Status.ACCEPTED))
-                .where(QTeam.team.type.eq(Type.PROJECT))
                 .fetch();
     }
 
@@ -35,29 +33,8 @@ public class TeamRepositoryImpl {
                 .join(QMember.member.team, QTeam.team)
                 .where(QUsers.users.id.eq(id))
                 .where(QMember.member.status.eq(Status.PENDING))
-                .where(QTeam.team.type.eq(Type.PROJECT))
                 .fetch();
     }
 
-    public List<Team> findStudyByUserId(Long id) {
-        return jpaQueryFactory.select(QTeam.team)
-                .from(QMember.member)
-                .join(QMember.member.user, QUsers.users)
-                .join(QMember.member.team, QTeam.team)
-                .where(QUsers.users.id.eq(id))
-                .where(QMember.member.status.eq(Status.ACCEPTED))
-                .where(QTeam.team.type.eq(Type.STUDY))
-                .fetch();
-    }
-
-    public List<Team> findInvitedStudyByUsersId(Long id) {
-        return jpaQueryFactory.select(QTeam.team)
-                .from(QMember.member)
-                .join(QMember.member.user, QUsers.users)
-                .join(QMember.member.team, QTeam.team)
-                .where(QUsers.users.id.eq(id))
-                .where(QMember.member.status.eq(Status.PENDING))
-                .where(QTeam.team.type.eq(Type.STUDY))
-                .fetch();
-    }
 }
+

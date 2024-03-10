@@ -60,12 +60,14 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/test/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/swagger**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/login/**")).permitAll()
-                    .requestMatchers(new AntPathRequestMatcher("/api/user/test/**")).permitAll()
-                    .requestMatchers(new AntPathRequestMatcher("/api/auth/refresh")).permitAll()
-                        .requestMatchers("/", "/css/**","/images/**","/js/**","/favicon.ico","/h2-console/**").permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/user/test/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/auth/refresh")).permitAll()
+                        // swagger 화면을 보여주기 위해서 아래에 추가해두었습니다.
+                        .requestMatchers("/","/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**","/css/**","/images/**","/js/**","/favicon.ico","/h2-console/**").permitAll()
                         .anyRequest().authenticated()))
 
                 // current url for triggering login /oauth2/authorization/{provider}
+                // 아래 oauth2Login 의 () 는 생략되어도 좋을거같아요 !
                 .oauth2Login((oauth2Login) -> oauth2Login
                         .userInfoEndpoint(userInfoEndpointConfig ->
                                 userInfoEndpointConfig.userService(customOAuth2UserService)
@@ -74,15 +76,16 @@ public class SecurityConfig {
                         .failureHandler(oAuth2FailureHandler))
 
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class)
-                    .exceptionHandling(config->config
-                            .authenticationEntryPoint(((request, response, authException) -> {
-                                response.setContentType("application/json");
-                                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                                response.getWriter().print("Invalid access token");
-                            })));
+                .exceptionHandling(config->config
+                        .authenticationEntryPoint(((request, response, authException) -> {
+                            response.setContentType("application/json");
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.getWriter().print("Invalid access token");
+                        })));
 
         return httpSecurity.build();
     }
 
 }
+
 

@@ -27,6 +27,7 @@ public class Post extends BaseTimeEntity {
     @ManyToOne
     private Member author;
 
+    // Class 이름과 같아서 변경하는게 좋겠다고 알림이 옵니다!
     private String content;
 
     @Enumerated(EnumType.STRING)
