@@ -1,7 +1,7 @@
 package com.keepyuppy.KeepyUppy.team.domain.entity;
 
 import com.keepyuppy.KeepyUppy.content.domain.entity.Issue;
-import com.keepyuppy.KeepyUppy.content.domain.entity.Content;
+import com.keepyuppy.KeepyUppy.content.domain.entity.Post;
 import com.keepyuppy.KeepyUppy.content.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.content.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
@@ -45,10 +45,10 @@ public class Team extends BaseTimeEntity {
     private Set<Member> members = new HashSet<>();
 
     @OneToMany(mappedBy = "team")
-    private List<Content> posts = new ArrayList<>();
+    private List<Post> posts = new ArrayList<>();
 
     @OneToMany(mappedBy = "team")
-    private List<Content> announcements = new ArrayList<>();
+    private List<Post> announcements = new ArrayList<>();
 
     @OneToMany(mappedBy = "team")
     private List<Issue> issues = new ArrayList<>();
@@ -80,14 +80,14 @@ public class Team extends BaseTimeEntity {
         this.members.remove(member);
     }
 
-    public void addContent(Content content) {
-        content.setTeam(this);
-        ContentType type = content.getType();
+    public void addContent(Post post) {
+        post.setTeam(this);
+        ContentType type = post.getType();
         switch (type) {
-            case POST -> this.posts.add(content);
-            case ANNOUNCEMENT -> this.announcements.add(content);
-            case ISSUE -> this.issues.add((Issue) content);
-            case SCHEDULE -> this.schedules.add((Schedule) content);
+            case POST -> this.posts.add(post);
+            case ANNOUNCEMENT -> this.announcements.add(post);
+            case ISSUE -> this.issues.add((Issue) post);
+            case SCHEDULE -> this.schedules.add((Schedule) post);
         }
     }
 

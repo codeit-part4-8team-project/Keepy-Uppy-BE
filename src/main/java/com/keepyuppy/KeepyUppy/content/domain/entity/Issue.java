@@ -15,9 +15,9 @@ import java.util.Set;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Issue extends Content {
+public class Issue extends Post {
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     private Set<Member> assignedMembers;
 
     private LocalDateTime dueDate;
