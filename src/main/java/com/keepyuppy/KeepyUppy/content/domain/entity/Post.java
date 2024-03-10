@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Content extends BaseTimeEntity {
+public class Post extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class Content extends BaseTimeEntity {
 
     private String title;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Member author;
 
     // Class 이름과 같아서 변경하는게 좋겠다고 알림이 옵니다!
@@ -34,7 +34,7 @@ public class Content extends BaseTimeEntity {
     private ContentType type;
 
     @Builder
-    public Content(Team team, String title, Member author, String content, ContentType type) {
+    public Post(Team team, String title, Member author, String content, ContentType type) {
         this.team = team;
         this.title = title;
         this.author = author;

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Schedule extends Content {
+public class Schedule extends Post {
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
