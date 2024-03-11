@@ -67,8 +67,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()))
 
                 // current url for triggering login /oauth2/authorization/{provider}
-                // 아래 oauth2Login 의 () 는 생략되어도 좋을거같아요 !
-                .oauth2Login((oauth2Login) -> oauth2Login
+                .oauth2Login(oauth2Login -> oauth2Login
                         .userInfoEndpoint(userInfoEndpointConfig ->
                                 userInfoEndpointConfig.userService(customOAuth2UserService)
                                         .oidcUserService(customOidcUserService))

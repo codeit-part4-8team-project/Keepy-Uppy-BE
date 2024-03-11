@@ -1,6 +1,7 @@
 package com.keepyuppy.KeepyUppy.member.domain.entity;
 
 import com.keepyuppy.KeepyUppy.content.domain.entity.IssueAssignment;
+import com.keepyuppy.KeepyUppy.content.domain.entity.Post;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.communication.request.UpdateMemberRequest;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
@@ -43,6 +44,9 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member")
     private Set<IssueAssignment> issueAssignments = new HashSet<>();
+
+    @OneToMany(mappedBy = "author")
+    private Set<Post> posts = new HashSet<>();
 
     public void setTeam(Team team) {
         this.team = team;
