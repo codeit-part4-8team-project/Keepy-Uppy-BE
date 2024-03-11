@@ -1,6 +1,7 @@
 package com.keepyuppy.KeepyUppy.team.communication.controller;
 
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
+import com.keepyuppy.KeepyUppy.team.communication.request.ChangeTeamOwnerRequest;
 import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
 import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeam;
 import com.keepyuppy.KeepyUppy.team.communication.response.TeamResponse;
@@ -23,10 +24,16 @@ import java.util.List;
 public class TeamController {
     private final TeamService teamService;
 
-    @PostMapping("/")
     @Operation(summary = "팀 생성")
+    @PostMapping("/")
     public ResponseEntity<TeamResponse> createTeam(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody CreateTeamRequest createTeamRequest) {
         return ResponseEntity.ok(teamService.createTeam(userDetails, createTeamRequest));
+    }
+
+    @Operation(summary = "팀 소유자 변경")
+    @PutMapping("/owner/{teamId}")
+    public ResponseEntity<Boolean> changeOwner(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long teamId, @RequestBody ChangeTeamOwnerRequest changeTeamOwnerRequest) {
+        return ResponseEntity.ok(teamService.changeTeamOwner(userDetails, teamId,changeTeamOwnerRequest));
     }
 
     @Operation(summary = "로그인한 유저가 속한 팀 조회")
