@@ -11,5 +11,6 @@ public class CreatePostRequest {
 
     private String title;
     private String content;
+    // initialized to false if not given by default
     private boolean isAnnouncement;
 }
