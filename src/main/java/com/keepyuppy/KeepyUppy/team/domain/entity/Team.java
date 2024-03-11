@@ -12,7 +12,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -31,13 +30,11 @@ public class Team extends BaseTimeEntity {
     private String name;
     private String description;
     private String color;
+    private Long ownerId;
     private LocalDate startDate;
     private LocalDate endDate;
-    @ColumnDefault("www.figma.com/")
     private String figma;
-    @ColumnDefault("www.github.com/")
     private String github;
-    @ColumnDefault("discord.com/")
     private String discord;
 
     // fetch is lazy by default
@@ -105,5 +102,9 @@ public class Team extends BaseTimeEntity {
     private LocalDate stringToLocalDate(String dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return LocalDate.parse(dateTime, formatter);
+    }
+
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
     }
 }
