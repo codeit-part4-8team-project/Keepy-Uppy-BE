@@ -57,6 +57,10 @@ dependencies {
 	// H2
 	implementation 'com.h2database:h2'
 	runtimeOnly 'com.h2database:h2'
+
+	// Jackson
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 tasks.named('test') {

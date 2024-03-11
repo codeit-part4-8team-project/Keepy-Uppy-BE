@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class IssueResponse {
     private IssueStatus status;
 
     public static IssueResponse of(Issue issue, Set<Member> assignedMembers){
-        List<MemberResponse> memberResponses = null;
+        List<MemberResponse> memberResponses = Collections.emptyList();
         if (!assignedMembers.isEmpty()) {
             memberResponses = assignedMembers.stream()
                     .filter(member -> member.getStatus().equals(Status.ACCEPTED))

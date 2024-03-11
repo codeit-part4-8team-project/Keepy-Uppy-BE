@@ -12,7 +12,7 @@ public class MemberResponse {
     private String grade;
 
     public MemberResponse(Member member) {
-        this.name = member.getUser().getName();
+        this.name = member.getUser() == null ? null : member.getUser().getName();
         this.role = member.getRole() == null ? null : member.getRole().name();
         this.grade = member.getGrade().name();
     }
