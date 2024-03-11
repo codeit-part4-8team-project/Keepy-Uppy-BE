@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Schema(name = "게시글, 공지 생성 요청")
-public class CreatePostRequest {
+public class PostRequest {
 
     private String title;
     private String content;
-    // initialized to false if not given by default
-    private boolean isAnnouncement;
+    private Boolean isAnnouncement;
 }

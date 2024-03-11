@@ -1,11 +1,12 @@
 package com.keepyuppy.KeepyUppy.global.handler;
 
+import com.keepyuppy.KeepyUppy.global.exception.AccessDeniedException;
+import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
 import com.keepyuppy.KeepyUppy.global.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.webjars.NotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -13,6 +14,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)

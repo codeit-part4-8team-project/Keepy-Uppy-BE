@@ -1,6 +1,6 @@
 package com.keepyuppy.KeepyUppy.content.communication.controller;
 
-import com.keepyuppy.KeepyUppy.content.communication.request.CreatePostRequest;
+import com.keepyuppy.KeepyUppy.content.communication.request.PostRequest;
 import com.keepyuppy.KeepyUppy.content.communication.response.PostResponse;
 import com.keepyuppy.KeepyUppy.content.service.PostService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
@@ -26,9 +26,9 @@ public class PostController {
     public ResponseEntity<PostResponse> createPost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId,
-            @RequestBody CreatePostRequest createPostRequest) {
+            @RequestBody PostRequest postRequest) {
 
-        return ResponseEntity.ok(postService.createPost(userDetails, teamId, createPostRequest));
+        return ResponseEntity.ok(postService.createPost(userDetails, teamId, postRequest));
     }
 
     @GetMapping("/{postId}")
@@ -39,5 +39,27 @@ public class PostController {
             @PathVariable Long postId) {
 
         return ResponseEntity.ok(postService.viewPost(userDetails, teamId, postId));
+    }
+
+    @PutMapping("/{postId}")
+    @Operation(summary = "게시글 수정")
+    public ResponseEntity<PostResponse> updatePost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long teamId,
+            @PathVariable Long postId,
+            @RequestBody PostRequest postRequest) {
+
+        return ResponseEntity.ok(postService.updatePost(userDetails, teamId, postId, postRequest));
+    }
+
+    @DeleteMapping("/{postId}")
+    @Operation(summary = "게시글 삭제")
+    public ResponseEntity<PostResponse> deletePost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long teamId,
+            @PathVariable Long postId) {
+
+        postService.deletePost(userDetails, teamId, postId);
+        return ResponseEntity.ok().build();
     }
 }

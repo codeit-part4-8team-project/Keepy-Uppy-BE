@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Schema(name = "이슈 생성 요청")
-public class CreateIssueRequest {
+public class IssueRequest {
 
     private String title;
     private String content;

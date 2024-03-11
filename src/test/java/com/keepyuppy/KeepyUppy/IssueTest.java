@@ -3,7 +3,7 @@ package com.keepyuppy.KeepyUppy;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.keepyuppy.KeepyUppy.content.communication.request.CreateIssueRequest;
+import com.keepyuppy.KeepyUppy.content.communication.request.IssueRequest;
 import com.keepyuppy.KeepyUppy.content.communication.response.IssueResponse;
 import com.keepyuppy.KeepyUppy.content.domain.entity.Issue;
 import com.keepyuppy.KeepyUppy.content.domain.enums.ContentType;
@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -48,7 +47,7 @@ class IssueTest {
         LocalDateTime expectedDateTime = LocalDateTime.of(2024, 3, 20, 12, 0, 0);
 
 
-        CreateIssueRequest request = objectMapper.readValue(json, CreateIssueRequest.class);
+        IssueRequest request = objectMapper.readValue(json, IssueRequest.class);
 
         assertEquals("Issue title", request.getTitle());
         assertEquals("Issue content", request.getContent());

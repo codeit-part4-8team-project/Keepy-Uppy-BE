@@ -1,5 +1,6 @@
 package com.keepyuppy.KeepyUppy.content.domain.entity;
 
+import com.keepyuppy.KeepyUppy.content.communication.request.PostRequest;
 import com.keepyuppy.KeepyUppy.content.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
@@ -44,5 +45,15 @@ public class Post extends BaseTimeEntity {
 
     public void setTeam(Team team){
         this.team = team;
+    }
+
+    public void update(PostRequest request){
+        if (request.getTitle() != null) this.title = request.getTitle();
+        if (request.getContent() != null) this.content = request.getContent();
+        if (request.getIsAnnouncement() != null && request.getIsAnnouncement()) {
+            this.type = ContentType.ANNOUNCEMENT;
+        } else if (request.getIsAnnouncement() != null) {
+            this.type = ContentType.POST;
+        }
     }
 }

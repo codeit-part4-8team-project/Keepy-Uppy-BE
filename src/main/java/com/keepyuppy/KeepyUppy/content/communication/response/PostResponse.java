@@ -16,7 +16,7 @@ public class PostResponse {
     private String title;
     private MemberResponse author;
     private String content;
-    private boolean isAnnouncement;
+    private Boolean isAnnouncement;
 
     public static PostResponse of(Post post){
         return new PostResponse(
