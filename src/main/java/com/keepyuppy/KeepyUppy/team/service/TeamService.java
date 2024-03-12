@@ -43,13 +43,20 @@ public class TeamService {
                 .discord(createTeamRequest.getDiscordLink())
                 .build();
 
-        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
+        Users user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(IllegalArgumentException::new);
 
         Member member = new Member(user, team, Grade.OWNER, Status.ACCEPTED);
 
         team.addMember(member);
 
         team.setOwnerId(member.getId());
+
+        for (String memberName : createTeamRequest.getMembers()) {
+            Member startMember = new Member(userRepository.findByUsername(memberName).orElseThrow(IllegalArgumentException::new), team, Grade.TEAM_MEMBER, Status.PENDING);
+            memberJpaRepository.save(startMember);
+
+            team.addMember(startMember);
+        }
 
         teamJpaRepository.save(team);
 
