@@ -12,7 +12,6 @@ import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
-import com.keepyuppy.KeepyUppy.team.repository.TeamJpaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,6 @@ import java.util.Objects;
 public class PostService {
 
     private final PostJpaRepository postJpaRepository;
-    private final TeamJpaRepository teamJpaRepository;
     private final MemberRepositoryImpl memberRepository;
 
     @Transactional

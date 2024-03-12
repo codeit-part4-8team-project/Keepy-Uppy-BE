@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -95,6 +96,14 @@ public class Member extends BaseTimeEntity {
 
     public void setGrade(Grade grade) {
         this.grade = grade;
+    }
+
+    public void addIssueAssignment(IssueAssignment assignment){
+        this.issueAssignments.add(assignment);
+    }
+
+    public void removeIssueAssignment(IssueAssignment assignment){
+        this.issueAssignments.remove(assignment);
     }
 }
 

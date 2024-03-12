@@ -1,10 +1,9 @@
 package com.keepyuppy.KeepyUppy.content.communication.response;
 
 import com.keepyuppy.KeepyUppy.content.domain.entity.Issue;
+import com.keepyuppy.KeepyUppy.content.domain.entity.IssueAssignment;
 import com.keepyuppy.KeepyUppy.content.domain.enums.IssueStatus;
 import com.keepyuppy.KeepyUppy.member.communication.response.MemberResponse;
-import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
-import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,14 +26,10 @@ public class IssueResponse {
     private LocalDateTime dueDate;
     private IssueStatus status;
 
-    public static IssueResponse of(Issue issue, Set<Member> assignedMembers){
-        List<MemberResponse> memberResponses = Collections.emptyList();
-        if (!assignedMembers.isEmpty()) {
-            memberResponses = assignedMembers.stream()
-                    .filter(member -> member.getStatus().equals(Status.ACCEPTED))
-                    .map(MemberResponse::new)
+    public static IssueResponse of(Issue issue){
+        List<MemberResponse> memberResponses = issue.getIssueAssignments().stream()
+                    .map(assignment -> new MemberResponse(assignment.getMember()))
                     .toList();
-        }
 
         return new IssueResponse(
                 issue.getId(),

@@ -1,5 +1,8 @@
 package com.keepyuppy.KeepyUppy.content.domain.entity;
 
+import com.keepyuppy.KeepyUppy.content.communication.request.IssueRequest;
+import com.keepyuppy.KeepyUppy.content.communication.request.IssueStatusRequest;
+import com.keepyuppy.KeepyUppy.content.communication.request.PostRequest;
 import com.keepyuppy.KeepyUppy.content.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.content.domain.enums.IssueStatus;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
@@ -33,6 +36,20 @@ public class Issue extends Post {
         this.issueAssignments = issueAssignments;
         this.dueDate = dueDate;
         this.status = status;
+    }
+
+    public void update(IssueRequest request){
+        super.update(PostRequest.ofIssue(request));
+        if (request.getDueDate() != null) this.dueDate = request.getDueDate();
+        if (request.getStatus() != null) this.status = request.getStatus();
+    }
+
+    public void updateStatus(IssueStatusRequest request){
+        if (request.getStatus() != null) this.status = request.getStatus();
+    }
+
+    public void setAssignments(Set<IssueAssignment> assignments){
+        this.issueAssignments = assignments;
     }
 
 }

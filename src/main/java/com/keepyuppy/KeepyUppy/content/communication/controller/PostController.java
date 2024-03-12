@@ -54,12 +54,12 @@ public class PostController {
 
     @DeleteMapping("/{postId}")
     @Operation(summary = "게시글 삭제")
-    public ResponseEntity<PostResponse> deletePost(
+    public ResponseEntity<String> deletePost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId,
             @PathVariable Long postId) {
 
         postService.deletePost(userDetails, teamId, postId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("게시글 삭제 성공");
     }
 }

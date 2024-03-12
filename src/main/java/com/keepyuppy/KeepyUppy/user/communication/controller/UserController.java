@@ -41,9 +41,9 @@ public class UserController {
 
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping( "/")
-    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         userService.deleteUser(userDetails.getUserId());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("회원 탈퇴 성공");
     }
 
     @Operation(summary = "유저네임 중복 확인")
