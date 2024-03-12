@@ -25,7 +25,7 @@ public class PostService {
 
     @Transactional
     public PostResponse createPost(CustomUserDetails userDetails, Long teamId, CreatePostRequest request){
-        Member author = getMemberInTeam(userDetails.getUserId(), teamId);
+        Member author = getMemberInTeam(userDetails.getUsername(), teamId);
         Team team = author.getTeam();
         ContentType type = request.isAnnouncement() ? ContentType.ANNOUNCEMENT : ContentType.POST;
 
@@ -43,14 +43,14 @@ public class PostService {
     }
 
     public PostResponse viewPost(CustomUserDetails userDetails, Long teamId, Long postId){
-        getMemberInTeam(userDetails.getUserId(), teamId);
+        getMemberInTeam(userDetails.getUsername(), teamId);
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 게시글입니다."));
         return PostResponse.of(post);
     }
 
-    public Member getMemberInTeam(Long userId, Long teamId){
-        return memberRepository.findMemberInTeamByUserId(userId, teamId)
+    public Member getMemberInTeam(String userName, Long teamId){
+        return memberRepository.findMemberInTeamByUserName(userName, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 속하지 않은 팀입니다."));
     }
 

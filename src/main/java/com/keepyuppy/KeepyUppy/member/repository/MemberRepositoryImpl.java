@@ -18,29 +18,29 @@ import static com.keepyuppy.KeepyUppy.member.domain.entity.QMember.member;
 public class MemberRepositoryImpl {
     private final JPAQueryFactory jpaQueryFactory;
 
-    public Optional<Member> findByUserId(Long userId) {
+    public Optional<Member> findByUserName(String userName) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(member)
                 .join(member.user, QUsers.users)
-                .where(member.user.id.eq(userId))
+                .where(member.user.username.eq(userName))
                 .fetchOne());
     }
 
-    public Optional<Member> findInviteByUserId(Long userId,Long teamId) {
+    public Optional<Member> findInviteByUserName(String userName,Long teamId) {
         return Optional.ofNullable(
                 jpaQueryFactory.selectFrom(member)
                         .join(member.user, QUsers.users)
-                        .where(member.user.id.eq(userId))
+                        .where(member.user.username.eq(userName))
                         .where(member.team.id.eq(teamId))
                         .where(member.status.eq(Status.PENDING))
                         .fetchOne()
         );
     }
 
-    public Optional<Member> findMemberInTeamByUserId(Long userId, Long teamId) {
+    public Optional<Member> findMemberInTeamByUserName(String userName, Long teamId) {
         return Optional.ofNullable(
                 jpaQueryFactory.selectFrom(member)
                         .where(
-                                member.user.id.eq(userId)
+                                member.user.name.eq(userName)
                                         .and(member.team.id.eq(teamId))
                         )
                         .fetchOne()

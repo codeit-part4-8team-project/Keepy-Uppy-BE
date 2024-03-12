@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/team")
-@Tag(name = "TeamController",description = "Team 관련 컨트롤러 입니다.")
+@Tag(name = "TeamController", description = "Team 관련 컨트롤러 입니다.")
 @SecurityRequirement(name = "Bearer Authentication")
 public class TeamController {
     private final TeamService teamService;
@@ -33,7 +33,7 @@ public class TeamController {
     @Operation(summary = "팀 소유자 변경")
     @PutMapping("/owner/{teamId}")
     public ResponseEntity<Boolean> changeOwner(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long teamId, @RequestBody ChangeTeamOwnerRequest changeTeamOwnerRequest) {
-        return ResponseEntity.ok(teamService.changeTeamOwner(userDetails, teamId,changeTeamOwnerRequest));
+        return ResponseEntity.ok(teamService.changeTeamOwner(userDetails, teamId, changeTeamOwnerRequest));
     }
 
     @Operation(summary = "로그인한 유저가 속한 팀 조회")
@@ -50,8 +50,8 @@ public class TeamController {
 
     @Operation(summary = "팀 소유자 일경우 정보 변경")
     @PutMapping("/{teamId}")
-    public ResponseEntity<Boolean> updateLinks(@AuthenticationPrincipal CustomUserDetails userDetails,@PathVariable Long teamId , @RequestBody UpdateTeam updateTeam) {
-        return ResponseEntity.ok(teamService.updateTeam(userDetails,teamId, updateTeam));
+    public ResponseEntity<Boolean> updateLinks(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long teamId, @RequestBody UpdateTeam updateTeam) {
+        return ResponseEntity.ok(teamService.updateTeam(userDetails, teamId, updateTeam));
     }
 
     @Operation(summary = "로그인한 유저가 초대받은 응답 대기중인 팀 목록 조회")

@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @Schema(name = "멤버 추가 요청")
 public class AddMemberRequest {
-    private Long userId;
+    private String userName;
 }
