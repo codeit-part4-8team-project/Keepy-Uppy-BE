@@ -6,6 +6,7 @@ import com.keepyuppy.KeepyUppy.issue.communication.response.IssueBoardResponse;
 import com.keepyuppy.KeepyUppy.issue.communication.response.IssueResponse;
 import com.keepyuppy.KeepyUppy.issue.domain.entity.Issue;
 import com.keepyuppy.KeepyUppy.issue.domain.entity.IssueAssignment;
+import com.keepyuppy.KeepyUppy.issue.domain.entity.IssueTag;
 import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.issue.domain.enums.IssueStatus;
 import com.keepyuppy.KeepyUppy.issue.repository.IssueAssignmentJpaRepository;
@@ -57,6 +58,7 @@ public class IssueService {
                 .build();
 
         assignMembers(issue, request.getAssignedMembersUsernames(), teamId);
+        setIssueTags(issue, request.getTags(), author.getTeam());
 
         // check if the changes persist
         team.addContent(issue);
@@ -107,7 +109,13 @@ public class IssueService {
         if (usernames != null){
             // reset issueAssignment before updating
             deleteAssignments(issue);
-            assignMembers(issue, request.getAssignedMembersUsernames(), teamId);
+            assignMembers(issue, usernames, teamId);
+        }
+
+        List<String> tags = request.getTags();
+        if (tags != null){
+            issue.resetTag();
+            setIssueTags(issue, tags, member.getTeam());
         }
 
         issueJpaRepository.save(issue);
@@ -193,6 +201,22 @@ public class IssueService {
         List<Issue> done = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.DONE);
 
         return IssueBoardResponse.of(todo, progress, done);
+    }
+
+    public void setIssueTags(Issue issue, List<String> tags, Team team){
+        List<IssueTag> teamTags = tagJpaRepository.findByTeam(team);
+
+        for (String tagName : tags) {
+            Optional<IssueTag> optionalTag = teamTags.stream()
+                    .filter(tag -> tagName.equals(tag.getName()))
+                    .findFirst();
+
+            if (optionalTag.isPresent()) {
+                issue.addTag(optionalTag.get());
+            } else {
+                throw new IllegalArgumentException(tagName + "은(는) 존재하지 않는 태그입니다.");
+            }
+        }
     }
 
 

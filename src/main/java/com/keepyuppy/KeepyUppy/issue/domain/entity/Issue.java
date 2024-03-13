@@ -61,7 +61,13 @@ public class Issue extends Post {
         this.issueAssignments = assignments;
     }
 
-    public void setTags(Set<IssueTag> tags){
-        this.tags = tags;
+    public void addTag(IssueTag tag) {
+        tags.add(tag);
+        tag.addIssue(this);
+    }
+
+    public void resetTag() {
+        tags.forEach(tag -> tag.removeIssue(this));
+        this.tags = new HashSet<>();
     }
 }

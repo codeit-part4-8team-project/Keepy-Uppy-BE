@@ -20,7 +20,7 @@ public class IssueTag {
 
     private String name;
 
-    private String color = "#808080";
+    private String color;
 
     @ManyToOne
     @JoinColumn(name = "team_id")

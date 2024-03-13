@@ -92,11 +92,11 @@ public class IssueController {
 
     @PostMapping("/tag")
     @Operation(summary = "팀 이슈 태그 생성")
-    public ResponseEntity<List<IssueTagResponse>> createTeamTag(
+    public ResponseEntity<IssueTagResponse> createTeamTag(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId,
             @RequestBody IssueTagRequest tagRequest) {
-        return ResponseEntity.ok(tagService.getTeamTags(userDetails, teamId));
+        return ResponseEntity.ok(tagService.createTag(userDetails, teamId, tagRequest));
     }
 
     @GetMapping("/tag")
@@ -105,5 +105,15 @@ public class IssueController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId) {
         return ResponseEntity.ok(tagService.getTeamTags(userDetails, teamId));
+    }
+
+    @DeleteMapping("/tag")
+    @Operation(summary = "팀 이슈 태그 삭제")
+    public ResponseEntity<String> deleteTeamTag(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long teamId,
+            @RequestBody String tagName) {
+        tagService.deleteTag(userDetails, teamId, tagName);
+        return ResponseEntity.ok("태그 삭제 성공");
     }
 }
