@@ -14,6 +14,9 @@ import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -95,6 +98,21 @@ public class PostService {
     public Member getMemberInTeam(Long userId, Long teamId){
         return memberRepository.findMemberInTeamByUserId(userId, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 속하지 않은 팀입니다."));
+    }
+
+    // sorted by created date (newer posts on top)
+    public Page<PostResponse> getPostPaginate(
+            CustomUserDetails userDetails,
+            Long teamId,
+            int page,
+            ContentType type) {
+
+        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
+
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        Page<Post> posts = postJpaRepository.findByTeamAndTypeOrderByCreatedDateDesc(member.getTeam(), type, pageable);
+
+        return posts.map(PostResponse::of);
     }
 
 

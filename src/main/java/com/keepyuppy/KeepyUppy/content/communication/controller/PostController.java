@@ -2,12 +2,14 @@ package com.keepyuppy.KeepyUppy.content.communication.controller;
 
 import com.keepyuppy.KeepyUppy.content.communication.request.PostRequest;
 import com.keepyuppy.KeepyUppy.content.communication.response.PostResponse;
+import com.keepyuppy.KeepyUppy.content.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.content.service.PostService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -61,5 +63,15 @@ public class PostController {
 
         postService.deletePost(userDetails, teamId, postId);
         return ResponseEntity.ok("게시글 삭제 성공");
+    }
+
+    @GetMapping("/")
+    @Operation(summary = "팀 게시판 페이지 조회")
+    public ResponseEntity<Page<PostResponse>> getPostsWithPagination(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long teamId,
+            @RequestParam(defaultValue = "1") int page) {
+
+        return ResponseEntity.ok(postService.getPostPaginate(userDetails, teamId, page, ContentType.POST));
     }
 }

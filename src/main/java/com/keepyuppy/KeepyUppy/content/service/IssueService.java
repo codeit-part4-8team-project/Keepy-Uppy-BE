@@ -2,6 +2,7 @@ package com.keepyuppy.KeepyUppy.content.service;
 
 import com.keepyuppy.KeepyUppy.content.communication.request.IssueRequest;
 import com.keepyuppy.KeepyUppy.content.communication.request.IssueStatusRequest;
+import com.keepyuppy.KeepyUppy.content.communication.response.IssueBoardResponse;
 import com.keepyuppy.KeepyUppy.content.communication.response.IssueResponse;
 import com.keepyuppy.KeepyUppy.content.domain.entity.Issue;
 import com.keepyuppy.KeepyUppy.content.domain.entity.IssueAssignment;
@@ -9,6 +10,7 @@ import com.keepyuppy.KeepyUppy.content.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.content.domain.enums.IssueStatus;
 import com.keepyuppy.KeepyUppy.content.repository.IssueAssignmentJpaRepository;
 import com.keepyuppy.KeepyUppy.content.repository.IssueJpaRepository;
+import com.keepyuppy.KeepyUppy.content.repository.IssueRepositoryImpl;
 import com.keepyuppy.KeepyUppy.global.exception.AccessDeniedException;
 import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 public class IssueService {
 
     private final IssueJpaRepository issueJpaRepository;
+    private final IssueRepositoryImpl issueRepository;
     private final MemberRepositoryImpl memberRepository;
     private final IssueAssignmentJpaRepository assignmentJpaRepository;
 
@@ -169,6 +172,25 @@ public class IssueService {
             assignment.getMember().removeIssueAssignment(assignment);
             assignmentJpaRepository.deleteById(assignment.getId());
         });
+    }
+
+    // in all getBoard methods issues are sorted by modified date were the older ones are on top
+    public IssueBoardResponse getTeamIssueBoard(CustomUserDetails userDetails, Long teamId){
+        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
+
+        List<Issue> todo = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.TODO);
+        List<Issue> progress = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.INPROGRESS);
+        List<Issue> done = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.DONE);
+
+        return IssueBoardResponse.of(todo, progress, done);
+    }
+
+    public IssueBoardResponse getMyIssueBoard(CustomUserDetails userDetails){
+        List<Issue> todo = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.TODO);
+        List<Issue> progress = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.INPROGRESS);
+        List<Issue> done = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.DONE);
+
+        return IssueBoardResponse.of(todo, progress, done);
     }
 
 
