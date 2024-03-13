@@ -51,12 +51,14 @@ public class TeamService {
 
         team.setOwnerId(member.getId());
 
-        for (String memberName : createTeamRequest.getMembers()) {
-            Member startMember = new Member(userRepository.findByUsername(memberName).orElseThrow(IllegalArgumentException::new), team, Grade.TEAM_MEMBER, Status.PENDING);
-            memberJpaRepository.save(startMember);
-
-            team.addMember(startMember);
+        if (createTeamRequest.getMembers() != null) {
+            createTeamRequest.getMembers().forEach(memberName -> {
+                Member addMember = new Member(userRepository.findByUsername(memberName).orElseThrow(IllegalArgumentException::new), team, Grade.TEAM_MEMBER, Status.PENDING);
+                memberJpaRepository.save(addMember);
+                team.addMember(addMember);
+            });
         }
+
 
         teamJpaRepository.save(team);
 
