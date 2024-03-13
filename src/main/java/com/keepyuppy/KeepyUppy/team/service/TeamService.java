@@ -43,7 +43,7 @@ public class TeamService {
                 .discord(createTeamRequest.getDiscordLink())
                 .build();
 
-        Users user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(IllegalArgumentException::new);
+        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
 
         Member member = new Member(user, team, Grade.OWNER, Status.ACCEPTED);
 

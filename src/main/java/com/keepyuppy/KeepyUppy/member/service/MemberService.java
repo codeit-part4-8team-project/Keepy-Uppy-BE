@@ -39,7 +39,7 @@ public class MemberService {
     @Transactional
     public boolean addMember(CustomUserDetails userDetails, Long teamId, AddMemberRequest addMemberRequest) {
 
-        Member loginMember = memberRepository.findMemberInTeamByUserName(userDetails.getUsername(), teamId).orElseThrow(IllegalArgumentException::new);
+        Member loginMember = memberRepository.findMemberInTeamByUserId(userDetails.getUserId(), teamId).orElseThrow(IllegalArgumentException::new);
 
         if (isManagerOrOwner(loginMember)) {
 
@@ -67,7 +67,7 @@ public class MemberService {
     @Transactional
     public boolean removeMember(CustomUserDetails userDetails, Long teamId, RemoveMemberRequest removeMemberRequest) {
 
-        Member loginMember = memberRepository.findMemberInTeamByUserName(userDetails.getUsername(), teamId).orElseThrow(IllegalArgumentException::new);
+        Member loginMember = memberRepository.findMemberInTeamByUserId(userDetails.getUserId(), teamId).orElseThrow(IllegalArgumentException::new);
 
         Team team = teamJpaRepository.findById(teamId).orElseThrow(IllegalArgumentException::new);
 
@@ -84,13 +84,13 @@ public class MemberService {
 
     @Transactional
     public void accept(@AuthenticationPrincipal CustomUserDetails userDetails, Long teamId) {
-        Member member = memberRepository.findInviteByUserName(userDetails.getUsername(), teamId).orElseThrow(IllegalArgumentException::new);
+        Member member = memberRepository.findInviteByUserId(userDetails.getUserId(), teamId).orElseThrow(IllegalArgumentException::new);
         member.setStatus(Status.ACCEPTED);
     }
 
     @Transactional
     public void reject(@AuthenticationPrincipal CustomUserDetails userDetails, Long teamId) {
-        Member member = memberRepository.findInviteByUserName(userDetails.getUsername(), teamId).orElseThrow(IllegalArgumentException::new);
+        Member member = memberRepository.findInviteByUserId(userDetails.getUserId(), teamId).orElseThrow(IllegalArgumentException::new);
         member.getTeam().removeMember(member);
         memberJpaRepository.delete(member);
     }
@@ -102,13 +102,13 @@ public class MemberService {
     }
 
     @Transactional
-    public boolean updateMember(CustomUserDetails customUserDetails, Long memberId, UpdateMemberRequest updateMemberRequest) {
+    public boolean updateMember(CustomUserDetails customUserDetails,Long memberId, UpdateMemberRequest updateMemberRequest) {
 
         // 수정될 member
         Member member = memberJpaRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException(memberId + " 를 찾을수 없습니다."));
 
         // 수정하는 사람
-        Member updater = memberRepository.findByUserName(customUserDetails.getUsername()).orElseThrow(IllegalArgumentException::new);
+        Member updater = memberRepository.findByUserId(customUserDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
 
         return member.update(updater, updateMemberRequest);
     }

@@ -25,13 +25,31 @@ public class MemberRepositoryImpl {
                 .fetchOne());
     }
 
-    public Optional<Member> findInviteByUserName(String userName,Long teamId) {
+    public Optional<Member> findByUserId(Long userId) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(member)
+                .join(member.user, QUsers.users)
+                .where(member.user.id.eq(userId))
+                .fetchOne());
+    }
+
+    public Optional<Member> findInviteByUserId(Long userId,Long teamId) {
         return Optional.ofNullable(
                 jpaQueryFactory.selectFrom(member)
                         .join(member.user, QUsers.users)
-                        .where(member.user.username.eq(userName))
+                        .where(member.user.id.eq(userId))
                         .where(member.team.id.eq(teamId))
                         .where(member.status.eq(Status.PENDING))
+                        .fetchOne()
+        );
+    }
+
+    public Optional<Member> findMemberInTeamByUserId(Long userId, Long teamId) {
+        return Optional.ofNullable(
+                jpaQueryFactory.selectFrom(member)
+                        .where(
+                                member.user.id.eq(userId)
+                                        .and(member.team.id.eq(teamId))
+                        )
                         .fetchOne()
         );
     }
@@ -40,7 +58,7 @@ public class MemberRepositoryImpl {
         return Optional.ofNullable(
                 jpaQueryFactory.selectFrom(member)
                         .where(
-                                member.user.name.eq(userName)
+                                member.user.username.eq(userName)
                                         .and(member.team.id.eq(teamId))
                         )
                         .fetchOne()
