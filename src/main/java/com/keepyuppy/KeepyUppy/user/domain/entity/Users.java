@@ -1,6 +1,5 @@
 package com.keepyuppy.KeepyUppy.user.domain.entity;
 
-import com.keepyuppy.KeepyUppy.content.domain.entity.UserSchedule;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.user.communication.request.UpdateUserRequest;
@@ -41,8 +40,6 @@ public class Users extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Member> members = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
-    private Set<UserSchedule> userSchedules = new HashSet<>();
 
     @Builder
     public Users(String name,
