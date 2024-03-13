@@ -72,5 +72,8 @@ public class Users extends BaseTimeEntity {
         this.members.add(member);
     }
 
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }
 
