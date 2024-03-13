@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @Schema(name = "멤버 삭제 요청")
 public class RemoveMemberRequest {
-    private Long memberId;
+    private String memberName;
 }

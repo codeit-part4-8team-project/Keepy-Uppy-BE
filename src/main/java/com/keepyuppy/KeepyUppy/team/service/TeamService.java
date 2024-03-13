@@ -30,10 +30,6 @@ public class TeamService {
     private final MemberJpaRepository memberJpaRepository;
     private final MemberRepositoryImpl memberRepository;
 
-
-    // 팀 생성
-    // 팀을 생성하는 유저 = 소유자
-    // 팀을 생성하는 유저는 그팀의 멤버가 된다.
     @Transactional
     public TeamResponse createTeam(CustomUserDetails userDetails, CreateTeamRequest createTeamRequest) {
         Team team = Team.builder()
@@ -55,6 +51,15 @@ public class TeamService {
 
         team.setOwnerId(member.getId());
 
+        if (createTeamRequest.getMembers() != null) {
+            createTeamRequest.getMembers().forEach(memberName -> {
+                Member addMember = new Member(userRepository.findByUsername(memberName).orElseThrow(IllegalArgumentException::new), team, Grade.TEAM_MEMBER, Status.PENDING);
+                memberJpaRepository.save(addMember);
+                team.addMember(addMember);
+            });
+        }
+
+
         teamJpaRepository.save(team);
 
         memberJpaRepository.save(member);
@@ -67,13 +72,10 @@ public class TeamService {
         return teamRepository.findTeamByUsersId(userDetails.getUserId()).stream().map(TeamResponse::of).toList();
     }
 
-    // 팀을 삭제한다.
-    // 팀 삭제를 신청한 유저의 정보가 팀 소유자 일경우만 실행.
     @Transactional
     public boolean removeTeam(CustomUserDetails userDetails, Long teamId) {
         Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException(teamId + " 는 없는 아이디 입니다."));
-        // todo
-        // 뭔가 개선할수 있을거같음
+
         Member teamOwner = team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(() -> new IllegalStateException("팀 소유자가 존재하지 않습니다."));
         if (teamOwner.getUser().getId().equals(userDetails.getUserId())) {
             teamJpaRepository.delete(team);
@@ -102,8 +104,8 @@ public class TeamService {
     @Transactional
     public boolean changeTeamOwner(CustomUserDetails userDetails, Long teamId, ChangeTeamOwnerRequest changeTeamOwnerRequest) {
         Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException(teamId + " 를 찾을수 없습니다."));
-        Member beforeOwner = memberRepository.findMemberInTeamByUserId(userDetails.getUserId(), teamId).orElseThrow(() -> new IllegalArgumentException(userDetails.getUserId() + " 를 찾을수 없습니다."));
-        Member afterOwner = memberJpaRepository.findById(changeTeamOwnerRequest.getNewOwnerId()).orElseThrow(() -> new IllegalArgumentException(changeTeamOwnerRequest.getNewOwnerId() + " 를 찾을수 없습니다."));
+        Member beforeOwner = memberRepository.findMemberInTeamByUserName(userDetails.getUsername(), teamId).orElseThrow(() -> new IllegalArgumentException(userDetails.getUserId() + " 를 찾을수 없습니다."));
+        Member afterOwner = memberRepository.findMemberInTeamByUserName(changeTeamOwnerRequest.getNewOwnerName(), teamId).orElseThrow(() -> new IllegalArgumentException(changeTeamOwnerRequest.getNewOwnerName() + " 를 찾을수 없습니다."));
 
         if (beforeOwner.getGrade().equals(Grade.OWNER)) {
             afterOwner.setGrade(Grade.OWNER);

@@ -18,6 +18,13 @@ import static com.keepyuppy.KeepyUppy.member.domain.entity.QMember.member;
 public class MemberRepositoryImpl {
     private final JPAQueryFactory jpaQueryFactory;
 
+    public Optional<Member> findByUserName(String userName) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(member)
+                .join(member.user, QUsers.users)
+                .where(member.user.username.eq(userName))
+                .fetchOne());
+    }
+
     public Optional<Member> findByUserId(Long userId) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(member)
                 .join(member.user, QUsers.users)
@@ -41,6 +48,17 @@ public class MemberRepositoryImpl {
                 jpaQueryFactory.selectFrom(member)
                         .where(
                                 member.user.id.eq(userId)
+                                        .and(member.team.id.eq(teamId))
+                        )
+                        .fetchOne()
+        );
+    }
+
+    public Optional<Member> findMemberInTeamByUserName(String userName, Long teamId) {
+        return Optional.ofNullable(
+                jpaQueryFactory.selectFrom(member)
+                        .where(
+                                member.user.username.eq(userName)
                                         .and(member.team.id.eq(teamId))
                         )
                         .fetchOne()
