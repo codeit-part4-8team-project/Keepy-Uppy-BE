@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Schema(name = "게시글, 공지 정보 응답")
 @AllArgsConstructor
@@ -17,6 +19,8 @@ public class PostResponse {
     private MemberResponse author;
     private String content;
     private Boolean isAnnouncement;
+    private LocalDateTime createdDate;
+    private boolean isEdited;
 
     public static PostResponse of(Post post){
         return new PostResponse(
@@ -24,7 +28,9 @@ public class PostResponse {
                 post.getTitle(),
                 new MemberResponse(post.getAuthor()),
                 post.getContent(),
-                post.getType() == ContentType.ANNOUNCEMENT
+                post.getType() == ContentType.ANNOUNCEMENT,
+                post.getCreatedDate(),
+                post.getModifiedDate().isAfter(post.getCreatedDate().plusMinutes(1))
         );
     }
 }
