@@ -1,9 +1,9 @@
 package com.keepyuppy.KeepyUppy.team.domain.entity;
 
-import com.keepyuppy.KeepyUppy.content.domain.entity.Issue;
-import com.keepyuppy.KeepyUppy.content.domain.entity.Post;
-import com.keepyuppy.KeepyUppy.content.domain.entity.Schedule;
-import com.keepyuppy.KeepyUppy.content.domain.enums.ContentType;
+import com.keepyuppy.KeepyUppy.issue.domain.entity.Issue;
+import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
+import com.keepyuppy.KeepyUppy.post.domain.entity.Schedule;
+import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeam;

@@ -1,7 +1,7 @@
 package com.keepyuppy.KeepyUppy.member.domain.entity;
 
-import com.keepyuppy.KeepyUppy.content.domain.entity.IssueAssignment;
-import com.keepyuppy.KeepyUppy.content.domain.entity.Post;
+import com.keepyuppy.KeepyUppy.issue.domain.entity.IssueAssignment;
+import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.communication.request.UpdateMemberRequest;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter

@@ -31,6 +31,8 @@ public class UserService {
     public void validateUsername(String username){
         if (username == null) {
             return;
+        } else if (username.length() < 5 || username.length() > 30) {
+        throw new IllegalArgumentException("유저네임은 5자 이상, 30자 이하여야 합니다.");
         } else if (!USERNAME_PATTERN.matcher(username).matches()){
             throw new IllegalArgumentException("알파벳, 숫자, 밑줄(_)만 사용할 수 있습니다.");
         } else if (existsByUsername(username)){
