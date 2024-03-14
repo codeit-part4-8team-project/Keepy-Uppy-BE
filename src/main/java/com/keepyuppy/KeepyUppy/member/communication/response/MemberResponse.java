@@ -16,5 +16,9 @@ public class MemberResponse {
         this.role = member.getRole() == null ? null : member.getRole().name();
         this.grade = member.getGrade().name();
     }
+
+    public static MemberResponse of(Member member) {
+        return new MemberResponse(member);
+    }
 }
 
