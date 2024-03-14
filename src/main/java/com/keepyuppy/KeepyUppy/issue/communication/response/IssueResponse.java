@@ -42,7 +42,7 @@ public class IssueResponse {
 
     public static List<MemberResponse> getMemberResponses(Issue issue){
         return issue.getIssueAssignments().stream()
-                .map(assignment -> new MemberResponse(assignment.getMember()))
+                .map(assignment -> MemberResponse.of(assignment.getMember()))
                 .toList();
     }
 
