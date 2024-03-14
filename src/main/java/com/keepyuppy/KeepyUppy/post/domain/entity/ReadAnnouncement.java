@@ -16,8 +16,8 @@ public class ReadAnnouncement {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "announcement_id")
-    private Post announcement;
+    @JoinColumn(name = "post_id")
+    private Issue issue;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

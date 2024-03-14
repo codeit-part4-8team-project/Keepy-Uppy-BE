@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateMemberRequest {
-    private Long memberId;
     private String grade;
     private String role;
 }

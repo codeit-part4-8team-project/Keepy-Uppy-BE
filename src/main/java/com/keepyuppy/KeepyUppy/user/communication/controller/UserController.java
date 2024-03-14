@@ -12,9 +12,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,10 +59,18 @@ public class UserController {
         return ResponseEntity.ok(exists);
     }
 
-    //todo with other info
-    @Operation(summary = "메인 페이지")
-    @GetMapping( "/main")
-    public ResponseEntity<IssueBoardResponse> getMainPage(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
+    @Operation(summary = "회원 프로필 이미지 변경")
+    @PutMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void updateProfileImage(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestPart(value = "image") MultipartFile multipartFile) {
+        userService.updateProfileImage(userDetails, multipartFile);
     }
+
+     //todo with other info
+     @Operation(summary = "메인 페이지")
+     @GetMapping( "/main")
+     public ResponseEntity<IssueBoardResponse> getMainPage(@AuthenticationPrincipal CustomUserDetails userDetails) {
+         return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
+     }
+
 }
+
