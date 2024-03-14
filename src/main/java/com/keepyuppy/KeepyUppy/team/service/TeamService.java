@@ -1,5 +1,9 @@
 package com.keepyuppy.KeepyUppy.team.service;
 
+import com.keepyuppy.KeepyUppy.global.exception.ExceptionMessage;
+import com.keepyuppy.KeepyUppy.global.exception.MemberException;
+import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
+import com.keepyuppy.KeepyUppy.global.exception.TeamException;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
@@ -43,7 +47,7 @@ public class TeamService {
                 .discord(createTeamRequest.getDiscordLink())
                 .build();
 
-        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
+        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(() -> new NotFoundException.UserNotFoundException(ExceptionMessage.USER_NOT_FOUND.getMessage()));
 
         Member member = new Member(user, team, Grade.OWNER, Status.ACCEPTED);
 
@@ -53,7 +57,7 @@ public class TeamService {
 
         if (createTeamRequest.getMembers() != null) {
             createTeamRequest.getMembers().forEach(memberName -> {
-                Member addMember = new Member(userRepository.findByUsername(memberName).orElseThrow(IllegalArgumentException::new), team, Grade.TEAM_MEMBER, Status.PENDING);
+                Member addMember = new Member(userRepository.findByUsername(memberName).orElseThrow(MemberException.MemberNotFoundException::new), team, Grade.TEAM_MEMBER, Status.PENDING);
                 memberJpaRepository.save(addMember);
                 team.addMember(addMember);
             });
@@ -74,9 +78,9 @@ public class TeamService {
 
     @Transactional
     public boolean removeTeam(CustomUserDetails userDetails, Long teamId) {
-        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException(teamId + " 는 없는 아이디 입니다."));
+        Team team = getTeamById(teamId);
 
-        Member teamOwner = team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(() -> new IllegalStateException("팀 소유자가 존재하지 않습니다."));
+        Member teamOwner = getTeamOwner(team);
         if (teamOwner.getUser().getId().equals(userDetails.getUserId())) {
             teamJpaRepository.delete(team);
             return true;
@@ -86,9 +90,9 @@ public class TeamService {
 
     @Transactional
     public boolean updateTeam(CustomUserDetails userDetails, Long teamId, UpdateTeam updateTeam) {
-        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException(teamId + " 는 없는 아이디 입니다."));
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(TeamException.TeamNotFoundException::new);
 
-        Member teamOwner = team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(() -> new IllegalStateException("팀 소유자가 존재하지 않습니다."));
+        Member teamOwner = getTeamOwner(team);
 
         if (teamOwner.getUser().getId().equals(userDetails.getUserId())) {
             team.update(updateTeam);
@@ -103,9 +107,9 @@ public class TeamService {
 
     @Transactional
     public boolean changeTeamOwner(CustomUserDetails userDetails, Long teamId, ChangeTeamOwnerRequest changeTeamOwnerRequest) {
-        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException(teamId + " 를 찾을수 없습니다."));
-        Member beforeOwner = memberRepository.findMemberInTeamByUserName(userDetails.getUsername(), teamId).orElseThrow(() -> new IllegalArgumentException(userDetails.getUserId() + " 를 찾을수 없습니다."));
-        Member afterOwner = memberRepository.findMemberInTeamByUserName(changeTeamOwnerRequest.getNewOwnerName(), teamId).orElseThrow(() -> new IllegalArgumentException(changeTeamOwnerRequest.getNewOwnerName() + " 를 찾을수 없습니다."));
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(TeamException.TeamNotFoundException::new);
+        Member beforeOwner = getMemberByUsernameAndTeamId(userDetails.getUsername(), teamId);
+        Member afterOwner = getMemberByUsernameAndTeamId(changeTeamOwnerRequest.getNewOwnerName(), teamId);
 
         if (beforeOwner.getGrade().equals(Grade.OWNER)) {
             afterOwner.setGrade(Grade.OWNER);
@@ -117,5 +121,18 @@ public class TeamService {
 
         return false;
     }
+
+    private Member getMemberByUsernameAndTeamId(String username, Long teamId) {
+        return memberRepository.findMemberInTeamByUserName(username, teamId).orElseThrow(MemberException.MemberNotFoundException::new);
+    }
+
+    private Team getTeamById(Long teamId) {
+        return teamJpaRepository.findById(teamId).orElseThrow(TeamException.TeamNotFoundException::new);
+    }
+
+    private Member getTeamOwner(Team team) {
+        return team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(MemberException.MemberNotFoundException::new);
+    }
 }
+
 
