@@ -40,20 +40,6 @@ public class IssueResponse {
         );
     }
 
-    public static IssueResponse ofTeam(Issue issue, Team team){
-        return new IssueResponse(
-                issue.getId(),
-                issue.getTitle(),
-                new MemberResponse(issue.getAuthor()),
-                issue.getContent(),
-                getMemberResponses(issue),
-                issue.getDueDate(),
-                issue.getStatus(),
-                team.getName(),
-                team.getColor()
-        );
-    }
-
     public static List<MemberResponse> getMemberResponses(Issue issue){
         return issue.getIssueAssignments().stream()
                 .map(assignment -> new MemberResponse(assignment.getMember()))

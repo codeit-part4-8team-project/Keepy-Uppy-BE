@@ -68,7 +68,7 @@ public class IssueService {
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Issue issue = issueJpaRepository.findById(issueId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이슈입니다."));
-        return IssueResponse.ofTeam(issue, member.getTeam());
+        return IssueResponse.of(issue);
     }
 
     @Transactional
@@ -111,7 +111,7 @@ public class IssueService {
             assignMembers(issue, request.getAssignedMembersUsernames(), teamId);
         }
 
-        return IssueResponse.ofTeam(issue, member.getTeam());
+        return IssueResponse.of(issue);
     }
 
     public Member getMemberInTeam(Long userId, Long teamId){
@@ -144,7 +144,7 @@ public class IssueService {
 
         issue.updateStatus(request);
         issueJpaRepository.save(issue);
-        return IssueResponse.ofTeam(issue, member.getTeam());
+        return IssueResponse.of(issue);
     }
 
     @Transactional
@@ -176,13 +176,12 @@ public class IssueService {
         });
     }
 
-    // in all getBoard methods issues are sorted by modified date were the older ones are on top
     public IssueBoardResponse getTeamIssueBoard(CustomUserDetails userDetails, Long teamId){
-        getMemberInTeam(userDetails.getUserId(), teamId);
+        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
 
-        List<Issue> todo = issueRepository.findByTeamId(teamId, IssueStatus.TODO);
-        List<Issue> progress = issueRepository.findByTeamId(teamId, IssueStatus.INPROGRESS);
-        List<Issue> done = issueRepository.findByTeamId(teamId, IssueStatus.DONE);
+        List<Issue> todo = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.TODO);
+        List<Issue> progress = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.INPROGRESS);
+        List<Issue> done = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.DONE);
 
         return IssueBoardResponse.of(todo, progress, done);
     }

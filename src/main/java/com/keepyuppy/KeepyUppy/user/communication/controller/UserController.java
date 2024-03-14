@@ -1,5 +1,8 @@
 package com.keepyuppy.KeepyUppy.user.communication.controller;
 
+import com.keepyuppy.KeepyUppy.issue.communication.response.IssueBoardResponse;
+import com.keepyuppy.KeepyUppy.issue.communication.response.IssueResponse;
+import com.keepyuppy.KeepyUppy.issue.service.IssueService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.user.communication.request.UpdateUserRequest;
 import com.keepyuppy.KeepyUppy.user.communication.response.UserResponse;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final IssueService issueService;
 
     @Operation(summary = "회원(본인) 프로필 조회")
     @GetMapping("/")
@@ -51,5 +55,12 @@ public class UserController {
     public ResponseEntity<Boolean> checkUsername(@PathVariable String username) {
         boolean exists = userService.existsByUsername(username);
         return ResponseEntity.ok(exists);
+    }
+
+    //todo with other info
+    @Operation(summary = "메인 페이지")
+    @GetMapping( "/main")
+    public ResponseEntity<IssueBoardResponse> getMainPage(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
     }
 }
