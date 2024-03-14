@@ -24,7 +24,7 @@ public class ScheduleResponse {
         return new ScheduleResponse(
                 schedule.getId(),
                 schedule.getTitle(),
-                new MemberResponse(schedule.getAuthor()),
+                MemberResponse.of(schedule.getAuthor()),
                 schedule.getContent(),
                 schedule.getStartDateTime(),
                 schedule.getEndDateTime()

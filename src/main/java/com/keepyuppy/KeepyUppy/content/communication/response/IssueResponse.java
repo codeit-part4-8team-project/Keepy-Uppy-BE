@@ -32,7 +32,7 @@ public class IssueResponse {
         if (!assignedMembers.isEmpty()) {
             memberResponses = assignedMembers.stream()
                     .filter(member -> member.getStatus().equals(Status.ACCEPTED))
-                    .map(MemberResponse::new)
+                    .map(MemberResponse::of)
                     .toList();
         }
 
