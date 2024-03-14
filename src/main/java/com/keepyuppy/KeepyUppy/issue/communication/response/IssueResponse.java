@@ -3,6 +3,7 @@ package com.keepyuppy.KeepyUppy.issue.communication.response;
 import com.keepyuppy.KeepyUppy.issue.domain.entity.Issue;
 import com.keepyuppy.KeepyUppy.issue.domain.enums.IssueStatus;
 import com.keepyuppy.KeepyUppy.member.communication.response.MemberResponse;
+import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,27 +23,41 @@ public class IssueResponse {
     private List<MemberResponse> assignedMembers;
     private LocalDateTime dueDate;
     private IssueStatus status;
-    private List<IssueTagResponse> tags;
+    private String teamName;
+    private String teamColor;
 
     public static IssueResponse of(Issue issue){
-        List<MemberResponse> memberResponses = issue.getIssueAssignments().stream()
-                    .map(assignment -> new MemberResponse(assignment.getMember()))
-                    .toList();
-
-        List<IssueTagResponse> tagResponses = issue.getTags().stream()
-                .map(tag -> IssueTagResponse.of(tag))
-                .toList();
-
         return new IssueResponse(
                 issue.getId(),
                 issue.getTitle(),
                 new MemberResponse(issue.getAuthor()),
                 issue.getContent(),
-                memberResponses,
+                getMemberResponses(issue),
                 issue.getDueDate(),
                 issue.getStatus(),
-                tagResponses
+                issue.getTeam().getName(),
+                issue.getTeam().getColor()
         );
+    }
+
+    public static IssueResponse ofTeam(Issue issue, Team team){
+        return new IssueResponse(
+                issue.getId(),
+                issue.getTitle(),
+                new MemberResponse(issue.getAuthor()),
+                issue.getContent(),
+                getMemberResponses(issue),
+                issue.getDueDate(),
+                issue.getStatus(),
+                team.getName(),
+                team.getColor()
+        );
+    }
+
+    public static List<MemberResponse> getMemberResponses(Issue issue){
+        return issue.getIssueAssignments().stream()
+                .map(assignment -> new MemberResponse(assignment.getMember()))
+                .toList();
     }
 
 

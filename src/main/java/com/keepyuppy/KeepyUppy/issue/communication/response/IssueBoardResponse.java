@@ -1,6 +1,7 @@
 package com.keepyuppy.KeepyUppy.issue.communication.response;
 
 import com.keepyuppy.KeepyUppy.issue.domain.entity.Issue;
+import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

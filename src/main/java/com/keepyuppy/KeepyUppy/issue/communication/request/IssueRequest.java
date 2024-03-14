@@ -18,6 +18,5 @@ public class IssueRequest {
     private LocalDateTime dueDate;
     private IssueStatus status;
     private List<String> assignedMembersUsernames;
-    private List<String> tags;
 
 }

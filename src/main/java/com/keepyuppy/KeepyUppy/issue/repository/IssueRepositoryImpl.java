@@ -11,6 +11,7 @@ import java.util.List;
 import static com.keepyuppy.KeepyUppy.issue.domain.entity.QIssue.issue;
 import static com.keepyuppy.KeepyUppy.issue.domain.entity.QIssueAssignment.issueAssignment;
 import static com.keepyuppy.KeepyUppy.member.domain.entity.QMember.member;
+import static com.keepyuppy.KeepyUppy.team.domain.entity.QTeam.team;
 import static com.keepyuppy.KeepyUppy.user.domain.entity.QUsers.users;
 
 @Repository
@@ -24,7 +25,19 @@ public class IssueRepositoryImpl {
                 .innerJoin(issue.issueAssignments, issueAssignment)
                 .innerJoin(issueAssignment.member, member)
                 .innerJoin(member.user, users)
+                .innerJoin(issue.team, team)
                 .where(users.id.eq(userId).and(issue.status.eq(status)))
+                .orderBy(issue.modifiedDate.asc())
+                .fetch();
+    }
+
+    public List<Issue> findByTeamId(Long teamId, IssueStatus status) {
+        return queryFactory.selectFrom(issue)
+                .innerJoin(issue.issueAssignments, issueAssignment)
+                .innerJoin(issueAssignment.member, member)
+                .innerJoin(member.user, users)
+                .innerJoin(issue.team, team)
+                .where(team.id.eq(teamId).and(issue.status.eq(status)))
                 .orderBy(issue.modifiedDate.asc())
                 .fetch();
     }

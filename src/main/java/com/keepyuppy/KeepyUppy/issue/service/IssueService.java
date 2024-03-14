@@ -6,13 +6,11 @@ import com.keepyuppy.KeepyUppy.issue.communication.response.IssueBoardResponse;
 import com.keepyuppy.KeepyUppy.issue.communication.response.IssueResponse;
 import com.keepyuppy.KeepyUppy.issue.domain.entity.Issue;
 import com.keepyuppy.KeepyUppy.issue.domain.entity.IssueAssignment;
-import com.keepyuppy.KeepyUppy.issue.domain.entity.IssueTag;
 import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.issue.domain.enums.IssueStatus;
 import com.keepyuppy.KeepyUppy.issue.repository.IssueAssignmentJpaRepository;
 import com.keepyuppy.KeepyUppy.issue.repository.IssueJpaRepository;
 import com.keepyuppy.KeepyUppy.issue.repository.IssueRepositoryImpl;
-import com.keepyuppy.KeepyUppy.issue.repository.IssueTagJpaRepository;
 import com.keepyuppy.KeepyUppy.global.exception.AccessDeniedException;
 import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
@@ -36,7 +34,6 @@ public class IssueService {
     private final IssueRepositoryImpl issueRepository;
     private final MemberRepositoryImpl memberRepository;
     private final IssueAssignmentJpaRepository assignmentJpaRepository;
-    private final IssueTagJpaRepository tagJpaRepository;
 
     @Transactional
     public IssueResponse createIssue(
@@ -54,23 +51,24 @@ public class IssueService {
                 .content(request.getContent())
                 .type(ContentType.ISSUE)
                 .dueDate(request.getDueDate())
+                .team(team)
                 .status(type)
                 .build();
 
-        assignMembers(issue, request.getAssignedMembersUsernames(), teamId);
-        setIssueTags(issue, request.getTags(), author.getTeam());
-
-        // check if the changes persist
-        team.addContent(issue);
         issueJpaRepository.save(issue);
+
+        if (request.getAssignedMembersUsernames() != null){
+            assignMembers(issue, request.getAssignedMembersUsernames(), teamId);
+        }
+
         return IssueResponse.of(issue);
     }
 
     public IssueResponse viewIssue(CustomUserDetails userDetails, Long teamId, Long issueId){
-        getMemberInTeam(userDetails.getUserId(), teamId);
+        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Issue issue = issueJpaRepository.findById(issueId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 이슈입니다."));
-        return IssueResponse.of(issue);
+        return IssueResponse.ofTeam(issue, member.getTeam());
     }
 
     @Transactional
@@ -105,21 +103,15 @@ public class IssueService {
         }
 
         issue.update(request);
-        List<String> usernames = request.getAssignedMembersUsernames();
-        if (usernames != null){
+        issueJpaRepository.save(issue);
+
+        if (request.getAssignedMembersUsernames() != null){
             // reset issueAssignment before updating
             deleteAssignments(issue);
-            assignMembers(issue, usernames, teamId);
+            assignMembers(issue, request.getAssignedMembersUsernames(), teamId);
         }
 
-        List<String> tags = request.getTags();
-        if (tags != null){
-            issue.resetTag();
-            setIssueTags(issue, tags, member.getTeam());
-        }
-
-        issueJpaRepository.save(issue);
-        return IssueResponse.of(issue);
+        return IssueResponse.ofTeam(issue, member.getTeam());
     }
 
     public Member getMemberInTeam(Long userId, Long teamId){
@@ -152,7 +144,7 @@ public class IssueService {
 
         issue.updateStatus(request);
         issueJpaRepository.save(issue);
-        return IssueResponse.of(issue);
+        return IssueResponse.ofTeam(issue, member.getTeam());
     }
 
     @Transactional
@@ -186,11 +178,11 @@ public class IssueService {
 
     // in all getBoard methods issues are sorted by modified date were the older ones are on top
     public IssueBoardResponse getTeamIssueBoard(CustomUserDetails userDetails, Long teamId){
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
+        getMemberInTeam(userDetails.getUserId(), teamId);
 
-        List<Issue> todo = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.TODO);
-        List<Issue> progress = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.INPROGRESS);
-        List<Issue> done = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.DONE);
+        List<Issue> todo = issueRepository.findByTeamId(teamId, IssueStatus.TODO);
+        List<Issue> progress = issueRepository.findByTeamId(teamId, IssueStatus.INPROGRESS);
+        List<Issue> done = issueRepository.findByTeamId(teamId, IssueStatus.DONE);
 
         return IssueBoardResponse.of(todo, progress, done);
     }
@@ -202,22 +194,5 @@ public class IssueService {
 
         return IssueBoardResponse.of(todo, progress, done);
     }
-
-    public void setIssueTags(Issue issue, List<String> tags, Team team){
-        List<IssueTag> teamTags = tagJpaRepository.findByTeam(team);
-
-        for (String tagName : tags) {
-            Optional<IssueTag> optionalTag = teamTags.stream()
-                    .filter(tag -> tagName.equals(tag.getName()))
-                    .findFirst();
-
-            if (optionalTag.isPresent()) {
-                issue.addTag(optionalTag.get());
-            } else {
-                throw new IllegalArgumentException(tagName + "은(는) 존재하지 않는 태그입니다.");
-            }
-        }
-    }
-
 
 }

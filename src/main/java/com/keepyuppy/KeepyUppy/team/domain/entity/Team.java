@@ -41,19 +41,6 @@ public class Team extends BaseTimeEntity {
     @OneToMany(mappedBy = "team")
     private Set<Member> members = new HashSet<>();
 
-    @OneToMany(mappedBy = "team")
-    private List<Post> posts = new ArrayList<>();
-
-    @OneToMany(mappedBy = "team")
-    private List<Post> announcements = new ArrayList<>();
-
-    @OneToMany(mappedBy = "team")
-    private List<Issue> issues = new ArrayList<>();
-
-    @OneToMany(mappedBy = "team")
-    private List<Schedule> schedules = new ArrayList<>();
-
-
 
     @Builder
     public Team(String name, String description,String color, String startDate, String endDate, String figma, String github, String discord) {
@@ -75,17 +62,6 @@ public class Team extends BaseTimeEntity {
     public void removeMember(Member member) {
         member.setTeam(null);
         this.members.remove(member);
-    }
-
-    public void addContent(Post post) {
-        post.setTeam(this);
-        ContentType type = post.getType();
-        switch (type) {
-            case POST -> this.posts.add(post);
-            case ANNOUNCEMENT -> this.announcements.add(post);
-            case ISSUE -> this.issues.add((Issue) post);
-            case SCHEDULE -> this.schedules.add((Schedule) post);
-        }
     }
 
     public void update(UpdateTeam updateTeam) {

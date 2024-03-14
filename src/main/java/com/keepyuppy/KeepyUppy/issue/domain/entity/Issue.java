@@ -30,21 +30,13 @@ public class Issue extends Post {
     @OneToMany(mappedBy = "issue")
     private Set<IssueAssignment> issueAssignments = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(name = "issue_tag",
-            joinColumns = @JoinColumn(name = "issue_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<IssueTag> tags = new HashSet<>();
-
     @Builder(builderMethodName = "issueBuilder")
     public Issue(Team team, String title, Member author, String content, ContentType type,
-                 Set<IssueAssignment> issueAssignments, LocalDateTime dueDate,
-                 IssueStatus status, Set<IssueTag> tags) {
+                 Set<IssueAssignment> issueAssignments, LocalDateTime dueDate, IssueStatus status) {
         super(team, title, author, content, type);
         this.issueAssignments = issueAssignments;
         this.dueDate = dueDate;
         this.status = status;
-        this.tags = tags;
     }
 
     public void update(IssueRequest request){
@@ -61,13 +53,4 @@ public class Issue extends Post {
         this.issueAssignments = assignments;
     }
 
-    public void addTag(IssueTag tag) {
-        tags.add(tag);
-        tag.addIssue(this);
-    }
-
-    public void resetTag() {
-        tags.forEach(tag -> tag.removeIssue(this));
-        this.tags = new HashSet<>();
-    }
 }

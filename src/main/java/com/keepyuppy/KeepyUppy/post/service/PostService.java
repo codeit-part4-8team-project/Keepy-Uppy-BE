@@ -46,9 +46,9 @@ public class PostService {
                 .author(author)
                 .content(request.getContent())
                 .type(type)
+                .team(team)
                 .build();
 
-        team.addContent(post);
         postJpaRepository.save(post);
 
         return PostResponse.of(post);
