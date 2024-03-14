@@ -18,7 +18,7 @@ public class IssueAssignment {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "issue_id")
+    @JoinColumn(name = "post_id")
     private Issue issue;
 
     @ManyToOne

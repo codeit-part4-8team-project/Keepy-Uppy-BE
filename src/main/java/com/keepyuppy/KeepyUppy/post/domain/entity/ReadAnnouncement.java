@@ -17,7 +17,7 @@ public class ReadAnnouncement {
 
     @ManyToOne
     @JoinColumn(name = "post_id")
-    private Issue issue;
+    private Post announcement;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
