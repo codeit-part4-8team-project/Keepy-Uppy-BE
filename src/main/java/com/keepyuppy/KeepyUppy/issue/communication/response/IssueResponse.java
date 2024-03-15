@@ -3,12 +3,11 @@ package com.keepyuppy.KeepyUppy.issue.communication.response;
 import com.keepyuppy.KeepyUppy.issue.domain.entity.Issue;
 import com.keepyuppy.KeepyUppy.issue.domain.enums.IssueStatus;
 import com.keepyuppy.KeepyUppy.member.communication.response.MemberResponse;
-import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class IssueResponse {
     private MemberResponse author;
     private String content;
     private List<MemberResponse> assignedMembers;
-    private LocalDateTime dueDate;
+    private LocalDate dueDate;
     private IssueStatus status;
     private String teamName;
     private String teamColor;
