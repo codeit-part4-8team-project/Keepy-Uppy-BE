@@ -1,10 +1,13 @@
 package com.keepyuppy.KeepyUppy.security.oauth;
 
+import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +16,7 @@ import java.util.Map;
 public class OAuth2Attributes {
 
     private Map<String, Object> attributes;
-    private String provider;
+    private Provider provider;
     private String oauthId;
     private String name;
     private String imageUrl;
@@ -30,7 +33,7 @@ public class OAuth2Attributes {
 
     private static OAuth2Attributes ofGoogle(Map<String, Object> attributes) {
         return OAuth2Attributes.builder()
-                .provider("GOOGLE")
+                .provider(Provider.GOOGLE)
                 .oauthId(String.valueOf(attributes.get("sub")))
                 .name((String) attributes.get("name"))
                 .imageUrl((String) attributes.get("picture"))
@@ -44,7 +47,7 @@ public class OAuth2Attributes {
         Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
 
         return OAuth2Attributes.builder()
-                .provider("KAKAO")
+                .provider(Provider.KAKAO)
                 .oauthId(String.valueOf(attributes.get("id")))
                 .name((String) profile.get("nickname"))
                 .imageUrl((String) properties.get("profile_image"))
@@ -54,7 +57,7 @@ public class OAuth2Attributes {
 
     private static OAuth2Attributes ofGithub(Map<String, Object> attributes) {
         return OAuth2Attributes.builder()
-                .provider("GITHUB")
+                .provider(Provider.GITHUB)
                 .oauthId(String.valueOf(attributes.get("id")))
                 .name((String) attributes.get("name"))
                 .imageUrl((String) attributes.get("avatar_url"))
@@ -72,6 +75,28 @@ public class OAuth2Attributes {
         map.put("imageUrl", imageUrl);
 
         return map;
+    }
+
+    public Users toUserEntity(){
+        return Users.builder()
+                .oauthId(this.oauthId)
+                .username(generateUsername())
+                .provider(this.provider)
+                .name(this.name)
+                .imageUrl(this.imageUrl)
+                .build();
+    }
+
+    public static String generateUsername() {
+        int length = 10;
+
+        byte[] randomBytes = new byte[length];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(randomBytes);
+        String randomString = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+        randomString = randomString.replaceAll("[^a-zA-Z0-9]", "");
+
+        return "user-" + randomString.substring(0, Math.min(length, randomString.length()));
     }
 
 }
