@@ -2,6 +2,7 @@ package com.keepyuppy.KeepyUppy.user.domain.entity;
 
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
+import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.user.communication.request.UpdateUserRequest;
 import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
 import jakarta.persistence.*;
@@ -40,6 +41,8 @@ public class Users extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Member> members = new HashSet<>();
 
+    @OneToMany(mappedBy = "user")
+    private Set<Schedule> schedules = new HashSet<>();
 
     @Builder
     public Users(String name,
@@ -70,6 +73,11 @@ public class Users extends BaseTimeEntity {
     public void addMember(Member member) {
         member.setUsers(this);
         this.members.add(member);
+    }
+
+    public void addSchedule(Schedule schedule) {
+        schedule.setUser(this);
+        this.schedules.add(schedule);
     }
 
     public void setImageUrl(String imageUrl) {

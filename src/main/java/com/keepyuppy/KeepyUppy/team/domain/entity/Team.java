@@ -1,11 +1,8 @@
 package com.keepyuppy.KeepyUppy.team.domain.entity;
 
-import com.keepyuppy.KeepyUppy.issue.domain.entity.Issue;
-import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
-import com.keepyuppy.KeepyUppy.post.domain.entity.Schedule;
-import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
+import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeam;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -15,9 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -42,6 +37,9 @@ public class Team extends BaseTimeEntity {
     private Set<Member> members = new HashSet<>();
 
 
+    @OneToMany(mappedBy = "team")
+    private Set<Schedule> schedules = new HashSet<>();
+
     @Builder
     public Team(String name, String description,String color, String startDate, String endDate, String figma, String github, String discord) {
         this.name = name;
@@ -62,6 +60,11 @@ public class Team extends BaseTimeEntity {
     public void removeMember(Member member) {
         member.setTeam(null);
         this.members.remove(member);
+    }
+
+    public void addSchedule(Schedule schedule) {
+        schedule.setTeam(this);
+        this.schedules.add(schedule);
     }
 
     public void update(UpdateTeam updateTeam) {
