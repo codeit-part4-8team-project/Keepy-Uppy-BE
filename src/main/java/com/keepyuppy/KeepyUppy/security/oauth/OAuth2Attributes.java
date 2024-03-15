@@ -8,7 +8,6 @@ import lombok.Getter;
 
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 
 @Builder(access = AccessLevel.PRIVATE)
@@ -63,18 +62,6 @@ public class OAuth2Attributes {
                 .imageUrl((String) attributes.get("avatar_url"))
                 .attributes(attributes)
                 .build();
-    }
-
-    public Map<String, Object> convertToMap() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", nameAttributeKey);
-        map.put("key", nameAttributeKey);
-        map.put("provider", provider);
-        map.put(nameAttributeKey, oauthId);
-        map.put("name", name);
-        map.put("imageUrl", imageUrl);
-
-        return map;
     }
 
     public Users toUserEntity(){
