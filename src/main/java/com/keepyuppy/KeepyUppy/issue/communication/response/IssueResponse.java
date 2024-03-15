@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -30,7 +31,7 @@ public class IssueResponse {
         return new IssueResponse(
                 issue.getId(),
                 issue.getTitle(),
-                new MemberResponse(issue.getAuthor()),
+                MemberResponse.of(issue.getAuthor()),
                 issue.getContent(),
                 getMemberResponses(issue),
                 issue.getDueDate(),
@@ -41,6 +42,7 @@ public class IssueResponse {
     }
 
     public static List<MemberResponse> getMemberResponses(Issue issue){
+        if (issue.getIssueAssignments() == null) return Collections.emptyList();
         return issue.getIssueAssignments().stream()
                 .map(assignment -> MemberResponse.of(assignment.getMember()))
                 .toList();

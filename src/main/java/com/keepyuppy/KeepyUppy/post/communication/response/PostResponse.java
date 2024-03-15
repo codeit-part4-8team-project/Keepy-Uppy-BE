@@ -18,6 +18,7 @@ public class PostResponse {
     private String title;
     private MemberResponse author;
     private String content;
+    @Schema(example = "false")
     private Boolean isAnnouncement;
     private LocalDateTime createdDate;
     private boolean isEdited;
