@@ -1,5 +1,9 @@
 package com.keepyuppy.KeepyUppy.member.service;
 
+import com.keepyuppy.KeepyUppy.global.exception.ExceptionMessage;
+import com.keepyuppy.KeepyUppy.global.exception.MemberException;
+import com.keepyuppy.KeepyUppy.global.exception.TeamException;
+import com.keepyuppy.KeepyUppy.global.exception.UnauthorizedException;
 import com.keepyuppy.KeepyUppy.member.communication.request.AddMemberRequest;
 import com.keepyuppy.KeepyUppy.member.communication.request.RemoveMemberRequest;
 import com.keepyuppy.KeepyUppy.member.communication.request.UpdateMemberRequest;
@@ -17,6 +21,7 @@ import com.keepyuppy.KeepyUppy.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,25 +37,23 @@ public class MemberService {
     private final MemberRepositoryImpl memberRepository;
 
     public List<MemberResponse> getMembers(Long teamId) {
-        return memberRepository.findMembersByTeamId(teamId).orElseThrow(() -> new IllegalStateException("팀에 속한 멤버가 존재하지 않습니다.")).stream().map(MemberResponse::new).toList();
+        return memberRepository.findMembersByTeamId(teamId).orElseThrow(MemberException.MemberNotFoundException::new).stream().map(MemberResponse::new).toList();
 
     }
 
     @Transactional
     public boolean addMember(CustomUserDetails userDetails, Long teamId, AddMemberRequest addMemberRequest) {
 
-        Member loginMember = memberRepository.findMemberInTeamByUserId(userDetails.getUserId(), teamId).orElseThrow(IllegalArgumentException::new);
+        Member loginMember = findMemberInTeamByUserId(userDetails.getUserId(), teamId);
 
         if (isManagerOrOwner(loginMember)) {
 
-            Team team = teamJpaRepository.findById(teamId)
-                    .orElseThrow(() -> new IllegalArgumentException(teamId + " 는 존재하지 않는 팀 아이디 입니다."));
+            Team team = findTeamById(teamId);
 
-            Users user = userRepository.findByUsername(addMemberRequest.getUserName())
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+            Users user = findUserById(userDetails.getUserId());
 
-            if (memberRepository.findMemberInTeamByUserName(addMemberRequest.getUserName(), teamId).isPresent()) {
-                throw new IllegalArgumentException("이미 팀에 포함된 회원입니다.");
+            if (alreadyMemberInTeam(addMemberRequest.getUserName(), teamId)) {
+                throw new MemberException.MemberAlreadyExistException();
             }
 
             Member member = new Member(user, team, Grade.TEAM_MEMBER, Status.PENDING);
@@ -60,37 +63,37 @@ public class MemberService {
             memberJpaRepository.save(member);
             return true;
         } else {
-            throw new IllegalStateException("팀원 초대는 매니저 이상의 권한이 필요합니다.");
+            throw new UnauthorizedException(ExceptionMessage.AUTHORIZED.getMessage());
         }
     }
 
     @Transactional
     public boolean removeMember(CustomUserDetails userDetails, Long teamId, RemoveMemberRequest removeMemberRequest) {
 
-        Member loginMember = memberRepository.findMemberInTeamByUserId(userDetails.getUserId(), teamId).orElseThrow(IllegalArgumentException::new);
+        Member loginMember = findMemberInTeamByUserId(userDetails.getUserId(), teamId);
 
-        Team team = teamJpaRepository.findById(teamId).orElseThrow(IllegalArgumentException::new);
+        Team team = findTeamById(teamId);
 
-        Member member = memberRepository.findMemberInTeamByUserName(removeMemberRequest.getMemberName(), teamId).orElseThrow(() -> new IllegalArgumentException(removeMemberRequest.getMemberName() + " 를 찾을수 없습니다."));
+        Member member = findMemberInTeamByUserName(removeMemberRequest.getMemberName(), teamId);
 
         if (member.canUpdate(loginMember)) {
             memberJpaRepository.delete(member);
             team.removeMember(member);
             return true;
         } else {
-            throw new IllegalStateException();
+            throw new MemberException.RemoveMemberFailException();
         }
     }
 
     @Transactional
     public void accept(@AuthenticationPrincipal CustomUserDetails userDetails, Long teamId) {
-        Member member = memberRepository.findInviteByUserId(userDetails.getUserId(), teamId).orElseThrow(IllegalArgumentException::new);
+        Member member = findPendingByUserId(userDetails.getUserId(), teamId);
         member.setStatus(Status.ACCEPTED);
     }
 
     @Transactional
     public void reject(@AuthenticationPrincipal CustomUserDetails userDetails, Long teamId) {
-        Member member = memberRepository.findInviteByUserId(userDetails.getUserId(), teamId).orElseThrow(IllegalArgumentException::new);
+        Member member = findPendingByUserId(userDetails.getUserId(), teamId);
         member.getTeam().removeMember(member);
         memberJpaRepository.delete(member);
     }
@@ -105,13 +108,40 @@ public class MemberService {
     public boolean updateMember(CustomUserDetails customUserDetails,Long memberId, UpdateMemberRequest updateMemberRequest) {
 
         // 수정될 member
-        Member member = memberJpaRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException(memberId + " 를 찾을수 없습니다."));
+        Member member = memberJpaRepository.findById(memberId).orElseThrow(MemberException.MemberNotFoundException::new);
 
         // 수정하는 사람
-        Member updater = memberRepository.findByUserId(customUserDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
+        Member updater = memberRepository.findByUserId(customUserDetails.getUserId()).orElseThrow(MemberException.MemberNotFoundException::new);
+
 
         return member.update(updater, updateMemberRequest);
     }
+
+    private Member findMemberInTeamByUserId(Long userId, Long teamId) {
+        return memberRepository.findMemberInTeamByUserId(userId, teamId).orElseThrow(MemberException.MemberNotFoundException::new);
+    }
+
+    private Team findTeamById(Long teamId) {
+        return teamJpaRepository.findById(teamId).orElseThrow(TeamException.TeamNotFoundException::new);
+    }
+
+    private Users findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException(ExceptionMessage.USER_NOT_FOUND.getMessage()));
+    }
+
+    private boolean alreadyMemberInTeam(String userName,Long teamId) {
+        return (memberRepository.findMemberInTeamByUserName(userName, teamId).isPresent());
+    }
+
+    private Member findMemberInTeamByUserName(String userName, Long teamId) {
+        return memberRepository.findMemberInTeamByUserName(userName, teamId).orElseThrow(MemberException.MemberNotFoundException::new);
+    }
+
+    private Member findPendingByUserId(Long userId, Long teamId) {
+        return memberRepository.findPendingByUserId(userId, teamId).orElseThrow(MemberException.MemberNotFoundException::new);
+    }
 }
+
 
 
