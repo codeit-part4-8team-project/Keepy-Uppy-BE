@@ -1,7 +1,7 @@
 package com.keepyuppy.KeepyUppy.member.domain.entity;
 
-import com.keepyuppy.KeepyUppy.content.domain.entity.IssueAssignment;
-import com.keepyuppy.KeepyUppy.content.domain.entity.Post;
+import com.keepyuppy.KeepyUppy.issue.domain.entity.IssueAssignment;
+import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.communication.request.UpdateMemberRequest;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
@@ -95,6 +95,14 @@ public class Member extends BaseTimeEntity {
 
     public void setGrade(Grade grade) {
         this.grade = grade;
+    }
+
+    public void addIssueAssignment(IssueAssignment assignment){
+        this.issueAssignments.add(assignment);
+    }
+
+    public void removeIssueAssignment(IssueAssignment assignment){
+        this.issueAssignments.remove(assignment);
     }
 }
 

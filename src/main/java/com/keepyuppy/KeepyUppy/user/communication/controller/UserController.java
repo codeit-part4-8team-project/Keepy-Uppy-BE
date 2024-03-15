@@ -1,5 +1,8 @@
 package com.keepyuppy.KeepyUppy.user.communication.controller;
 
+import com.keepyuppy.KeepyUppy.issue.communication.response.IssueBoardResponse;
+import com.keepyuppy.KeepyUppy.issue.communication.response.IssueResponse;
+import com.keepyuppy.KeepyUppy.issue.service.IssueService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.user.communication.request.UpdateUserRequest;
 import com.keepyuppy.KeepyUppy.user.communication.response.UserResponse;
@@ -23,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
     private final UserService userService;
+    private final IssueService issueService;
 
     @Operation(summary = "회원(본인) 프로필 조회")
     @GetMapping("/")
@@ -43,9 +47,9 @@ public class UserController {
 
     @Operation(summary = "회원 탈퇴")
     @DeleteMapping( "/")
-    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         userService.deleteUser(userDetails.getUserId());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("회원 탈퇴 성공");
     }
 
     @Operation(summary = "유저네임 중복 확인")
@@ -60,6 +64,13 @@ public class UserController {
     public void updateProfileImage(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestPart(value = "image") MultipartFile multipartFile) {
         userService.updateProfileImage(userDetails, multipartFile);
     }
+
+     //todo with other info
+     @Operation(summary = "메인 페이지")
+     @GetMapping( "/main")
+     public ResponseEntity<IssueBoardResponse> getMainPage(@AuthenticationPrincipal CustomUserDetails userDetails) {
+         return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
+     }
 
 }
 
