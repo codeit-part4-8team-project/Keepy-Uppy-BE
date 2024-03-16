@@ -32,7 +32,7 @@ public class MemberRepositoryImpl {
                 .fetchOne());
     }
 
-    public Optional<Member> findInviteByUserId(Long userId,Long teamId) {
+    public Optional<Member> findPendingByUserId(Long userId, Long teamId) {
         return Optional.ofNullable(
                 jpaQueryFactory.selectFrom(member)
                         .join(member.user, QUsers.users)
@@ -86,5 +86,6 @@ public class MemberRepositoryImpl {
         );
     }
 }
+
 
 

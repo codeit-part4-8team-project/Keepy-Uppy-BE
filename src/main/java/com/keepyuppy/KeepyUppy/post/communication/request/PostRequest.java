@@ -12,6 +12,7 @@ public class PostRequest {
 
     private String title;
     private String content;
+    @Schema(example = "false")
     private Boolean isAnnouncement;
 
     public static PostRequest ofIssue(IssueRequest request){

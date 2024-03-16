@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -15,7 +15,7 @@ public class IssueRequest {
 
     private String title;
     private String content;
-    private LocalDateTime dueDate;
+    private LocalDate dueDate;
     private IssueStatus status;
     private List<String> assignedMembersUsernames;
 

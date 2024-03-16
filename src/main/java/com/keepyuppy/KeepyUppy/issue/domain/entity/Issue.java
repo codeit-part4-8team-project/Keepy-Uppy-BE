@@ -13,7 +13,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class Issue extends Post {
 
-    private LocalDateTime dueDate;
+    private LocalDate dueDate;
 
     @Enumerated(EnumType.STRING)
     private IssueStatus status;
@@ -32,9 +33,9 @@ public class Issue extends Post {
 
     @Builder(builderMethodName = "issueBuilder")
     public Issue(Team team, String title, Member author, String content, ContentType type,
-                 Set<IssueAssignment> issueAssignments, LocalDateTime dueDate, IssueStatus status) {
+                 Set<IssueAssignment> issueAssignments, LocalDate dueDate, IssueStatus status) {
         super(team, title, author, content, type);
-        this.issueAssignments = issueAssignments;
+        this.issueAssignments = issueAssignments != null ? issueAssignments : Collections.emptySet();
         this.dueDate = dueDate;
         this.status = status;
     }
