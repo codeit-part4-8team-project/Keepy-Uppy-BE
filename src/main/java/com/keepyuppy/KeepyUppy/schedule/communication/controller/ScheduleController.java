@@ -60,6 +60,7 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.updateSchedule(userDetails, scheduleId, updateScheduleRequest));
     }
 
+    @Operation(summary = "스케쥴 삭제")
     @DeleteMapping("/{scheduleId}")
     public void deleteSchedule(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long scheduleId) {
         scheduleService.deleteSchedule(userDetails,scheduleId);

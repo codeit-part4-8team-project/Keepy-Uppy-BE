@@ -1,10 +1,14 @@
 package com.keepyuppy.KeepyUppy.schedule.communication.response;
 
 import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
+@Schema(name = "유저 스케쥴 응답")
 @Data
 public class UserScheduleResponse extends ScheduleResponse{
     private String userName;
