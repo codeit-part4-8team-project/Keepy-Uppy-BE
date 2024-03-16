@@ -1,11 +1,14 @@
 package com.keepyuppy.KeepyUppy.schedule.domain.entity;
 
 import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequest;
+import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.domain.enums.ScheduleType;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -41,6 +44,21 @@ public class Schedule {
         this.endDateTime = endDateTime;
     }
 
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    public void update(UpdateScheduleRequest updateScheduleRequest) {
+        this.title = updateScheduleRequest.getTitle();
+        this.content = updateScheduleRequest.getContent();
+        this.startDateTime = updateScheduleRequest.getStartDateTime();
+        this.endDateTime = updateScheduleRequest.getEndDateTime();
+    }
+
     public static Schedule ofUser(CreateScheduleRequest createScheduleRequest , Users user) {
         return new Schedule(createScheduleRequest.getType(), user, null, createScheduleRequest.getTitle(), createScheduleRequest.getContent(), createScheduleRequest.getStartDateTime(), createScheduleRequest.getEndDateTime());
     }
@@ -49,13 +67,4 @@ public class Schedule {
         return new Schedule(createScheduleRequest.getType(), user, team, createScheduleRequest.getTitle(), createScheduleRequest.getContent(), createScheduleRequest.getStartDateTime(), createScheduleRequest.getEndDateTime());
     }
 
-
-
-    public void setUser(Users user) {
-        this.user = user;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
-    }
 }
