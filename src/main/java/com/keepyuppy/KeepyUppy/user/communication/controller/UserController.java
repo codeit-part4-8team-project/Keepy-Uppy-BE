@@ -72,5 +72,11 @@ public class UserController {
          return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
      }
 
+    @Operation(summary = "내 이슈 조회")
+    @GetMapping( "/myIssue")
+    public ResponseEntity<IssueBoardResponse> getMyIssues(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
+    }
+
 }
 
