@@ -32,7 +32,6 @@ public class ScheduleService {
         Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
 
         Schedule schedule = Schedule.ofUser(createScheduleRequest, user);
-        user.addSchedule(schedule);
 
         scheduleJpaRepository.save(schedule);
 
@@ -44,8 +43,6 @@ public class ScheduleService {
         Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
         Team team = teamJpaRepository.findById(teamId).orElseThrow(IllegalArgumentException::new);
         Schedule schedule = Schedule.ofTeam(createScheduleRequest, user, team);
-
-        team.addSchedule(schedule);
 
         scheduleJpaRepository.save(schedule);
 
@@ -86,12 +83,6 @@ public class ScheduleService {
         Schedule schedule = scheduleJpaRepository.findById(scheduleId).orElseThrow(IllegalArgumentException::new);
 
         if (canUpdate(userDetails, schedule)) {
-            schedule.getUser().getSchedules().remove(schedule);
-
-            if (schedule.getTeam() != null) {
-                schedule.getTeam().getSchedules().remove(schedule);
-            }
-
             scheduleJpaRepository.delete(schedule);
         } else {
             throw new IllegalStateException();

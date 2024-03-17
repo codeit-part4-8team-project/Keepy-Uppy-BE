@@ -2,7 +2,6 @@ package com.keepyuppy.KeepyUppy.team.domain.entity;
 
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
-import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeam;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -37,9 +36,6 @@ public class Team extends BaseTimeEntity {
     private Set<Member> members = new HashSet<>();
 
 
-    @OneToMany(mappedBy = "team")
-    private Set<Schedule> schedules = new HashSet<>();
-
     @Builder
     public Team(String name, String description,String color, String startDate, String endDate, String figma, String github, String discord) {
         this.name = name;
@@ -62,10 +58,6 @@ public class Team extends BaseTimeEntity {
         this.members.remove(member);
     }
 
-    public void addSchedule(Schedule schedule) {
-        schedule.setTeam(this);
-        this.schedules.add(schedule);
-    }
 
     public void update(UpdateTeam updateTeam) {
         this.name = updateTeam.getName();

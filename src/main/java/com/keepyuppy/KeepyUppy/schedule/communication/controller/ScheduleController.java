@@ -25,7 +25,7 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @Operation(summary = "유저 스케쥴 생성")
-    @PostMapping("/")
+    @PostMapping("/user")
     public ResponseEntity<UserScheduleResponse> createUserSchedule(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody CreateScheduleRequest createScheduleRequest) {
         return ResponseEntity.ok(scheduleService.createUserSchedule(userDetails, createScheduleRequest));
     }
@@ -37,19 +37,19 @@ public class ScheduleController {
     }
 
     @Operation(summary = "userId 로 스케쥴 리스트 조회")
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserScheduleResponse>> getUserSchedules(@PathVariable Long userId) {
         return ResponseEntity.ok(scheduleService.getUserSchedule(userId));
     }
 
     @Operation(summary = "팀 스케쥴 생성")
-    @PostMapping("/{teamId}")
+    @PostMapping("/team/{teamId}")
     public ResponseEntity<TeamScheduleResponse> createTeamSchedule(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long teamId, @RequestBody CreateScheduleRequest createScheduleRequest) {
         return ResponseEntity.ok(scheduleService.createTeamSchedule(userDetails, teamId, createScheduleRequest));
     }
 
     @Operation(summary = "teamId 로 스케쥴 리스트 조회")
-    @GetMapping("/{teamId}")
+    @GetMapping("/team/{teamId}")
     public ResponseEntity<List<TeamScheduleResponse>> getTeamSchedules(@PathVariable Long teamId) {
         return ResponseEntity.ok(scheduleService.getTeamSchedules(teamId));
     }
@@ -63,8 +63,6 @@ public class ScheduleController {
     @Operation(summary = "스케쥴 삭제")
     @DeleteMapping("/{scheduleId}")
     public void deleteSchedule(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long scheduleId) {
-        scheduleService.deleteSchedule(userDetails,scheduleId);
+        scheduleService.deleteSchedule(userDetails, scheduleId);
     }
-
-
 }
