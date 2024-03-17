@@ -57,7 +57,6 @@ public class Users extends BaseTimeEntity {
 
     public void update(UpdateUserRequest request){
         if (request.getName() != null) this.name = request.getName();
-        if (request.getImageUrl() != null) this.imageUrl = request.getImageUrl();
         if (request.getUsername() != null) this.username = request.getUsername();
         if (request.getBio() != null) this.bio = request.getBio();
     }

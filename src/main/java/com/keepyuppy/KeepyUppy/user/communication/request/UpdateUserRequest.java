@@ -7,7 +7,6 @@ import lombok.Data;
 @Schema(name = "회원 정보 업데이트 요청")
 public class UpdateUserRequest {
     private String name;
-    private String imageUrl;
     private String username;
     private String bio;
 }
