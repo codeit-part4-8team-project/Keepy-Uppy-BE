@@ -37,20 +37,16 @@ public class PostService {
     ){
         Member author = getMemberInTeam(userDetails.getUserId(), teamId);
         Team team = author.getTeam();
-        ContentType type = request.getIsAnnouncement() != null && request.getIsAnnouncement()
-                ? ContentType.ANNOUNCEMENT
-                : ContentType.POST;
 
         Post post = Post.builder()
                 .title(request.getTitle())
                 .author(author)
                 .content(request.getContent())
-                .type(type)
+                .type(ContentType.POST)
                 .team(team)
                 .build();
 
         postJpaRepository.save(post);
-
         return PostResponse.of(post);
     }
 
@@ -110,7 +106,7 @@ public class PostService {
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
 
         Pageable pageable = PageRequest.of(page - 1, 10);
-        Page<Post> posts = postJpaRepository.findByTeamAndTypeOrderByCreatedDateDesc(member.getTeam(), type, pageable);
+        Page<Post> posts = postJpaRepository.findByTeamOrderByCreatedDateDesc(member.getTeam(), pageable);
 
         return posts.map(PostResponse::of);
     }
