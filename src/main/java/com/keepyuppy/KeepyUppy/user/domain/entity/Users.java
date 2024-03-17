@@ -40,7 +40,6 @@ public class Users extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Member> members = new HashSet<>();
 
-
     @Builder
     public Users(String name,
                  String imageUrl,
@@ -70,6 +69,7 @@ public class Users extends BaseTimeEntity {
         member.setUsers(this);
         this.members.add(member);
     }
+
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
