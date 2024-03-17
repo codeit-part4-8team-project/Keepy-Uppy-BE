@@ -2,10 +2,6 @@ package com.keepyuppy.KeepyUppy.global.config;
 
 import com.keepyuppy.KeepyUppy.security.jwt.JwtAuthenticationFilter;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;
-import com.keepyuppy.KeepyUppy.security.oauth.service.CustomOAuth2UserService;
-import com.keepyuppy.KeepyUppy.security.oauth.service.CustomOidcUserService;
-import com.keepyuppy.KeepyUppy.security.oauth.handler.OAuth2FailureHandler;
-import com.keepyuppy.KeepyUppy.security.oauth.handler.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,10 +24,6 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtUtils jwtUtils;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomOidcUserService customOidcUserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    private final OAuth2FailureHandler oAuth2FailureHandler;
 
 
     @Bean
@@ -60,19 +52,11 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/test/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/swagger**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/login/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/user/test/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/oauth/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/auth/refresh")).permitAll()
-                        // swagger 화면을 보여주기 위해서 아래에 추가해두었습니다.
-                        .requestMatchers("/","/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**","/css/**","/images/**","/js/**","/favicon.ico","/h2-console/**").permitAll()
-                        .anyRequest().authenticated()))
-
-                // current url for triggering login /oauth2/authorization/{provider}
-                .oauth2Login(oauth2Login -> oauth2Login
-                        .userInfoEndpoint(userInfoEndpointConfig ->
-                                userInfoEndpointConfig.userService(customOAuth2UserService)
-                                        .oidcUserService(customOidcUserService))
-                        .successHandler(oAuth2SuccessHandler)
-                        .failureHandler(oAuth2FailureHandler))
+                        .requestMatchers( "/","/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**","/css/**","/images/**","/js/**","/favicon.ico","/h2-console/**").permitAll()
+                        .anyRequest().authenticated())
+                )
 
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(config->config

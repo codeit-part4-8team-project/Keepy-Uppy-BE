@@ -35,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static String[] skipUrls = {
             "test/**",
             "/api/auth/refresh",
+            "/api/oauth/**",
             "/login/**",
             "/swagger**", "/", "/*.html", "/favicon.ico",
             "/**/*.html", "/**/*.css", "/**/*.js"

@@ -1,32 +1,64 @@
 package com.keepyuppy.KeepyUppy.security.communication;
 
+import com.keepyuppy.KeepyUppy.security.communication.response.LoginResponse;
 import com.keepyuppy.KeepyUppy.security.communication.response.TokenResponse;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;
+import com.keepyuppy.KeepyUppy.security.oauth.OAuth2RequestUrlProvider;
+import com.keepyuppy.KeepyUppy.security.oauth.OAuth2Service;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
+import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
 import com.keepyuppy.KeepyUppy.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 @Tag(name = "AuthController",description = "Authentication 관련 컨트롤러 입니다.")
 public class AuthController {
 
     private final UserService userService;
     private final JwtUtils jwtUtils;
+    private final OAuth2RequestUrlProvider urlProvider;
+    private final OAuth2Service oAuth2Service;
+
+    @Operation(summary = "OAuth 로그인 페이지로 리다이렉트")
+    @GetMapping("/oauth/{provider}")
+    public ResponseEntity<Void> redirectOAuth(
+            @PathVariable String provider,
+            HttpServletResponse response) throws IOException {
+
+        String redirectUrl = urlProvider.provide(Provider.of(provider));
+        response.sendRedirect(redirectUrl);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "OAuth 로그인")
+    @GetMapping("/oauth/login/{provider}")
+    public ResponseEntity<LoginResponse> loginOAuth(
+            @PathVariable String provider,
+            @RequestParam("code") String code
+    ) {
+        if (provider.equals("google")) {
+            code = URLDecoder.decode(code, StandardCharsets.UTF_8);
+        }
+        return ResponseEntity.ok().body(oAuth2Service.login(provider, code));
+    }
 
     @Operation(summary = "회원 로그아웃")
-    @PostMapping("/logout")
+    @PostMapping("/auth/logout")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<String> logout(final HttpServletRequest request) {
 
@@ -40,7 +72,7 @@ public class AuthController {
     }
 
     @Operation(summary = "새 Refresh 토큰 발급")
-    @PostMapping("/refresh")
+    @PostMapping("/auth/refresh")
     public ResponseEntity<TokenResponse> refresh(final HttpServletRequest request) {
 
         // generate new access token if refresh token is valid
