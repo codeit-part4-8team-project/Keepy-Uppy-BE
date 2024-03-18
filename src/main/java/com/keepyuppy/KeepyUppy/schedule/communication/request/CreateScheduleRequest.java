@@ -1,16 +1,14 @@
-package com.keepyuppy.KeepyUppy.post.communication.request;
+package com.keepyuppy.KeepyUppy.schedule.communication.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Schema(name = "스케쥴 생성 요청")
 @Data
-@NoArgsConstructor
-@Schema(name = "스케줄 생성 요청")
 public class CreateScheduleRequest {
-
+    private String type;
     private String title;
     private String content;
     private LocalDateTime startDateTime;

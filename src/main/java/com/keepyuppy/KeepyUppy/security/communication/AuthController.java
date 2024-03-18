@@ -2,6 +2,7 @@ package com.keepyuppy.KeepyUppy.security.communication;
 
 import com.keepyuppy.KeepyUppy.security.communication.response.LoginResponse;
 import com.keepyuppy.KeepyUppy.security.communication.response.TokenResponse;
+import com.keepyuppy.KeepyUppy.security.communication.response.UrlResponse;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;
 import com.keepyuppy.KeepyUppy.security.oauth.OAuth2RequestUrlProvider;
 import com.keepyuppy.KeepyUppy.security.oauth.OAuth2Service;
@@ -34,15 +35,12 @@ public class AuthController {
     private final OAuth2RequestUrlProvider urlProvider;
     private final OAuth2Service oAuth2Service;
 
-    @Operation(summary = "OAuth 로그인 페이지로 리다이렉트")
-    @GetMapping("/oauth/{provider}")
-    public ResponseEntity<Void> redirectOAuth(
-            @PathVariable String provider,
-            HttpServletResponse response) throws IOException {
+    @Operation(summary = "OAuth 로그인 페이지 Url 생성")
+    @GetMapping("/oauth/url/{provider}")
+    public ResponseEntity<UrlResponse> redirectOAuth(@PathVariable String provider) {
 
         String redirectUrl = urlProvider.provide(Provider.of(provider));
-        response.sendRedirect(redirectUrl);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new UrlResponse(redirectUrl));
     }
 
     @Operation(summary = "OAuth 로그인")
