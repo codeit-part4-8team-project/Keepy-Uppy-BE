@@ -82,7 +82,7 @@ public class UserController {
         return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
     }
 
-    @GetMapping( "/unreadAnnouncement")
+    @GetMapping( "/unread")
     @Operation(summary = "읽지 않은 공지 조회")
     public ResponseEntity<List<AnnouncementResponse>> getUnreadAnnouncements(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(announcementService.getUnreadAnnouncements(userDetails));

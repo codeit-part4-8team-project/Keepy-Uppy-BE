@@ -46,8 +46,7 @@ public class PostService {
                 .team(team)
                 .build();
 
-        postJpaRepository.save(post);
-        return PostResponse.of(post);
+        return PostResponse.of(postJpaRepository.save(post));
     }
 
     public PostResponse viewPost(CustomUserDetails userDetails, Long teamId, Long postId){
@@ -87,8 +86,7 @@ public class PostService {
             throw new AccessDeniedException("수정할 권한이 없는 게시글입니다.");
         }
         post.update(request);
-        postJpaRepository.save(post);
-        return PostResponse.of(post);
+        return PostResponse.of(postJpaRepository.save(post));
     }
 
     // sorted by created date (newer posts on top)

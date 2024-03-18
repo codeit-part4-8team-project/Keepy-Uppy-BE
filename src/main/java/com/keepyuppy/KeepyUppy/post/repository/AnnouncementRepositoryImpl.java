@@ -1,6 +1,8 @@
 package com.keepyuppy.KeepyUppy.post.repository;
 
+import com.keepyuppy.KeepyUppy.member.domain.entity.QMember;
 import com.keepyuppy.KeepyUppy.post.domain.entity.Announcement;
+import com.keepyuppy.KeepyUppy.user.domain.entity.QUsers;
 import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +26,8 @@ public class AnnouncementRepositoryImpl {
 
     public List<Announcement> findUnreadByUserId(Long userId) {
         return jpaQueryFactory.selectFrom(announcement)
-                .innerJoin(announcement.team, team)
-                .leftJoin(announcement.readers, member).on(member.user.id.eq(userId))
-                .innerJoin(member.user, users)
-                .where(users.id.eq(userId).and(member.id.isNull()))
+                .where(announcement.team.members.any().user.id.eq(userId)
+                    .and((announcement.readers.any().user.id.eq(userId)).not()))
                 .orderBy(announcement.createdDate.desc())
                 .fetch();
     }
@@ -41,6 +41,7 @@ public class AnnouncementRepositoryImpl {
                 .fetch();
 
         Long total = jpaQueryFactory.select(announcement.count())
+                .from(announcement)
                 .where(announcement.team.id.eq(teamId))
                 .fetchOne();
         total = total == null ? 0 : total;

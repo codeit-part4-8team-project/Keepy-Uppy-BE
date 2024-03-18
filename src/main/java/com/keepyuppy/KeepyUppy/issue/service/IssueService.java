@@ -103,7 +103,7 @@ public class IssueService {
         }
 
         issue.update(request);
-        issueJpaRepository.save(issue);
+        issue = issueJpaRepository.save(issue);
 
         if (request.getAssignedMembersUsernames() != null){
             // reset issueAssignment before updating
@@ -143,8 +143,7 @@ public class IssueService {
         }
 
         issue.updateStatus(request);
-        issueJpaRepository.save(issue);
-        return IssueResponse.of(issue);
+        return IssueResponse.of(issueJpaRepository.save(issue));
     }
 
     @Transactional

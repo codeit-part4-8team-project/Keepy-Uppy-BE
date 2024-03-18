@@ -39,6 +39,7 @@ public class AnnouncementService {
     ){
         Member author = getMemberInTeam(userDetails.getUserId(), teamId);
         Team team = author.getTeam();
+        // add author automatically to reader set
         Set<Member> readers = new HashSet<>(Collections.singletonList(author));
 
         Announcement announcement = Announcement.announcementBuilder()
@@ -51,8 +52,7 @@ public class AnnouncementService {
                 .readers(readers)
                 .build();
 
-        announcementJPARepository.save(announcement);
-        return AnnouncementResponse.of(announcement);
+        return AnnouncementResponse.of(announcementJPARepository.save(announcement));
     }
 
     public AnnouncementResponse viewAnnouncement(CustomUserDetails userDetails, Long teamId, Long announcementId){
@@ -91,8 +91,7 @@ public class AnnouncementService {
             throw new AccessDeniedException("수정할 권한이 없는 공지글입니다.");
         }
         announcement.update(request);
-        announcementJPARepository.save(announcement);
-        return AnnouncementResponse.of(announcement);
+        return AnnouncementResponse.of(announcementJPARepository.save(announcement));
     }
 
     @Transactional
