@@ -6,21 +6,21 @@ import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
 import com.keepyuppy.KeepyUppy.post.communication.request.PostRequest;
-import com.keepyuppy.KeepyUppy.post.communication.response.PostResponse;
+import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
 import com.keepyuppy.KeepyUppy.post.domain.entity.Announcement;
-import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
 import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.post.repository.AnnouncementJPARepository;
+import com.keepyuppy.KeepyUppy.post.repository.AnnouncementRepositoryImpl;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 
 @Service
@@ -28,10 +28,11 @@ import java.util.Set;
 public class AnnouncementService {
 
     private final AnnouncementJPARepository announcementJPARepository;
+    private final AnnouncementRepositoryImpl announcementRepository;
     private final MemberRepositoryImpl memberRepository;
 
     @Transactional
-    public PostResponse createAnnouncement(
+    public AnnouncementResponse createAnnouncement(
             CustomUserDetails userDetails,
             Long teamId,
             PostRequest request
@@ -51,20 +52,20 @@ public class AnnouncementService {
                 .build();
 
         announcementJPARepository.save(announcement);
-        return PostResponse.of(announcement);
+        return AnnouncementResponse.of(announcement);
     }
 
-    public PostResponse viewAnnouncement(CustomUserDetails userDetails, Long teamId, Long announcementId){
+    public AnnouncementResponse viewAnnouncement(CustomUserDetails userDetails, Long teamId, Long announcementId){
         getMemberInTeam(userDetails.getUserId(), teamId);
-        Post announcement = announcementJPARepository.findById(announcementId)
+        Announcement announcement = announcementJPARepository.findById(announcementId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 공지글입니다."));
-        return PostResponse.of(announcement);
+        return AnnouncementResponse.of(announcement);
     }
 
     @Transactional
     public void deleteAnnouncement(CustomUserDetails userDetails, Long teamId, Long announcementId){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
-        Post announcement = announcementJPARepository.findById(announcementId)
+        Announcement announcement = announcementJPARepository.findById(announcementId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 공지글입니다."));
         Member author = announcement.getAuthor();
 
@@ -75,7 +76,7 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public PostResponse updateAnnouncement(
+    public AnnouncementResponse updateAnnouncement(
             CustomUserDetails userDetails,
             Long teamId,
             Long announcementId,
@@ -91,7 +92,7 @@ public class AnnouncementService {
         }
         announcement.update(request);
         announcementJPARepository.save(announcement);
-        return PostResponse.of(announcement);
+        return AnnouncementResponse.of(announcement);
     }
 
     @Transactional
@@ -117,18 +118,29 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public void markAsRead(CustomUserDetails userDetails, Long teamId, Long announcementId){
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
+    public void markAsRead(CustomUserDetails userDetails, Long announcementId){
         Announcement announcement = announcementJPARepository.findById(announcementId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 공지글입니다."));
-
+        Member member = getMemberInTeam(userDetails.getUserId(), announcement.getTeam().getId());
         announcement.addReader(member);
         announcementJPARepository.save(announcement);
     }
 
-    // todo get unread announcements for users
+    public List<AnnouncementResponse> getUnreadAnnouncements(CustomUserDetails userDetails){
+        List<Announcement> announcements = announcementRepository.findUnreadByUserId(userDetails.getUserId());
+        return announcements.stream().map(AnnouncementResponse::of).toList();
+    }
 
-    // todo get team announcements with pins
+    public Page<AnnouncementResponse> getAnnouncementsByTeam(
+            CustomUserDetails userDetails,
+            Long teamId,
+            int page
+    ){
+        getMemberInTeam(userDetails.getUserId(), teamId);
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        Page<Announcement> announcements = announcementRepository.findByTeam(teamId, pageable);
+        return announcements.map(AnnouncementResponse::of);
+    }
 
     public Member getMemberInTeam(Long userId, Long teamId){
         return memberRepository.findMemberInTeamByUserId(userId, teamId)

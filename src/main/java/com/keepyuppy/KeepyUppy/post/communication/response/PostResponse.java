@@ -10,7 +10,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@Schema(name = "게시글, 공지 정보 응답")
+@Schema(name = "게시글 정보 응답")
 @AllArgsConstructor
 public class PostResponse {
 

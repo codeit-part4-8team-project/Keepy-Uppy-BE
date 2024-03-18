@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/{teamId}/post")
-@Tag(name = "PostController", description = "게시글, 공지글 관련 컨트롤러 입니다.")
+@Tag(name = "PostController", description = "게시글 관련 컨트롤러 입니다.")
 @SecurityRequirement(name = "Bearer Authentication")
 public class PostController {
 
     private final PostService postService;
 
     @PostMapping("/")
-    @Operation(summary = "게시글/공지글 작성")
+    @Operation(summary = "게시글 작성")
     public ResponseEntity<PostResponse> createPost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId,
@@ -34,7 +34,7 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    @Operation(summary = "게시글/공지글 조회")
+    @Operation(summary = "게시글 조회")
     public ResponseEntity<PostResponse> viewPost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId,
@@ -44,7 +44,7 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    @Operation(summary = "게시글/공지글 수정")
+    @Operation(summary = "게시글 수정")
     public ResponseEntity<PostResponse> updatePost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId,
@@ -55,7 +55,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    @Operation(summary = "게시글/공지글 삭제")
+    @Operation(summary = "게시글 삭제")
     public ResponseEntity<String> deletePost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId,
@@ -66,12 +66,12 @@ public class PostController {
     }
 
     @GetMapping("/")
-    @Operation(summary = "팀 게시판 페이지 조회")
+    @Operation(summary = "팀 자유 게시판 페이지 조회")
     public ResponseEntity<Page<PostResponse>> getPostsWithPagination(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId,
             @RequestParam(defaultValue = "1") int page) {
 
-        return ResponseEntity.ok(postService.getPostPaginate(userDetails, teamId, page, ContentType.POST));
+        return ResponseEntity.ok(postService.getPostPaginate(userDetails, teamId, page));
     }
 }

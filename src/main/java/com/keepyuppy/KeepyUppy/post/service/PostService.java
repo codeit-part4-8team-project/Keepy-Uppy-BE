@@ -91,17 +91,11 @@ public class PostService {
         return PostResponse.of(post);
     }
 
-    public Member getMemberInTeam(Long userId, Long teamId){
-        return memberRepository.findMemberInTeamByUserId(userId, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 속하지 않은 팀입니다."));
-    }
-
     // sorted by created date (newer posts on top)
     public Page<PostResponse> getPostPaginate(
             CustomUserDetails userDetails,
             Long teamId,
-            int page,
-            ContentType type) {
+            int page) {
 
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
 
@@ -109,6 +103,11 @@ public class PostService {
         Page<Post> posts = postJpaRepository.findByTeamOrderByCreatedDateDesc(member.getTeam(), pageable);
 
         return posts.map(PostResponse::of);
+    }
+
+    public Member getMemberInTeam(Long userId, Long teamId){
+        return memberRepository.findMemberInTeamByUserId(userId, teamId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 속하지 않은 팀입니다."));
     }
 
 
