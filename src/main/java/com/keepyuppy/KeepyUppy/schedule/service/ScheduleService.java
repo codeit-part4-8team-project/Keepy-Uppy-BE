@@ -1,5 +1,7 @@
 package com.keepyuppy.KeepyUppy.schedule.service;
 
+import com.keepyuppy.KeepyUppy.global.exception.MemberException;
+import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
@@ -26,6 +28,7 @@ public class ScheduleService {
     private final UserRepository userRepository;
     private final TeamJpaRepository teamJpaRepository;
     private final ScheduleRepository scheduleRepository;
+    private final MemberRepositoryImpl memberRepository;
 
     @Transactional
     public UserScheduleResponse createUserSchedule(CustomUserDetails userDetails, CreateScheduleRequest createScheduleRequest) {
@@ -44,9 +47,13 @@ public class ScheduleService {
         Team team = teamJpaRepository.findById(teamId).orElseThrow(IllegalArgumentException::new);
         Schedule schedule = Schedule.ofTeam(createScheduleRequest, user, team);
 
-        scheduleJpaRepository.save(schedule);
+        if (team.getMembers().contains(memberRepository.findMemberInTeamByUserId(user.getId(), teamId).orElseThrow(MemberException.MemberNotFoundException::new))) {
+            scheduleJpaRepository.save(schedule);
 
-        return TeamScheduleResponse.of(schedule);
+            return TeamScheduleResponse.of(schedule);
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     public List<UserScheduleResponse> getUserSchedule(Long userId) {

@@ -11,10 +11,9 @@ import java.time.LocalDateTime;
 @Schema(name = "유저 스케쥴 응답")
 @Data
 public class UserScheduleResponse extends ScheduleResponse{
-    private String userName;
 
     public UserScheduleResponse(String userName, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        this.userName = userName;
+        setAuthor(userName);
         setTitle(title);
         setContent(content);
         setStartDateTime(startDateTime);

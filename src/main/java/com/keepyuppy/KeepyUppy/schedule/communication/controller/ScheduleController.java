@@ -10,6 +10,7 @@ import com.keepyuppy.KeepyUppy.schedule.service.ScheduleService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/schedule")
 @SecurityRequirement(name = "Bearer Authentication")
+@Tag(name = "ScheduleController",description = "Schedule 관련 컨트롤러 입니다.")
 public class ScheduleController {
     private final ScheduleService scheduleService;
 

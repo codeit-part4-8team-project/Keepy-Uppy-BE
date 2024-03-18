@@ -13,8 +13,9 @@ import java.time.LocalDateTime;
 public class TeamScheduleResponse extends ScheduleResponse{
     private String teamName;
 
-    public TeamScheduleResponse(String teamName, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public TeamScheduleResponse(String teamName,String author, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.teamName = teamName;
+        setAuthor(author);
         setTitle(title);
         setContent(content);
         setStartDateTime(startDateTime);
@@ -26,6 +27,7 @@ public class TeamScheduleResponse extends ScheduleResponse{
                 schedule.getTeam().getName(),
                 schedule.getTitle(),
                 schedule.getContent(),
+                schedule.getUser().getUsername(),
                 schedule.getStartDateTime(),
                 schedule.getEndDateTime()
         );
