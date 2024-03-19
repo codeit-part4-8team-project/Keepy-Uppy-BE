@@ -1,6 +1,7 @@
 package com.keepyuppy.KeepyUppy.schedule.service;
 
 import com.keepyuppy.KeepyUppy.global.exception.MemberException;
+import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
@@ -8,6 +9,7 @@ import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.UserScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
+import com.keepyuppy.KeepyUppy.schedule.domain.enums.ScheduleType;
 import com.keepyuppy.KeepyUppy.schedule.repository.ScheduleJpaRepository;
 import com.keepyuppy.KeepyUppy.schedule.repository.ScheduleRepository;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
@@ -45,7 +47,8 @@ public class ScheduleService {
     public TeamScheduleResponse createTeamSchedule(CustomUserDetails userDetails, Long teamId, CreateScheduleRequest createScheduleRequest) {
         Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
         Team team = teamJpaRepository.findById(teamId).orElseThrow(IllegalArgumentException::new);
-        Schedule schedule = Schedule.ofTeam(createScheduleRequest, user, team);
+        Member member = memberRepository.findMemberInTeamByUserId(user.getId(), team.getId()).orElseThrow(IllegalArgumentException::new);
+        Schedule schedule = Schedule.ofTeam(createScheduleRequest, user, team,member);
 
         if (team.getMembers().contains(memberRepository.findMemberInTeamByUserId(user.getId(), teamId).orElseThrow(MemberException.MemberNotFoundException::new))) {
             scheduleJpaRepository.save(schedule);
@@ -60,8 +63,14 @@ public class ScheduleService {
         return scheduleRepository.findUserSchedulesById(userId).stream().map(UserScheduleResponse::of).toList();
     }
 
-    public Schedule getScheduleById(Long scheduleId) {
-        return scheduleJpaRepository.findById(scheduleId).orElseThrow(IllegalArgumentException::new);
+    public ScheduleResponse getScheduleById(Long scheduleId) {
+        Schedule schedule = scheduleJpaRepository.findById(scheduleId).orElseThrow(IllegalArgumentException::new);
+
+        if (schedule.getScheduleType().equals(ScheduleType.TEAM)) {
+            return TeamScheduleResponse.of(schedule);
+        } else {
+            return UserScheduleResponse.of(schedule);
+        }
     }
 
     public List<TeamScheduleResponse> getTeamSchedules(Long teamId) {

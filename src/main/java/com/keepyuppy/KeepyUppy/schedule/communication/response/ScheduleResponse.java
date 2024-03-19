@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 public abstract class ScheduleResponse {
     private String title;
     private String content;
-    private String author;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
 }

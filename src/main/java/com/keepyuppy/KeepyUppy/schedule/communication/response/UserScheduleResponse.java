@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 @Data
 public class UserScheduleResponse extends ScheduleResponse{
 
-    public UserScheduleResponse(String userName, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        setAuthor(userName);
+    public UserScheduleResponse(String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         setTitle(title);
         setContent(content);
         setStartDateTime(startDateTime);
@@ -22,7 +21,6 @@ public class UserScheduleResponse extends ScheduleResponse{
 
     public static UserScheduleResponse of(Schedule schedule) {
         return new UserScheduleResponse(
-                schedule.getUser().getUsername(),
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getStartDateTime(),

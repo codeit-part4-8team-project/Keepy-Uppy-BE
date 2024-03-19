@@ -1,5 +1,7 @@
 package com.keepyuppy.KeepyUppy.schedule.communication.response;
 
+import com.keepyuppy.KeepyUppy.member.communication.response.MemberResponse;
+import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -11,11 +13,10 @@ import java.time.LocalDateTime;
 @Schema(name = "팀 스케쥴 응답")
 @Data
 public class TeamScheduleResponse extends ScheduleResponse{
-    private String teamName;
+    private MemberResponse memberResponse;
 
-    public TeamScheduleResponse(String teamName,String author, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        this.teamName = teamName;
-        setAuthor(author);
+    public TeamScheduleResponse(Member member, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        this.memberResponse = MemberResponse.of(member);
         setTitle(title);
         setContent(content);
         setStartDateTime(startDateTime);
@@ -24,10 +25,9 @@ public class TeamScheduleResponse extends ScheduleResponse{
 
     public static TeamScheduleResponse of(Schedule schedule) {
         return new TeamScheduleResponse(
-                schedule.getTeam().getName(),
+                schedule.getMember(),
                 schedule.getTitle(),
                 schedule.getContent(),
-                schedule.getUser().getUsername(),
                 schedule.getStartDateTime(),
                 schedule.getEndDateTime()
         );

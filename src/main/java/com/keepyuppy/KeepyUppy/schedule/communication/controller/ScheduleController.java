@@ -5,7 +5,6 @@ import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequ
 import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.UserScheduleResponse;
-import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.schedule.service.ScheduleService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +33,7 @@ public class ScheduleController {
 
     @Operation(summary = "Id 로 스케쥴 단일 조회")
     @GetMapping("/{scheduleId}")
-    public ResponseEntity<Schedule> getSchedule(@PathVariable Long scheduleId) {
+    public ResponseEntity<ScheduleResponse> getSchedule(@PathVariable Long scheduleId) {
         return ResponseEntity.ok(scheduleService.getScheduleById(scheduleId));
     }
 
