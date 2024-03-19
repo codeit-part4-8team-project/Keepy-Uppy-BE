@@ -69,13 +69,6 @@ public class UserController {
         userService.updateProfileImage(userDetails, multipartFile);
     }
 
-     //todo with other info?
-     @GetMapping( "/main")
-     @Operation(summary = "메인 페이지")
-     public ResponseEntity<IssueBoardResponse> getMainPage(@AuthenticationPrincipal CustomUserDetails userDetails) {
-         return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
-     }
-
     @GetMapping( "/myIssue")
     @Operation(summary = "내 이슈 조회")
     public ResponseEntity<IssueBoardResponse> getMyIssues(@AuthenticationPrincipal CustomUserDetails userDetails) {
