@@ -5,11 +5,11 @@ import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequ
 import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.UserScheduleResponse;
-import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.schedule.service.ScheduleService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/schedule")
 @SecurityRequirement(name = "Bearer Authentication")
+@Tag(name = "ScheduleController",description = "Schedule 관련 컨트롤러 입니다.")
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
@@ -32,7 +33,7 @@ public class ScheduleController {
 
     @Operation(summary = "Id 로 스케쥴 단일 조회")
     @GetMapping("/{scheduleId}")
-    public ResponseEntity<Schedule> getSchedule(@PathVariable Long scheduleId) {
+    public ResponseEntity<ScheduleResponse> getSchedule(@PathVariable Long scheduleId) {
         return ResponseEntity.ok(scheduleService.getScheduleById(scheduleId));
     }
 

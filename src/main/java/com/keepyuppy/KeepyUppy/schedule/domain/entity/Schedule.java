@@ -1,6 +1,7 @@
 package com.keepyuppy.KeepyUppy.schedule.domain.entity;
 
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
+import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.domain.enums.ScheduleType;
@@ -30,15 +31,19 @@ public class Schedule extends BaseTimeEntity {
     @ManyToOne
     private Team team;
 
+    @ManyToOne
+    private Member member;
+
     private String title;
     private String content;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
 
-    public Schedule(String type,Users user, Team team, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public Schedule(String type, Users user, Team team, Member member, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.scheduleType = ScheduleType.getInstance(type);
         this.user = user;
         this.team = team;
+        this.member = member;
         this.title = title;
         this.content = content;
         this.startDateTime = startDateTime;
@@ -53,6 +58,10 @@ public class Schedule extends BaseTimeEntity {
         this.team = team;
     }
 
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
     public void update(UpdateScheduleRequest updateScheduleRequest) {
         this.title = updateScheduleRequest.getTitle();
         this.content = updateScheduleRequest.getContent();
@@ -60,12 +69,12 @@ public class Schedule extends BaseTimeEntity {
         this.endDateTime = updateScheduleRequest.getEndDateTime();
     }
 
-    public static Schedule ofUser(CreateScheduleRequest createScheduleRequest , Users user) {
-        return new Schedule(createScheduleRequest.getType(), user, null, createScheduleRequest.getTitle(), createScheduleRequest.getContent(), createScheduleRequest.getStartDateTime(), createScheduleRequest.getEndDateTime());
+    public static Schedule ofUser(CreateScheduleRequest createScheduleRequest, Users user) {
+        return new Schedule(createScheduleRequest.getType(), user, null, null, createScheduleRequest.getTitle(), createScheduleRequest.getContent(), createScheduleRequest.getStartDateTime(), createScheduleRequest.getEndDateTime());
     }
 
-    public static Schedule ofTeam(CreateScheduleRequest createScheduleRequest,Users user, Team team) {
-        return new Schedule(createScheduleRequest.getType(), user, team, createScheduleRequest.getTitle(), createScheduleRequest.getContent(), createScheduleRequest.getStartDateTime(), createScheduleRequest.getEndDateTime());
+    public static Schedule ofTeam(CreateScheduleRequest createScheduleRequest, Users user, Team team,Member member) {
+        return new Schedule(createScheduleRequest.getType(), user, team, member, createScheduleRequest.getTitle(), createScheduleRequest.getContent(), createScheduleRequest.getStartDateTime(), createScheduleRequest.getEndDateTime());
     }
 
 }
