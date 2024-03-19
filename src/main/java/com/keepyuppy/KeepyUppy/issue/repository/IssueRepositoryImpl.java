@@ -2,8 +2,6 @@ package com.keepyuppy.KeepyUppy.issue.repository;
 
 import com.keepyuppy.KeepyUppy.issue.domain.entity.Issue;
 import com.keepyuppy.KeepyUppy.issue.domain.enums.IssueStatus;
-import com.keepyuppy.KeepyUppy.member.domain.entity.QMember;
-import com.keepyuppy.KeepyUppy.user.domain.entity.QUsers;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
