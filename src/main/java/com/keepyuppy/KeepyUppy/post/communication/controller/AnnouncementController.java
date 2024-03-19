@@ -55,6 +55,17 @@ public class AnnouncementController {
         return ResponseEntity.ok(announcementService.updateAnnouncement(userDetails, teamId, announcementId, postRequest));
     }
 
+    @PutMapping("/{announcementId}/convert")
+    @Operation(summary = "공지글을 게시글로 수정")
+    public ResponseEntity<PostResponse> updateAnnouncementAsPost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long teamId,
+            @PathVariable Long announcementId,
+            @RequestBody PostRequest postRequest) {
+
+        return ResponseEntity.ok(announcementService.convertAsPost(userDetails, teamId, announcementId, postRequest));
+    }
+
     @DeleteMapping("/{announcementId}")
     @Operation(summary = "공지글 삭제")
     public ResponseEntity<String> deleteAnnouncement(

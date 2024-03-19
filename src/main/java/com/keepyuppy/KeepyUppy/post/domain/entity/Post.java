@@ -10,7 +10,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -53,11 +56,19 @@ public class Post extends BaseTimeEntity {
     public void update(PostRequest request){
         if (request.getTitle() != null) this.title = request.getTitle();
         if (request.getContent() != null) this.content = request.getContent();
-        if (request.getIsAnnouncement() != null && request.getIsAnnouncement()) {
-            this.type = ContentType.ANNOUNCEMENT;
-        } else if (request.getIsAnnouncement() != null) {
-            this.type = ContentType.POST;
-        }
+    }
+
+    public Announcement convertAsAnnouncement(){
+        Set<Member> readers = new HashSet<>(Collections.singletonList(author));
+        return Announcement.announcementBuilder()
+                .title(title)
+                .content(content)
+                .team(team)
+                .author(author)
+                .type(ContentType.ANNOUNCEMENT)
+                .pinned(false)
+                .readers(readers)
+                .build();
     }
 
     @Override

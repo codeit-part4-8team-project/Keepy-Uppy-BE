@@ -1,9 +1,12 @@
 package com.keepyuppy.KeepyUppy.post.service;
 
 import com.keepyuppy.KeepyUppy.post.communication.request.PostRequest;
+import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
 import com.keepyuppy.KeepyUppy.post.communication.response.PostResponse;
+import com.keepyuppy.KeepyUppy.post.domain.entity.Announcement;
 import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
 import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
+import com.keepyuppy.KeepyUppy.post.repository.AnnouncementJPARepository;
 import com.keepyuppy.KeepyUppy.post.repository.PostJpaRepository;
 import com.keepyuppy.KeepyUppy.global.exception.AccessDeniedException;
 import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
@@ -27,6 +30,7 @@ import java.util.Objects;
 public class PostService {
 
     private final PostJpaRepository postJpaRepository;
+    private final AnnouncementJPARepository announcementJPARepository;
     private final MemberRepositoryImpl memberRepository;
 
     @Transactional
@@ -89,6 +93,28 @@ public class PostService {
         return PostResponse.of(postJpaRepository.save(post));
     }
 
+    @Transactional
+    public AnnouncementResponse convertAsAnnouncement(
+            CustomUserDetails userDetails,
+            Long teamId,
+            Long postId,
+            PostRequest request
+    ){
+        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
+        Post post = postJpaRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 게시글입니다."));
+        Member author = post.getAuthor();
+
+        if (!Objects.equals(member.getId(), author.getId())){
+            throw new AccessDeniedException("수정할 권한이 없는 게시글입니다.");
+        }
+        post.update(request);
+        Announcement announcement = post.convertAsAnnouncement();
+
+        postJpaRepository.deleteById(postId);
+        return AnnouncementResponse.of(announcementJPARepository.save(announcement));
+    }
+
     // sorted by created date (newer posts on top)
     public Page<PostResponse> getPostPaginate(
             CustomUserDetails userDetails,
@@ -98,7 +124,7 @@ public class PostService {
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
 
         Pageable pageable = PageRequest.of(page - 1, 10);
-        Page<Post> posts = postJpaRepository.findByTeamOrderByCreatedDateDesc(member.getTeam(), pageable);
+        Page<Post> posts = postJpaRepository.findByTeamAndTypeOrderByCreatedDateDesc(member.getTeam(), ContentType.POST, pageable);
 
         return posts.map(PostResponse::of);
     }

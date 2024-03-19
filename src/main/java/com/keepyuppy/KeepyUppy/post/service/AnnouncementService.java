@@ -7,10 +7,13 @@ import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
 import com.keepyuppy.KeepyUppy.post.communication.request.PostRequest;
 import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
+import com.keepyuppy.KeepyUppy.post.communication.response.PostResponse;
 import com.keepyuppy.KeepyUppy.post.domain.entity.Announcement;
+import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
 import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.post.repository.AnnouncementJPARepository;
 import com.keepyuppy.KeepyUppy.post.repository.AnnouncementRepositoryImpl;
+import com.keepyuppy.KeepyUppy.post.repository.PostJpaRepository;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import jakarta.transaction.Transactional;
@@ -29,6 +32,7 @@ public class AnnouncementService {
 
     private final AnnouncementJPARepository announcementJPARepository;
     private final AnnouncementRepositoryImpl announcementRepository;
+    private final PostJpaRepository postJpaRepository;
     private final MemberRepositoryImpl memberRepository;
 
     @Transactional
@@ -93,6 +97,29 @@ public class AnnouncementService {
         announcement.update(request);
         return AnnouncementResponse.of(announcementJPARepository.save(announcement));
     }
+
+    @Transactional
+    public PostResponse convertAsPost(
+            CustomUserDetails userDetails,
+            Long teamId,
+            Long announcementId,
+            PostRequest request
+    ){
+        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
+        Announcement announcement = announcementJPARepository.findById(announcementId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 공지글입니다."));
+        Member author = announcement.getAuthor();
+
+        if (!Objects.equals(member.getId(), author.getId())){
+            throw new AccessDeniedException("수정할 권한이 없는 게시글입니다.");
+        }
+        announcement.update(request);
+        Post post = announcement.convertAsPost();
+
+        announcementJPARepository.deleteById(announcementId);
+        return PostResponse.of(postJpaRepository.save(post));
+    }
+
 
     @Transactional
     public void pinAnnouncement(CustomUserDetails userDetails, Long teamId, Long announcementId, boolean pinned){

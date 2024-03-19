@@ -7,7 +7,9 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.joda.time.LocalDateTime;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,5 +37,15 @@ public class Announcement extends Post {
 
     public void addReader(Member reader){
         this.readers.add(reader);
+    }
+
+    public Post convertAsPost(){
+        return Post.builder()
+                .title(super.getTitle())
+                .content(super.getContent())
+                .team(super.getTeam())
+                .author(super.getAuthor())
+                .type(ContentType.POST)
+                .build();
     }
 }

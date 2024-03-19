@@ -1,8 +1,11 @@
 package com.keepyuppy.KeepyUppy.post.communication.controller;
 
 import com.keepyuppy.KeepyUppy.post.communication.request.PostRequest;
+import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
 import com.keepyuppy.KeepyUppy.post.communication.response.PostResponse;
+import com.keepyuppy.KeepyUppy.post.domain.entity.Announcement;
 import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
+import com.keepyuppy.KeepyUppy.post.service.AnnouncementService;
 import com.keepyuppy.KeepyUppy.post.service.PostService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,6 +55,16 @@ public class PostController {
             @RequestBody PostRequest postRequest) {
 
         return ResponseEntity.ok(postService.updatePost(userDetails, teamId, postId, postRequest));
+    }
+
+    @PutMapping("/{postId}/convert")
+    @Operation(summary = "게시글을 공지글로 수정")
+    public ResponseEntity<AnnouncementResponse> updatePostAsAnnouncement(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long teamId,
+            @PathVariable Long postId,
+            @RequestBody PostRequest postRequest) {
+        return ResponseEntity.ok(postService.convertAsAnnouncement(userDetails, teamId, postId, postRequest));
     }
 
     @DeleteMapping("/{postId}")

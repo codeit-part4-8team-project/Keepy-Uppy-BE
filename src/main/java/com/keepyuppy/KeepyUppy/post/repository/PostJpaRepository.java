@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostJpaRepository extends JpaRepository<Post,Long>{
 
-    Page<Post> findByTeamOrderByCreatedDateDesc(Team team, Pageable pageable);
+    Page<Post> findByTeamAndTypeOrderByCreatedDateDesc(Team team, ContentType type, Pageable pageable);
 
 }
