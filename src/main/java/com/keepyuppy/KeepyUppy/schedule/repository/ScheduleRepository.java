@@ -7,6 +7,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.time.temporal.WeekFields;
 import java.util.List;
 
 import static com.keepyuppy.KeepyUppy.schedule.domain.entity.QSchedule.schedule;
@@ -16,20 +18,43 @@ import static com.keepyuppy.KeepyUppy.schedule.domain.entity.QSchedule.schedule;
 public class ScheduleRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<Schedule> findUserSchedulesById(Long userId) {
+    public List<Schedule> findUserSchedulesByIdInWeek(Long userId,LocalDateTime date) {
         return jpaQueryFactory.selectFrom(schedule)
                 .join(schedule.user, QUsers.users)
                 .fetchJoin()
                 .where(schedule.user.id.eq(userId))
                 .where(schedule.team.isNull())
+                .where(schedule.endDateTime.week().eq(date.get(WeekFields.ISO.weekOfWeekBasedYear())))
                 .fetch();
     }
 
-    public List<Schedule> findTeamSchedulesByTeamId(Long teamId) {
+    public List<Schedule> findTeamSchedulesByTeamIdInWeek(Long teamId,LocalDateTime date) {
         return jpaQueryFactory.selectFrom(schedule)
                 .join(schedule.team, QTeam.team)
                 .fetchJoin()
                 .where(schedule.team.id.eq(teamId))
+                .where(schedule.endDateTime.week().eq(date.get(WeekFields.ISO.weekOfWeekBasedYear())))
                 .fetch();
     }
+
+    public List<Schedule> findUserSchedulesByIdInMonth(Long userId,LocalDateTime date) {
+        return jpaQueryFactory.selectFrom(schedule)
+                .join(schedule.user, QUsers.users)
+                .fetchJoin()
+                .where(schedule.user.id.eq(userId))
+                .where(schedule.team.isNull())
+                .where(schedule.endDateTime.month().eq(date.getMonthValue()))
+                .fetch();
+    }
+
+    public List<Schedule> findTeamSchedulesByTeamIdInMonth(Long teamId,LocalDateTime date) {
+        return jpaQueryFactory.selectFrom(schedule)
+                .join(schedule.team, QTeam.team)
+                .fetchJoin()
+                .where(schedule.team.id.eq(teamId))
+                .where(schedule.endDateTime.month().eq(date.getMonthValue()))
+                .fetch();
+    }
+
+
 }
