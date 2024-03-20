@@ -141,12 +141,6 @@ public class MemberService {
     private Member findPendingByUserId(Long userId, Long teamId) {
         return memberRepository.findPendingByUserId(userId, teamId).orElseThrow(MemberException.MemberNotFoundException::new);
     }
-
-    public MemberResponse findMemberByName(String userName) {
-        Member member = memberRepository.findByUserName(userName).orElseThrow(IllegalArgumentException::new);
-
-        return MemberResponse.of(member);
-    }
 }
 
 
