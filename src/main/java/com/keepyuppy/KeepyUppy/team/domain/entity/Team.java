@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,12 +36,12 @@ public class Team extends BaseTimeEntity {
 
 
     @Builder
-    public Team(String name, String description,String color, String startDate, String endDate, String figma, String github, String discord) {
+    public Team(String name, String description, String color, LocalDate startDate, LocalDate endDate, String figma, String github, String discord) {
         this.name = name;
         this.description = description;
         this.color = color;
-        this.startDate = stringToLocalDate(startDate);
-        this.endDate = stringToLocalDate(endDate);
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.figma = figma;
         this.github = github;
         this.discord = discord;
@@ -63,16 +62,11 @@ public class Team extends BaseTimeEntity {
         this.name = updateTeam.getName();
         this.description = updateTeam.getDescription();
         this.color = updateTeam.getColor();
-        this.startDate = stringToLocalDate(updateTeam.getStartDate());
-        this.endDate = stringToLocalDate(updateTeam.getEndDate());
+        this.startDate = updateTeam.getStartDate();
+        this.endDate = updateTeam.getEndDate();
         this.figma = updateTeam.getFigma();
         this.github = updateTeam.getGithub();
         this.discord = updateTeam.getDiscord();
-    }
-
-    private LocalDate stringToLocalDate(String dateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(dateTime, formatter);
     }
 
     public void setOwnerId(Long ownerId) {
