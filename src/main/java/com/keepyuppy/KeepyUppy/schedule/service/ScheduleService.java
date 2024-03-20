@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -48,7 +49,7 @@ public class ScheduleService {
         Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
         Team team = teamJpaRepository.findById(teamId).orElseThrow(IllegalArgumentException::new);
         Member member = memberRepository.findMemberInTeamByUserId(user.getId(), team.getId()).orElseThrow(IllegalArgumentException::new);
-        Schedule schedule = Schedule.ofTeam(createScheduleRequest, user, team,member);
+        Schedule schedule = Schedule.ofTeam(createScheduleRequest, user, team, member);
 
         if (team.getMembers().contains(memberRepository.findMemberInTeamByUserId(user.getId(), teamId).orElseThrow(MemberException.MemberNotFoundException::new))) {
             scheduleJpaRepository.save(schedule);
@@ -59,9 +60,14 @@ public class ScheduleService {
         }
     }
 
-    public List<UserScheduleResponse> getUserSchedule(Long userId) {
-        return scheduleRepository.findUserSchedulesById(userId).stream().map(UserScheduleResponse::of).toList();
+    public List<UserScheduleResponse> getUserScheduleInWeek(Long userId, LocalDateTime localDateTime) {
+        return scheduleRepository.findUserSchedulesByIdInWeek(userId, localDateTime).stream().map(UserScheduleResponse::of).toList();
     }
+
+    public List<UserScheduleResponse> getUserScheduleInMonth(Long userId, LocalDateTime localDateTime) {
+        return scheduleRepository.findUserSchedulesByIdInMonth(userId, localDateTime).stream().map(UserScheduleResponse::of).toList();
+    }
+
 
     public ScheduleResponse getScheduleById(Long scheduleId) {
         Schedule schedule = scheduleJpaRepository.findById(scheduleId).orElseThrow(IllegalArgumentException::new);
@@ -73,15 +79,19 @@ public class ScheduleService {
         }
     }
 
-    public List<TeamScheduleResponse> getTeamSchedules(Long teamId) {
-        return scheduleRepository.findTeamSchedulesByTeamId(teamId).stream().map(TeamScheduleResponse::of).toList();
+    public List<TeamScheduleResponse> getTeamSchedulesInweek(Long teamId, LocalDateTime localDateTime) {
+        return scheduleRepository.findTeamSchedulesByTeamIdInWeek(teamId, localDateTime).stream().map(TeamScheduleResponse::of).toList();
+    }
+
+    public List<TeamScheduleResponse> getTeamSchedulesInMonth(Long teamId, LocalDateTime localDateTime) {
+        return scheduleRepository.findTeamSchedulesByTeamIdInMonth(teamId, localDateTime).stream().map(TeamScheduleResponse::of).toList();
     }
 
     @Transactional
     public ScheduleResponse updateSchedule(CustomUserDetails userDetails, Long scheduleId, UpdateScheduleRequest updateScheduleRequest) {
         Schedule schedule = scheduleJpaRepository.findById(scheduleId).orElseThrow(IllegalArgumentException::new);
 
-        if (canUpdate(userDetails,schedule)) {
+        if (canUpdate(userDetails, schedule)) {
             schedule.update(updateScheduleRequest);
 
             if (schedule.getTeam() == null) {

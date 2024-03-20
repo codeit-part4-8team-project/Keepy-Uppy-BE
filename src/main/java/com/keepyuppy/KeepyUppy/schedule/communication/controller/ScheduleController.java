@@ -11,10 +11,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -37,10 +39,16 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.getScheduleById(scheduleId));
     }
 
-    @Operation(summary = "userId 로 스케쥴 리스트 조회")
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserScheduleResponse>> getUserSchedules(@PathVariable Long userId) {
-        return ResponseEntity.ok(scheduleService.getUserSchedule(userId));
+    @Operation(summary = "userId 로 주단위 스케쥴 리스트 조회")
+    @GetMapping("/user/week/{userId}")
+    public ResponseEntity<List<UserScheduleResponse>> getUserSchedulesInWeek(@PathVariable Long userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime localDateTime) {
+        return ResponseEntity.ok(scheduleService.getUserScheduleInWeek(userId, localDateTime));
+    }
+
+    @Operation(summary = "userId 로 월단위 스케쥴 리스트 조회")
+    @GetMapping("/user/month/{userId}")
+    public ResponseEntity<List<UserScheduleResponse>> getUserSchedulesInMonth(@PathVariable Long userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime localDateTime) {
+        return ResponseEntity.ok(scheduleService.getUserScheduleInMonth(userId, localDateTime));
     }
 
     @Operation(summary = "팀 스케쥴 생성")
@@ -49,10 +57,16 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.createTeamSchedule(userDetails, teamId, createScheduleRequest));
     }
 
-    @Operation(summary = "teamId 로 스케쥴 리스트 조회")
-    @GetMapping("/team/{teamId}")
-    public ResponseEntity<List<TeamScheduleResponse>> getTeamSchedules(@PathVariable Long teamId) {
-        return ResponseEntity.ok(scheduleService.getTeamSchedules(teamId));
+    @Operation(summary = "teamId 로 주단위 스케쥴 리스트 조회")
+    @GetMapping("/team/week/{teamId}")
+    public ResponseEntity<List<TeamScheduleResponse>> getTeamSchedulesInWeek(@PathVariable Long teamId,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime localDateTime) {
+        return ResponseEntity.ok(scheduleService.getTeamSchedulesInweek(teamId,localDateTime));
+    }
+
+    @Operation(summary = "teamId 로 월단위 스케쥴 리스트 조회")
+    @GetMapping("/team/month/{teamId}")
+    public ResponseEntity<List<TeamScheduleResponse>> getTeamSchedulesInMonth(@PathVariable Long teamId,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime localDateTime) {
+        return ResponseEntity.ok(scheduleService.getTeamSchedulesInMonth(teamId,localDateTime));
     }
 
     @Operation(summary = "스케쥴 수정")
