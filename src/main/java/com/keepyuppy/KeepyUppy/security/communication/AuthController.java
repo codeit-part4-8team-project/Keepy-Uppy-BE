@@ -1,5 +1,6 @@
 package com.keepyuppy.KeepyUppy.security.communication;
 
+import com.keepyuppy.KeepyUppy.global.exception.UnauthorizedException;
 import com.keepyuppy.KeepyUppy.security.communication.response.LoginResponse;
 import com.keepyuppy.KeepyUppy.security.communication.response.TokenResponse;
 import com.keepyuppy.KeepyUppy.security.communication.response.UrlResponse;
@@ -79,8 +80,8 @@ public class AuthController {
         if (jwtUtils.verifyToken(refreshToken, false) && refreshToken.equals(user.getRefreshToken())) {
             String newAccessToken = jwtUtils.generateAccessToken(user.getOauthId());
             return ResponseEntity.ok(new TokenResponse(newAccessToken));
+        } else {
+            throw new UnauthorizedException();
         }
-
-        return ResponseEntity.badRequest().build();
     }
 }

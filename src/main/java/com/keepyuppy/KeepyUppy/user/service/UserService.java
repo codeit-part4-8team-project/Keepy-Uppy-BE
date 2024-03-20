@@ -75,17 +75,17 @@ public class UserService {
     // methods that encapsulate methods in userRepository
     public Users findById(Long id){
         return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException.UserNotFoundException("존재하지 않는 유저입니다."));
+                .orElseThrow(NotFoundException.UserNotFoundException::new);
     }
 
     public Users findByOauthId(String oauthId){
         return userRepository.findByOauthId(oauthId)
-                .orElseThrow(() -> new NotFoundException.UserNotFoundException("존재하지 않는 유저입니다."));
+                .orElseThrow(NotFoundException.UserNotFoundException::new);
     }
 
     public Users findByRefreshToken(String refreshToken){
         return userRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new NotFoundException.UserNotFoundException("존재하지 않는 유저입니다."));
+                .orElseThrow(NotFoundException.UserNotFoundException::new);
     }
 
     public boolean existsByUsername(String username){

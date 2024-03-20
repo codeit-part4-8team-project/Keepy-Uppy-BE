@@ -1,5 +1,7 @@
 package com.keepyuppy.KeepyUppy.schedule.service;
 
+import com.keepyuppy.KeepyUppy.global.exception.AccessDeniedException;
+import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
@@ -29,7 +31,7 @@ public class ScheduleService {
 
     @Transactional
     public UserScheduleResponse createUserSchedule(CustomUserDetails userDetails, CreateScheduleRequest createScheduleRequest) {
-        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
+        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(NotFoundException.UserNotFoundException::new);
 
         Schedule schedule = Schedule.ofUser(createScheduleRequest, user);
 
@@ -40,8 +42,8 @@ public class ScheduleService {
 
     @Transactional
     public TeamScheduleResponse createTeamSchedule(CustomUserDetails userDetails, Long teamId, CreateScheduleRequest createScheduleRequest) {
-        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(IllegalArgumentException::new);
-        Team team = teamJpaRepository.findById(teamId).orElseThrow(IllegalArgumentException::new);
+        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(NotFoundException.UserNotFoundException::new);
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(NotFoundException.TeamNotFoundException::new);
         Schedule schedule = Schedule.ofTeam(createScheduleRequest, user, team);
 
         scheduleJpaRepository.save(schedule);
@@ -54,7 +56,8 @@ public class ScheduleService {
     }
 
     public Schedule getScheduleById(Long scheduleId) {
-        return scheduleJpaRepository.findById(scheduleId).orElseThrow(IllegalArgumentException::new);
+        return scheduleJpaRepository.findById(scheduleId)
+                .orElseThrow(NotFoundException.ScheduleNotFoundException::new);
     }
 
     public List<TeamScheduleResponse> getTeamSchedules(Long teamId) {
@@ -63,7 +66,7 @@ public class ScheduleService {
 
     @Transactional
     public ScheduleResponse updateSchedule(CustomUserDetails userDetails, Long scheduleId, UpdateScheduleRequest updateScheduleRequest) {
-        Schedule schedule = scheduleJpaRepository.findById(scheduleId).orElseThrow(IllegalArgumentException::new);
+        Schedule schedule = getScheduleById(scheduleId);
 
         if (canUpdate(userDetails,schedule)) {
             schedule.update(updateScheduleRequest);
@@ -74,18 +77,18 @@ public class ScheduleService {
                 return TeamScheduleResponse.of(schedule);
             }
         } else {
-            throw new IllegalStateException();
+            throw new AccessDeniedException.ActionAccessDeniedException();
         }
     }
 
     @Transactional
     public void deleteSchedule(CustomUserDetails userDetails, Long scheduleId) {
-        Schedule schedule = scheduleJpaRepository.findById(scheduleId).orElseThrow(IllegalArgumentException::new);
+        Schedule schedule = getScheduleById(scheduleId);
 
         if (canUpdate(userDetails, schedule)) {
             scheduleJpaRepository.delete(schedule);
         } else {
-            throw new IllegalStateException();
+            throw new AccessDeniedException.ActionAccessDeniedException();
         }
     }
 

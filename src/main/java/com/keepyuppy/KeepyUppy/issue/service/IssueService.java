@@ -1,5 +1,7 @@
 package com.keepyuppy.KeepyUppy.issue.service;
 
+import com.keepyuppy.KeepyUppy.global.exception.AccessDeniedException;
+import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
 import com.keepyuppy.KeepyUppy.issue.communication.request.IssueRequest;
 import com.keepyuppy.KeepyUppy.issue.communication.request.IssueStatusRequest;
 import com.keepyuppy.KeepyUppy.issue.communication.response.IssueBoardResponse;
@@ -11,8 +13,6 @@ import com.keepyuppy.KeepyUppy.issue.domain.enums.IssueStatus;
 import com.keepyuppy.KeepyUppy.issue.repository.IssueAssignmentJpaRepository;
 import com.keepyuppy.KeepyUppy.issue.repository.IssueJpaRepository;
 import com.keepyuppy.KeepyUppy.issue.repository.IssueRepositoryImpl;
-import com.keepyuppy.KeepyUppy.global.exception.AccessDeniedException;
-import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
@@ -65,9 +65,9 @@ public class IssueService {
     }
 
     public IssueResponse viewIssue(CustomUserDetails userDetails, Long teamId, Long issueId){
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
+        getMemberInTeam(userDetails.getUserId(), teamId);
         Issue issue = issueJpaRepository.findById(issueId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 이슈입니다."));
+                .orElseThrow(NotFoundException.IssueNotFoundException::new);
         return IssueResponse.of(issue);
     }
 
@@ -75,11 +75,11 @@ public class IssueService {
     public void deleteIssue(CustomUserDetails userDetails, Long teamId, Long issueId){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Issue issue = issueJpaRepository.findById(issueId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 이슈입니다."));
+                .orElseThrow(NotFoundException.IssueNotFoundException::new);
         Member author = issue.getAuthor();
 
         if (member.getGrade() == Grade.TEAM_MEMBER && !Objects.equals(member.getId(), author.getId())){
-            throw new AccessDeniedException("삭제할 권한이 없는 이슈입니다.");
+            throw new AccessDeniedException.ActionAccessDeniedException();
         }
 
         deleteAssignments(issue);
@@ -96,10 +96,10 @@ public class IssueService {
 
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Issue issue = issueJpaRepository.findById(issueId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 이슈입니다."));
+                .orElseThrow(NotFoundException.IssueNotFoundException::new);
 
         if (!Objects.equals(member.getId(), issue.getAuthor().getId())){
-            throw new AccessDeniedException("수정할 권한이 없는 이슈입니다.");
+            throw new AccessDeniedException.ActionAccessDeniedException();
         }
 
         issue.update(request);
@@ -116,7 +116,7 @@ public class IssueService {
 
     public Member getMemberInTeam(Long userId, Long teamId){
         return memberRepository.findMemberInTeamByUserId(userId, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 속하지 않은 팀입니다."));
+                .orElseThrow(AccessDeniedException.TeamAccessDeniedException::new);
     }
 
     @Transactional
@@ -128,7 +128,7 @@ public class IssueService {
     ){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Issue issue = issueJpaRepository.findById(issueId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 이슈입니다."));
+                .orElseThrow(NotFoundException.IssueNotFoundException::new);
 
         // check if the member is an author or has the issue assigned
         // also allow update if there were no assignments
@@ -139,7 +139,7 @@ public class IssueService {
         isAssigned = issue.getIssueAssignments().isEmpty() || isAssigned;
 
         if ( !isAuthor && !isAssigned ){
-            throw new AccessDeniedException("수정할 권한이 없는 이슈입니다.");
+            throw new AccessDeniedException.ActionAccessDeniedException();
         }
 
         issue.updateStatus(request);
