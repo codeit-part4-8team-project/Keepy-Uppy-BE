@@ -121,7 +121,7 @@ public class TeamService {
     }
 
     private Member getMemberByUsernameAndTeamId(String username, Long teamId) {
-        return memberRepository.findMemberInTeamByUserName(username, teamId).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND));
+        return memberRepository.findMemberInTeamByUsername(username, teamId).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND));
     }
 
     private Team getTeamById(Long teamId) {
