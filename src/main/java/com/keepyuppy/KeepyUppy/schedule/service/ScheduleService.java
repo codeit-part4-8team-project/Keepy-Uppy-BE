@@ -37,11 +37,9 @@ public class ScheduleService {
     @Transactional
     public UserScheduleResponse createUserSchedule(CustomUserDetails userDetails, CreateScheduleRequest createScheduleRequest) {
         Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
-
         Schedule schedule = Schedule.ofUser(createScheduleRequest, user);
 
         scheduleJpaRepository.save(schedule);
-
         return UserScheduleResponse.of(schedule);
     }
 
@@ -49,16 +47,11 @@ public class ScheduleService {
     public TeamScheduleResponse createTeamSchedule(CustomUserDetails userDetails, Long teamId, CreateScheduleRequest createScheduleRequest) {
         Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
         Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
-        Member member = memberRepository.findMemberInTeamByUserId(user.getId(), team.getId()).orElseThrow(() -> new CustomException(ExceptionType.TEAM_ACCESS_DENIED));
+        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Schedule schedule = Schedule.ofTeam(createScheduleRequest, user, team, member);
 
-        if (team.getMembers().contains(memberRepository.findMemberInTeamByUserId(user.getId(), teamId).orElseThrow(MemberException.MemberNotFoundException::new))) {
-            scheduleJpaRepository.save(schedule);
-
-            return TeamScheduleResponse.of(schedule);
-        } else {
-            throw new IllegalStateException();
-        }
+        scheduleJpaRepository.save(schedule);
+        return TeamScheduleResponse.of(schedule);
     }
 
     public List<UserScheduleResponse> getUserScheduleInWeek(Long userId, LocalDateTime localDateTime) {
@@ -70,13 +63,20 @@ public class ScheduleService {
     }
 
 
-    public ScheduleResponse getScheduleById(Long scheduleId) {
+    public ScheduleResponse getScheduleById(CustomUserDetails userDetails, Long scheduleId) {
         Schedule schedule = scheduleJpaRepository.findById(scheduleId).orElseThrow(() -> new CustomException(ExceptionType.SCHEDULE_NOT_FOUND));
 
         if (schedule.getScheduleType().equals(ScheduleType.TEAM)) {
+            // return if user is a member of the team
+            getMemberInTeam(userDetails.getUserId(), schedule.getTeam().getId());
             return TeamScheduleResponse.of(schedule);
-        } else {
+
+        } else if (canUpdate(userDetails, schedule)){
+            // return if the schedule belongs to the user
             return UserScheduleResponse.of(schedule);
+
+        } else {
+            throw new CustomException(ExceptionType.SCHEDULE_NOT_FOUND);
         }
     }
 
@@ -90,7 +90,7 @@ public class ScheduleService {
 
     @Transactional
     public ScheduleResponse updateSchedule(CustomUserDetails userDetails, Long scheduleId, UpdateScheduleRequest updateScheduleRequest) {
-        Schedule schedule = getScheduleById(scheduleId);
+        Schedule schedule = scheduleJpaRepository.findById(scheduleId).orElseThrow(() -> new CustomException(ExceptionType.SCHEDULE_NOT_FOUND));
 
         if (canUpdate(userDetails, schedule)) {
             schedule.update(updateScheduleRequest);
@@ -107,13 +107,18 @@ public class ScheduleService {
 
     @Transactional
     public void deleteSchedule(CustomUserDetails userDetails, Long scheduleId) {
-        Schedule schedule = getScheduleById(scheduleId);
+        Schedule schedule = scheduleJpaRepository.findById(scheduleId).orElseThrow(() -> new CustomException(ExceptionType.SCHEDULE_NOT_FOUND));
 
         if (canUpdate(userDetails, schedule)) {
             scheduleJpaRepository.delete(schedule);
         } else {
             throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
         }
+    }
+
+    public Member getMemberInTeam(Long userId, Long teamId){
+        return memberRepository.findMemberInTeamByUserId(userId, teamId)
+                .orElseThrow(() -> new CustomException(ExceptionType.TEAM_ACCESS_DENIED));
     }
 
     private boolean canUpdate(CustomUserDetails userDetails, Schedule schedule) {
