@@ -131,7 +131,7 @@ public class AnnouncementService {
             throw new AccessDeniedException("공지를 고정하거나 해제할 수 있는 권한이 없습니다.");
         }
         if (pinned && !checkPinnedNum(member.getTeam())){
-            throw new IllegalArgumentException("공지를 3개 이상 고정할 수 없습니다.");
+            throw new IllegalArgumentException("공지는 3개까지만 고정할 수 있습니다.");
         }
 
         announcement.setPinned(pinned);
