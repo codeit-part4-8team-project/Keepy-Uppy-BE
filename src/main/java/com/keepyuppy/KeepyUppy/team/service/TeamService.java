@@ -123,7 +123,7 @@ public class TeamService {
     }
 
     private Member getMemberByUsernameAndTeamId(String username, Long teamId) {
-        return memberRepository.findMemberInTeamByUserName(username, teamId).orElseThrow(MemberException.MemberNotFoundException::new);
+        return memberRepository.findMemberInTeamByUsername(username, teamId).orElseThrow(MemberException.MemberNotFoundException::new);
     }
 
     private Team getTeamById(Long teamId) {

@@ -54,18 +54,6 @@ public class MemberRepositoryImpl {
         );
     }
 
-    public Optional<Member> findMemberInTeamByUserName(String userName, Long teamId) {
-        return Optional.ofNullable(
-                jpaQueryFactory.selectFrom(member)
-                        .where(
-                                member.user.username.eq(userName)
-                                        .and(member.team.id.eq(teamId))
-                        )
-                        .fetchOne()
-        );
-    }
-
-
     public Optional<List<Member>> findMembersByTeamId(Long teamId) {
         return Optional.ofNullable(
                 jpaQueryFactory.selectFrom(member)
