@@ -1,7 +1,7 @@
 package com.keepyuppy.KeepyUppy.security.oauth;
 
 import com.keepyuppy.KeepyUppy.global.config.OAuth2ProviderConfig;
-import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
+import com.keepyuppy.KeepyUppy.global.exception.CustomException;
 import com.keepyuppy.KeepyUppy.security.communication.response.LoginResponse;
 import com.keepyuppy.KeepyUppy.security.communication.response.OAuth2TokenResponse;
 import com.keepyuppy.KeepyUppy.security.jwt.JwtUtils;
@@ -41,7 +41,7 @@ public class OAuth2Service {
             Users user = userService.findByOauthId(oAuth2Attributes.getOauthId());
             log.info("소셜 로그인에 성공했습니다.");
             return generateLoginResponse(user, false);
-        } catch (NotFoundException e){
+        } catch (CustomException e){
             // user is saved in repo within generateLoginResponse method
             Users user = oAuth2Attributes.toUserEntity();
             log.info("새 계정 생성에 성공했습니다.");

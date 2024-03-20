@@ -1,5 +1,7 @@
 package com.keepyuppy.KeepyUppy.post.service;
 
+import com.keepyuppy.KeepyUppy.global.exception.CustomException;
+import com.keepyuppy.KeepyUppy.global.exception.ExceptionType;
 import com.keepyuppy.KeepyUppy.post.communication.request.PostRequest;
 import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
 import com.keepyuppy.KeepyUppy.post.communication.response.PostResponse;
@@ -8,8 +10,6 @@ import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
 import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.post.repository.AnnouncementJPARepository;
 import com.keepyuppy.KeepyUppy.post.repository.PostJpaRepository;
-import com.keepyuppy.KeepyUppy.global.exception.AccessDeniedException;
-import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
@@ -56,7 +56,7 @@ public class PostService {
     public PostResponse viewPost(CustomUserDetails userDetails, Long teamId, Long postId){
         getMemberInTeam(userDetails.getUserId(), teamId);
         Post post = postJpaRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
         return PostResponse.of(post);
     }
 
@@ -64,11 +64,11 @@ public class PostService {
     public void deletePost(CustomUserDetails userDetails, Long teamId, Long postId){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Post post = postJpaRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
         Member author = post.getAuthor();
 
         if (member.getGrade() == Grade.TEAM_MEMBER && !Objects.equals(member.getId(), author.getId())){
-            throw new AccessDeniedException("삭제할 권한이 없는 게시글입니다.");
+            throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
         }
         postJpaRepository.deleteById(postId);
     }
@@ -83,11 +83,11 @@ public class PostService {
 
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Post post = postJpaRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
         Member author = post.getAuthor();
 
         if (!Objects.equals(member.getId(), author.getId())){
-            throw new AccessDeniedException("수정할 권한이 없는 게시글입니다.");
+            throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
         }
         post.update(request);
         return PostResponse.of(postJpaRepository.save(post));
@@ -102,11 +102,11 @@ public class PostService {
     ){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Post post = postJpaRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
         Member author = post.getAuthor();
 
         if (!Objects.equals(member.getId(), author.getId())){
-            throw new AccessDeniedException("수정할 권한이 없는 게시글입니다.");
+            throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
         }
         post.update(request);
         Announcement announcement = post.convertAsAnnouncement();
@@ -131,7 +131,7 @@ public class PostService {
 
     public Member getMemberInTeam(Long userId, Long teamId){
         return memberRepository.findMemberInTeamByUserId(userId, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 속하지 않은 팀입니다."));
+                .orElseThrow(() -> new CustomException(ExceptionType.TEAM_ACCESS_DENIED));
     }
 
 

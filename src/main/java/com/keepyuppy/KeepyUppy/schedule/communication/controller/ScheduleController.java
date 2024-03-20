@@ -35,8 +35,8 @@ public class ScheduleController {
 
     @Operation(summary = "Id 로 스케쥴 단일 조회")
     @GetMapping("/{scheduleId}")
-    public ResponseEntity<ScheduleResponse> getSchedule(@PathVariable Long scheduleId) {
-        return ResponseEntity.ok(scheduleService.getScheduleById(scheduleId));
+    public ResponseEntity<ScheduleResponse> getSchedule(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long scheduleId) {
+        return ResponseEntity.ok(scheduleService.getScheduleById(userDetails, scheduleId));
     }
 
     @Operation(summary = "userId 로 주단위 스케쥴 리스트 조회")
