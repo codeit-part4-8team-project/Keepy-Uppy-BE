@@ -1,7 +1,7 @@
 package com.keepyuppy.KeepyUppy.schedule.service;
 
-import com.keepyuppy.KeepyUppy.global.exception.AccessDeniedException;
-import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
+import com.keepyuppy.KeepyUppy.global.exception.CustomException;
+import com.keepyuppy.KeepyUppy.global.exception.ExceptionType;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
@@ -31,7 +31,7 @@ public class ScheduleService {
 
     @Transactional
     public UserScheduleResponse createUserSchedule(CustomUserDetails userDetails, CreateScheduleRequest createScheduleRequest) {
-        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(NotFoundException.UserNotFoundException::new);
+        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
 
         Schedule schedule = Schedule.ofUser(createScheduleRequest, user);
 
@@ -42,8 +42,8 @@ public class ScheduleService {
 
     @Transactional
     public TeamScheduleResponse createTeamSchedule(CustomUserDetails userDetails, Long teamId, CreateScheduleRequest createScheduleRequest) {
-        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(NotFoundException.UserNotFoundException::new);
-        Team team = teamJpaRepository.findById(teamId).orElseThrow(NotFoundException.TeamNotFoundException::new);
+        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
         Schedule schedule = Schedule.ofTeam(createScheduleRequest, user, team);
 
         scheduleJpaRepository.save(schedule);
@@ -57,7 +57,7 @@ public class ScheduleService {
 
     public Schedule getScheduleById(Long scheduleId) {
         return scheduleJpaRepository.findById(scheduleId)
-                .orElseThrow(NotFoundException.ScheduleNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ExceptionType.SCHEDULE_NOT_FOUND));
     }
 
     public List<TeamScheduleResponse> getTeamSchedules(Long teamId) {
@@ -77,7 +77,7 @@ public class ScheduleService {
                 return TeamScheduleResponse.of(schedule);
             }
         } else {
-            throw new AccessDeniedException.ActionAccessDeniedException();
+            throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
         }
     }
 
@@ -88,7 +88,7 @@ public class ScheduleService {
         if (canUpdate(userDetails, schedule)) {
             scheduleJpaRepository.delete(schedule);
         } else {
-            throw new AccessDeniedException.ActionAccessDeniedException();
+            throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
         }
     }
 

@@ -1,7 +1,7 @@
 package com.keepyuppy.KeepyUppy.post.service;
 
-import com.keepyuppy.KeepyUppy.global.exception.AccessDeniedException;
-import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
+import com.keepyuppy.KeepyUppy.global.exception.CustomException;
+import com.keepyuppy.KeepyUppy.global.exception.ExceptionType;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
@@ -62,7 +62,7 @@ public class AnnouncementService {
     public AnnouncementResponse viewAnnouncement(CustomUserDetails userDetails, Long teamId, Long announcementId){
         getMemberInTeam(userDetails.getUserId(), teamId);
         Announcement announcement = announcementJPARepository.findById(announcementId)
-                .orElseThrow(NotFoundException.AnnouncementNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ExceptionType.ANNOUNCEMENT_NOT_FOUND));
         return AnnouncementResponse.of(announcement);
     }
 
@@ -70,11 +70,11 @@ public class AnnouncementService {
     public void deleteAnnouncement(CustomUserDetails userDetails, Long teamId, Long announcementId){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Announcement announcement = announcementJPARepository.findById(announcementId)
-                .orElseThrow(NotFoundException.AnnouncementNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ExceptionType.ANNOUNCEMENT_NOT_FOUND));
         Member author = announcement.getAuthor();
 
         if (member.getGrade() == Grade.TEAM_MEMBER && !Objects.equals(member.getId(), author.getId())){
-            throw new AccessDeniedException.ActionAccessDeniedException();
+            throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
         }
         announcementJPARepository.deleteById(announcementId);
     }
@@ -88,11 +88,11 @@ public class AnnouncementService {
     ){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Announcement announcement = announcementJPARepository.findById(announcementId)
-                .orElseThrow(NotFoundException.AnnouncementNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ExceptionType.ANNOUNCEMENT_NOT_FOUND));
         Member author = announcement.getAuthor();
 
         if (!Objects.equals(member.getId(), author.getId())){
-            throw new AccessDeniedException.ActionAccessDeniedException();
+            throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
         }
         announcement.update(request);
         return AnnouncementResponse.of(announcementJPARepository.save(announcement));
@@ -107,11 +107,11 @@ public class AnnouncementService {
     ){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Announcement announcement = announcementJPARepository.findById(announcementId)
-                .orElseThrow(NotFoundException.AnnouncementNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ExceptionType.ANNOUNCEMENT_NOT_FOUND));
         Member author = announcement.getAuthor();
 
         if (!Objects.equals(member.getId(), author.getId())){
-            throw new AccessDeniedException.ActionAccessDeniedException();
+            throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
         }
         announcement.update(request);
         Post post = announcement.convertAsPost();
@@ -125,10 +125,10 @@ public class AnnouncementService {
     public void pinAnnouncement(CustomUserDetails userDetails, Long teamId, Long announcementId, boolean pinned){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Announcement announcement = announcementJPARepository.findById(announcementId)
-                .orElseThrow(NotFoundException.AnnouncementNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ExceptionType.ANNOUNCEMENT_NOT_FOUND));
 
         if (member.getGrade() == Grade.TEAM_MEMBER){
-            throw new AccessDeniedException.ActionAccessDeniedException();
+            throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
         }
         if (pinned && !checkPinnedNum(member.getTeam())){
             throw new IllegalArgumentException("공지는 3개까지만 고정할 수 있습니다.");
@@ -146,7 +146,7 @@ public class AnnouncementService {
     @Transactional
     public void markAsRead(CustomUserDetails userDetails, Long announcementId){
         Announcement announcement = announcementJPARepository.findById(announcementId)
-                .orElseThrow(NotFoundException.AnnouncementNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ExceptionType.ANNOUNCEMENT_NOT_FOUND));
         Member member = getMemberInTeam(userDetails.getUserId(), announcement.getTeam().getId());
         announcement.addReader(member);
         announcementJPARepository.save(announcement);
@@ -176,7 +176,7 @@ public class AnnouncementService {
 
     public Member getMemberInTeam(Long userId, Long teamId){
         return memberRepository.findMemberInTeamByUserId(userId, teamId)
-                .orElseThrow(AccessDeniedException.TeamAccessDeniedException::new);
+                .orElseThrow(() -> new CustomException(ExceptionType.TEAM_ACCESS_DENIED));
     }
 
 }

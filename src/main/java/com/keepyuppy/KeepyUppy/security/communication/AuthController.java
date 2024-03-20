@@ -1,6 +1,7 @@
 package com.keepyuppy.KeepyUppy.security.communication;
 
-import com.keepyuppy.KeepyUppy.global.exception.UnauthorizedException;
+import com.keepyuppy.KeepyUppy.global.exception.CustomException;
+import com.keepyuppy.KeepyUppy.global.exception.ExceptionType;
 import com.keepyuppy.KeepyUppy.security.communication.response.LoginResponse;
 import com.keepyuppy.KeepyUppy.security.communication.response.TokenResponse;
 import com.keepyuppy.KeepyUppy.security.communication.response.UrlResponse;
@@ -14,13 +15,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
@@ -81,7 +80,7 @@ public class AuthController {
             String newAccessToken = jwtUtils.generateAccessToken(user.getOauthId());
             return ResponseEntity.ok(new TokenResponse(newAccessToken));
         } else {
-            throw new UnauthorizedException();
+            throw new CustomException(ExceptionType.UNAUTHORIZED);
         }
     }
 }

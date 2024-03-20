@@ -1,6 +1,5 @@
 package com.keepyuppy.KeepyUppy.team.service;
 
-import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;

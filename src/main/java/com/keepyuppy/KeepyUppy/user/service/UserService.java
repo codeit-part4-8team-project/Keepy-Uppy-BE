@@ -1,6 +1,7 @@
 package com.keepyuppy.KeepyUppy.user.service;
 
-import com.keepyuppy.KeepyUppy.global.exception.NotFoundException;
+import com.keepyuppy.KeepyUppy.global.exception.CustomException;
+import com.keepyuppy.KeepyUppy.global.exception.ExceptionType;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.user.communication.request.UpdateUserRequest;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
@@ -69,23 +70,24 @@ public class UserService {
         } catch (Exception e) {
             log.info(e.getMessage());
             log.info("사진 업로드에 실패하였습니다.");
+            throw new CustomException(ExceptionType.PICTURE_UPLOAD_FAIL);
         }
     }
 
     // methods that encapsulate methods in userRepository
     public Users findById(Long id){
         return userRepository.findById(id)
-                .orElseThrow(NotFoundException.UserNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
     }
 
     public Users findByOauthId(String oauthId){
         return userRepository.findByOauthId(oauthId)
-                .orElseThrow(NotFoundException.UserNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
     }
 
     public Users findByRefreshToken(String refreshToken){
         return userRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(NotFoundException.UserNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
     }
 
     public boolean existsByUsername(String username){
