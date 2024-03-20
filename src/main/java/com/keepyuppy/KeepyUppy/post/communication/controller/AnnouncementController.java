@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/{teamId}/announcement")
@@ -107,6 +109,15 @@ public class AnnouncementController {
             @RequestParam(defaultValue = "1") int page) {
 
         return ResponseEntity.ok(announcementService.getAnnouncementsByTeam(userDetails, teamId, page));
+    }
+
+    @GetMapping("/unread")
+    @Operation(summary = "읽지 않은 팀 공지글 조회")
+    public ResponseEntity<List<AnnouncementResponse>> viewUnreadTeamAnnouncements(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long teamId) {
+
+        return ResponseEntity.ok(announcementService.getUnreadAnnouncementsByTeam(userDetails, teamId));
     }
 
 }

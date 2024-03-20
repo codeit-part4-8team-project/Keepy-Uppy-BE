@@ -32,7 +32,7 @@ public class AnnouncementRepositoryImpl {
                 .fetch();
     }
 
-    public Page<Announcement> findByTeam(Long teamId, Pageable pageable) {
+    public Page<Announcement> findByTeamId(Long teamId, Pageable pageable) {
         List<Announcement> content = jpaQueryFactory.selectFrom(announcement)
                 .where(announcement.team.id.eq(teamId))
                 .orderBy(announcement.pinned.desc(), announcement.createdDate.desc())
@@ -47,6 +47,14 @@ public class AnnouncementRepositoryImpl {
         total = total == null ? 0 : total;
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    public List<Announcement> findUnreadByTeamId(Long userId, Long teamId) {
+        return jpaQueryFactory.selectFrom(announcement)
+                .where(announcement.team.id.eq(teamId)
+                        .and((announcement.readers.any().user.id.eq(userId)).not()).or(announcement.pinned))
+                .orderBy(announcement.pinned.desc(), announcement.createdDate.desc())
+                .fetch();
     }
 
 }

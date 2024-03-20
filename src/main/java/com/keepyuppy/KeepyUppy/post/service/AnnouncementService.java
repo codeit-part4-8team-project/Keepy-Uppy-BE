@@ -164,8 +164,14 @@ public class AnnouncementService {
     ){
         getMemberInTeam(userDetails.getUserId(), teamId);
         Pageable pageable = PageRequest.of(page - 1, 10);
-        Page<Announcement> announcements = announcementRepository.findByTeam(teamId, pageable);
+        Page<Announcement> announcements = announcementRepository.findByTeamId(teamId, pageable);
         return announcements.map(AnnouncementResponse::of);
+    }
+
+    public List<AnnouncementResponse> getUnreadAnnouncementsByTeam(CustomUserDetails userDetails, Long teamId){
+        getMemberInTeam(userDetails.getUserId(), teamId);
+        List<Announcement> announcements = announcementRepository.findUnreadByTeamId(userDetails.getUserId(), teamId);
+        return announcements.stream().map(AnnouncementResponse::of).toList();
     }
 
     public Member getMemberInTeam(Long userId, Long teamId){
