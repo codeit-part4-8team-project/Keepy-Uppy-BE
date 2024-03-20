@@ -130,12 +130,12 @@ public class MemberService {
                 .orElseThrow(() -> new UsernameNotFoundException(ExceptionMessage.USER_NOT_FOUND.getMessage()));
     }
 
-    private boolean alreadyMemberInTeam(String userName,Long teamId) {
-        return (memberRepository.findMemberInTeamByUserName(userName, teamId).isPresent());
+    private boolean alreadyMemberInTeam(String username,Long teamId) {
+        return (memberRepository.findMemberInTeamByUsername(username, teamId).isPresent());
     }
 
-    private Member findMemberInTeamByUserName(String userName, Long teamId) {
-        return memberRepository.findMemberInTeamByUserName(userName, teamId).orElseThrow(MemberException.MemberNotFoundException::new);
+    private Member findMemberInTeamByUserName(String username, Long teamId) {
+        return memberRepository.findMemberInTeamByUsername(username, teamId).orElseThrow(MemberException.MemberNotFoundException::new);
     }
 
     private Member findPendingByUserId(Long userId, Long teamId) {
