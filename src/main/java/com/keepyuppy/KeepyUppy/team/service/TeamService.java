@@ -1,5 +1,7 @@
 package com.keepyuppy.KeepyUppy.team.service;
 
+import com.keepyuppy.KeepyUppy.global.exception.CustomException;
+import com.keepyuppy.KeepyUppy.global.exception.ExceptionType;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
@@ -43,7 +45,7 @@ public class TeamService {
                 .discord(createTeamRequest.getDiscordLink())
                 .build();
 
-        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(NotFoundException.UserNotFoundException::new);
+        Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
 
         Member member = new Member(user, team, Grade.OWNER, Status.ACCEPTED);
 
@@ -53,7 +55,7 @@ public class TeamService {
 
         if (createTeamRequest.getMembers() != null) {
             createTeamRequest.getMembers().forEach(memberName -> {
-                Member addMember = new Member(userRepository.findByUsername(memberName).orElseThrow(NotFoundException.UserNotFoundException::new), team, Grade.TEAM_MEMBER, Status.PENDING);
+                Member addMember = new Member(userRepository.findByUsername(memberName).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND)), team, Grade.TEAM_MEMBER, Status.PENDING);
                 memberJpaRepository.save(addMember);
                 team.addMember(addMember);
             });
@@ -86,7 +88,7 @@ public class TeamService {
 
     @Transactional
     public boolean updateTeam(CustomUserDetails userDetails, Long teamId, UpdateTeam updateTeam) {
-        Team team = teamJpaRepository.findById(teamId).orElseThrow(NotFoundException.TeamNotFoundException::new);
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
 
         Member teamOwner = getTeamOwner(team);
 
@@ -103,7 +105,7 @@ public class TeamService {
 
     @Transactional
     public boolean changeTeamOwner(CustomUserDetails userDetails, Long teamId, ChangeTeamOwnerRequest changeTeamOwnerRequest) {
-        Team team = teamJpaRepository.findById(teamId).orElseThrow(NotFoundException.TeamNotFoundException::new);
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
         Member beforeOwner = getMemberByUsernameAndTeamId(userDetails.getUsername(), teamId);
         Member afterOwner = getMemberByUsernameAndTeamId(changeTeamOwnerRequest.getNewOwnerName(), teamId);
 
@@ -119,15 +121,15 @@ public class TeamService {
     }
 
     private Member getMemberByUsernameAndTeamId(String username, Long teamId) {
-        return memberRepository.findMemberInTeamByUserName(username, teamId).orElseThrow(NotFoundException.MemberNotFoundException::new);
+        return memberRepository.findMemberInTeamByUserName(username, teamId).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND));
     }
 
     private Team getTeamById(Long teamId) {
-        return teamJpaRepository.findById(teamId).orElseThrow(NotFoundException.TeamNotFoundException::new);
+        return teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
     }
 
     private Member getTeamOwner(Team team) {
-        return team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(NotFoundException.MemberNotFoundException::new);
+        return team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND));
     }
 }
 

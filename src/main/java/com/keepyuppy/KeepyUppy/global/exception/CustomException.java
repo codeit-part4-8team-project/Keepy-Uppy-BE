@@ -6,8 +6,8 @@ import lombok.Getter;
 public class CustomException extends RuntimeException {
     private final ExceptionType type;
 
-    public CustomException(ExceptionType message){
-        super(message.getMessage());
-        this.type = message;
+    public CustomException(ExceptionType type){
+        super(type.getMessage());
+        this.type = type;
     }
 }
