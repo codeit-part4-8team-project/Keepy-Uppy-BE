@@ -76,7 +76,7 @@ public class MemberRepositoryImpl {
 
     public List<Member> findMemberInTeamByUsernamePattern(String username, Long teamId) {
         return jpaQueryFactory.selectFrom(member)
-                .where(member.user.username.lower().like(username + "%")
+                .where(member.user.username.lower().like("%" + username + "%")
                         .and(member.team.id.eq(teamId)))
                 .fetch();
     }
