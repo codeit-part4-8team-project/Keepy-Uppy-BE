@@ -8,19 +8,19 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(name = "이슈 진행상태별 리스트 응답")
+@Schema(name = "유저별 이슈 진행상태별 리스트 응답")
 @AllArgsConstructor
-public class IssueBoardResponse {
+public class UserIssueBoardResponse {
     private List<IssueResponse> todoIssues;
     private List<IssueResponse> progressIssues;
     private List<IssueResponse> doneIssues;
 
-    public static IssueBoardResponse of(
+    public static UserIssueBoardResponse of(
             List<Issue> todoIssues,
             List<Issue> progressIssues,
             List<Issue> doneIssues
     ){
-        return new IssueBoardResponse(
+        return new UserIssueBoardResponse(
                 getResponses(todoIssues),
                 getResponses(progressIssues),
                 getResponses(doneIssues)

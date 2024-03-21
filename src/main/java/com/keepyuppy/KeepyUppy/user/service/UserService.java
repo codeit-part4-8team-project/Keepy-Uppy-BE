@@ -22,7 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final S3Service s3Service;
 
-    private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]+$");
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]+$");
 
     @Transactional
     public Users updateUser(Long id, UpdateUserRequest request){
@@ -40,7 +40,7 @@ public class UserService {
         } else if (username.length() < 5 || username.length() > 30) {
         throw new IllegalArgumentException("유저네임은 5자 이상, 30자 이하여야 합니다.");
         } else if (!USERNAME_PATTERN.matcher(username).matches()){
-            throw new IllegalArgumentException("알파벳, 숫자, 밑줄(_)만 사용할 수 있습니다.");
+            throw new IllegalArgumentException("알파벳, 숫자, 밑줄(_), 줄표(-)만 사용할 수 있습니다.");
         } else if (existsByUsername(username)){
             throw new IllegalArgumentException("이미 사용중인 유저네임입니다.");
         }

@@ -1,6 +1,6 @@
 package com.keepyuppy.KeepyUppy.user.communication.controller;
 
-import com.keepyuppy.KeepyUppy.issue.communication.response.IssueBoardResponse;
+import com.keepyuppy.KeepyUppy.issue.communication.response.UserIssueBoardResponse;
 import com.keepyuppy.KeepyUppy.issue.service.IssueService;
 import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
 import com.keepyuppy.KeepyUppy.post.service.AnnouncementService;
@@ -71,7 +71,7 @@ public class UserController {
 
     @GetMapping( "/myIssue")
     @Operation(summary = "내 이슈 조회")
-    public ResponseEntity<IssueBoardResponse> getMyIssues(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<UserIssueBoardResponse> getMyIssues(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
     }
 

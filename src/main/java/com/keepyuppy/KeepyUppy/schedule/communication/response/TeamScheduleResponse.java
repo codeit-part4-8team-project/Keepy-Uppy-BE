@@ -3,7 +3,7 @@ package com.keepyuppy.KeepyUppy.schedule.communication.response;
 import com.keepyuppy.KeepyUppy.member.communication.response.MemberResponse;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
-import com.keepyuppy.KeepyUppy.team.communication.response.TeamInScheduleResponse;
+import com.keepyuppy.KeepyUppy.team.communication.response.TeamInContentResponse;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -16,11 +16,11 @@ import java.time.LocalDateTime;
 @Data
 public class TeamScheduleResponse extends ScheduleResponse {
     private MemberResponse memberResponse;
-    private TeamInScheduleResponse teamInScheduleResponse;
+    private TeamInContentResponse teamInScheduleResponse;
 
     public TeamScheduleResponse(Member member, Team team, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.memberResponse = MemberResponse.of(member);
-        this.teamInScheduleResponse = TeamInScheduleResponse.of(team);
+        this.teamInScheduleResponse = TeamInContentResponse.of(team);
         setTitle(title);
         setContent(content);
         setStartDateTime(startDateTime);
