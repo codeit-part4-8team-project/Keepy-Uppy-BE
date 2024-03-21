@@ -8,6 +8,7 @@ import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequ
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleResponse;
+import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleWithTeamInfoResponse;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.UserScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.schedule.domain.enums.ScheduleType;
@@ -80,12 +81,16 @@ public class ScheduleService {
         }
     }
 
-    public List<TeamScheduleResponse> getTeamSchedulesInweek(Long teamId, LocalDateTime localDateTime) {
-        return scheduleRepository.findTeamSchedulesByTeamIdInWeek(teamId, localDateTime).stream().map(TeamScheduleResponse::of).toList();
+    public TeamScheduleWithTeamInfoResponse getTeamSchedulesInWeek(Long teamId, LocalDateTime localDateTime) {
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
+        List<TeamScheduleResponse> teamScheduleResponses = scheduleRepository.findTeamSchedulesByTeamIdInWeek(teamId, localDateTime).stream().map(TeamScheduleResponse::of).toList();
+        return TeamScheduleWithTeamInfoResponse.of(team, teamScheduleResponses);
     }
 
-    public List<TeamScheduleResponse> getTeamSchedulesInMonth(Long teamId, LocalDateTime localDateTime) {
-        return scheduleRepository.findTeamSchedulesByTeamIdInMonth(teamId, localDateTime).stream().map(TeamScheduleResponse::of).toList();
+    public TeamScheduleWithTeamInfoResponse getTeamSchedulesInMonth(Long teamId, LocalDateTime localDateTime) {
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
+        List<TeamScheduleResponse> teamScheduleResponses = scheduleRepository.findTeamSchedulesByTeamIdInMonth(teamId, localDateTime).stream().map(TeamScheduleResponse::of).toList();
+        return TeamScheduleWithTeamInfoResponse.of(team,teamScheduleResponses);
     }
 
     @Transactional

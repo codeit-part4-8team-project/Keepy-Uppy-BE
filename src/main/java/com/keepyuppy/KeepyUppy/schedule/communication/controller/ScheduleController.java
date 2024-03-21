@@ -4,6 +4,7 @@ import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequ
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleResponse;
+import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleWithTeamInfoResponse;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.UserScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.service.ScheduleService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
@@ -59,13 +60,13 @@ public class ScheduleController {
 
     @Operation(summary = "teamId 로 주단위 스케쥴 리스트 조회")
     @GetMapping("/team/week/{teamId}")
-    public ResponseEntity<List<TeamScheduleResponse>> getTeamSchedulesInWeek(@PathVariable Long teamId,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime localDateTime) {
-        return ResponseEntity.ok(scheduleService.getTeamSchedulesInweek(teamId,localDateTime));
+    public ResponseEntity<TeamScheduleWithTeamInfoResponse> getTeamSchedulesInWeek(@PathVariable Long teamId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime localDateTime) {
+        return ResponseEntity.ok(scheduleService.getTeamSchedulesInWeek(teamId,localDateTime));
     }
 
     @Operation(summary = "teamId 로 월단위 스케쥴 리스트 조회")
     @GetMapping("/team/month/{teamId}")
-    public ResponseEntity<List<TeamScheduleResponse>> getTeamSchedulesInMonth(@PathVariable Long teamId,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime localDateTime) {
+    public ResponseEntity<TeamScheduleWithTeamInfoResponse> getTeamSchedulesInMonth(@PathVariable Long teamId,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime localDateTime) {
         return ResponseEntity.ok(scheduleService.getTeamSchedulesInMonth(teamId,localDateTime));
     }
 
