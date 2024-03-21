@@ -11,12 +11,14 @@ public class MemberResponse {
     private String imageUrl;
     private String role;
     private String grade;
+    private String username;
 
     public MemberResponse(Member member) {
         this.name = member.getUser() == null ? null : member.getUser().getName();
         this.imageUrl = member.getUser() == null ? null : member.getUser().getImageUrl();
         this.role = member.getRole() == null ? null : member.getRole().name();
         this.grade = member.getGrade().name();
+        this.username = member.getUser() == null ? null : member.getUser().getUsername();
     }
 
     public static MemberResponse of(Member member) {
