@@ -4,6 +4,7 @@ import com.keepyuppy.KeepyUppy.global.exception.CustomException;
 import com.keepyuppy.KeepyUppy.global.exception.ExceptionType;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.user.communication.request.UpdateUserRequest;
+import com.keepyuppy.KeepyUppy.user.communication.response.UserResponse;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import com.keepyuppy.KeepyUppy.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -92,6 +94,11 @@ public class UserService {
 
     public boolean existsByUsername(String username){
         return userRepository.existsByUsername(username);
+    }
+
+    public UserResponse findByUsername(String username) {
+        Optional<Users> byUsername = userRepository.findByUsername(username);
+        return byUsername.map(UserResponse::of).orElse(null);
     }
 }
 
