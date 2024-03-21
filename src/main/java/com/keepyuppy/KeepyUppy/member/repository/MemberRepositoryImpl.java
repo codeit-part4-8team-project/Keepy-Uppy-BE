@@ -73,6 +73,13 @@ public class MemberRepositoryImpl {
                         .fetchOne()
         );
     }
+
+    public List<Member> findMemberInTeamByUsernamePattern(String username, Long teamId) {
+        return jpaQueryFactory.selectFrom(member)
+                .where(member.user.username.lower().like(username + "%")
+                        .and(member.team.id.eq(teamId)))
+                .fetch();
+    }
 }
 
 

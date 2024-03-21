@@ -4,8 +4,10 @@ import com.keepyuppy.KeepyUppy.global.exception.CustomException;
 import com.keepyuppy.KeepyUppy.global.exception.ExceptionType;
 import com.keepyuppy.KeepyUppy.issue.communication.request.IssueRequest;
 import com.keepyuppy.KeepyUppy.issue.communication.request.IssueStatusRequest;
-import com.keepyuppy.KeepyUppy.issue.communication.response.IssueBoardResponse;
 import com.keepyuppy.KeepyUppy.issue.communication.response.IssueResponse;
+import com.keepyuppy.KeepyUppy.issue.communication.response.TeamIssueBoardResponse;
+import com.keepyuppy.KeepyUppy.issue.communication.response.UserIssueBoardResponse;
+import com.keepyuppy.KeepyUppy.issue.communication.response.TeamIssueResponse;
 import com.keepyuppy.KeepyUppy.issue.domain.entity.Issue;
 import com.keepyuppy.KeepyUppy.issue.domain.entity.IssueAssignment;
 import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
@@ -175,22 +177,22 @@ public class IssueService {
         });
     }
 
-    public IssueBoardResponse getTeamIssueBoard(CustomUserDetails userDetails, Long teamId){
+    public TeamIssueBoardResponse getTeamIssueBoard(CustomUserDetails userDetails, Long teamId){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
 
         List<Issue> todo = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.TODO);
         List<Issue> progress = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.INPROGRESS);
         List<Issue> done = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.DONE);
 
-        return IssueBoardResponse.of(todo, progress, done);
+        return TeamIssueBoardResponse.of(todo, progress, done, member.getTeam());
     }
 
-    public IssueBoardResponse getMyIssueBoard(CustomUserDetails userDetails){
+    public UserIssueBoardResponse getMyIssueBoard(CustomUserDetails userDetails){
         List<Issue> todo = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.TODO);
         List<Issue> progress = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.INPROGRESS);
         List<Issue> done = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.DONE);
 
-        return IssueBoardResponse.of(todo, progress, done);
+        return UserIssueBoardResponse.of(todo, progress, done);
     }
 
 }

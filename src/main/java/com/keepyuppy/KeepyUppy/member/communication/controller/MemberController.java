@@ -61,6 +61,16 @@ public class MemberController {
         memberService.reject(userDetails, teamId);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "팀 내에서 유저네임 부분 일치 검색")
+    @GetMapping("/{teamId}/search")
+    public ResponseEntity<List<MemberResponse>> findMemberByUsernamePattern(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long teamId,
+            @RequestParam(defaultValue = "") String username
+    ){
+        return ResponseEntity.ok(memberService.findByUsernamePattern(userDetails, teamId, username));
+    }
 }
 
 

@@ -113,8 +113,15 @@ public class MemberService {
         return member.update(updater, updateMemberRequest);
     }
 
+    public List<MemberResponse> findByUsernamePattern(CustomUserDetails userDetails, Long teamId, String username) {
+        findMemberInTeamByUserId(userDetails.getUserId(), teamId);
+
+        return memberRepository.findMemberInTeamByUsernamePattern(username.toLowerCase(), teamId)
+                .stream().map(MemberResponse::of).toList();
+    }
+
     private Member findMemberInTeamByUserId(Long userId, Long teamId) {
-        return memberRepository.findMemberInTeamByUserId(userId, teamId).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND));
+        return memberRepository.findMemberInTeamByUserId(userId, teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_ACCESS_DENIED));
     }
 
     private Team findTeamById(Long teamId) {

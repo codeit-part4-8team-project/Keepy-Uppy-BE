@@ -2,7 +2,8 @@ package com.keepyuppy.KeepyUppy.issue.communication.controller;
 
 import com.keepyuppy.KeepyUppy.issue.communication.request.IssueRequest;
 import com.keepyuppy.KeepyUppy.issue.communication.request.IssueStatusRequest;
-import com.keepyuppy.KeepyUppy.issue.communication.response.IssueBoardResponse;
+import com.keepyuppy.KeepyUppy.issue.communication.response.TeamIssueBoardResponse;
+import com.keepyuppy.KeepyUppy.issue.communication.response.TeamIssueResponse;
 import com.keepyuppy.KeepyUppy.issue.communication.response.IssueResponse;
 import com.keepyuppy.KeepyUppy.issue.service.IssueService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
@@ -78,7 +79,7 @@ public class IssueController {
 
     @GetMapping("/")
     @Operation(summary = "팀 이슈 보드 조회")
-    public ResponseEntity<IssueBoardResponse> getTeamIssueBoard(
+    public ResponseEntity<TeamIssueBoardResponse> getTeamIssueBoard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId) {
         return ResponseEntity.ok(issueService.getTeamIssueBoard(userDetails, teamId));
