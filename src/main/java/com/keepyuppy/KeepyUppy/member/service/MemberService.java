@@ -116,9 +116,8 @@ public class MemberService {
     public List<MemberResponse> findByUsernamePattern(CustomUserDetails userDetails, Long teamId, String username) {
         findMemberInTeamByUserId(userDetails.getUserId(), teamId);
 
-        return memberRepository.findMemberInTeamByUsernamePattern(username, teamId).stream()
-                .map(MemberResponse::of)
-                .toList();
+        return memberRepository.findMemberInTeamByUsernamePattern(username.toLowerCase(), teamId)
+                .stream().map(MemberResponse::of).toList();
     }
 
     private Member findMemberInTeamByUserId(Long userId, Long teamId) {
