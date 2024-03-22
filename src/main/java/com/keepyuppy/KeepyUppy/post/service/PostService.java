@@ -13,6 +13,7 @@ import com.keepyuppy.KeepyUppy.post.repository.PostJpaRepository;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
+import com.keepyuppy.KeepyUppy.post.repository.PostRepositoryImpl;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,7 @@ import java.util.Objects;
 public class PostService {
 
     private final PostJpaRepository postJpaRepository;
+    private final PostRepositoryImpl postRepository;
     private final AnnouncementJPARepository announcementJPARepository;
     private final MemberRepositoryImpl memberRepository;
 
@@ -116,7 +118,7 @@ public class PostService {
     }
 
     // sorted by created date (newer posts on top)
-    public Page<PostResponse> getPostPaginate(
+    public Page<PostResponse> getPostPaginateByTeam(
             CustomUserDetails userDetails,
             Long teamId,
             int page) {
@@ -125,6 +127,17 @@ public class PostService {
 
         Pageable pageable = PageRequest.of(page - 1, 10);
         Page<Post> posts = postJpaRepository.findByTeamAndTypeOrderByCreatedDateDesc(member.getTeam(), ContentType.POST, pageable);
+
+        return posts.map(PostResponse::of);
+    }
+
+    // sorted by created date (newer posts on top)
+    public Page<PostResponse> getPostPaginateByUser(
+            CustomUserDetails userDetails,
+            int page) {
+
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        Page<Post> posts = postRepository.findByUserId(userDetails.getUserId(), ContentType.POST, pageable);
 
         return posts.map(PostResponse::of);
     }

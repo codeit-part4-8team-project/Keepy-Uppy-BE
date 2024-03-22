@@ -3,9 +3,6 @@ package com.keepyuppy.KeepyUppy.post.communication.controller;
 import com.keepyuppy.KeepyUppy.post.communication.request.PostRequest;
 import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
 import com.keepyuppy.KeepyUppy.post.communication.response.PostResponse;
-import com.keepyuppy.KeepyUppy.post.domain.entity.Announcement;
-import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
-import com.keepyuppy.KeepyUppy.post.service.AnnouncementService;
 import com.keepyuppy.KeepyUppy.post.service.PostService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -85,6 +82,6 @@ public class PostController {
             @PathVariable Long teamId,
             @RequestParam(defaultValue = "1") int page) {
 
-        return ResponseEntity.ok(postService.getPostPaginate(userDetails, teamId, page));
+        return ResponseEntity.ok(postService.getPostPaginateByTeam(userDetails, teamId, page));
     }
 }
