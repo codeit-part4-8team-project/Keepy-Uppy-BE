@@ -8,5 +8,5 @@ import lombok.Data;
 @Schema(name = "멤버 추가 요청")
 @AllArgsConstructor
 public class AddMemberRequest {
-    private String userName;
+    private String username;
 }

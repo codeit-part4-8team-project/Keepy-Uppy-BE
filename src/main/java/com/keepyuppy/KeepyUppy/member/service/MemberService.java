@@ -47,9 +47,9 @@ public class MemberService {
 
             Team team = findTeamById(teamId);
 
-            Users user = findUserByUsername(addMemberRequest.getUserName());
+            Users user = findUserByUsername(addMemberRequest.getUsername());
 
-            if (alreadyMemberInTeam(addMemberRequest.getUserName(), teamId)) {
+            if (alreadyMemberInTeam(addMemberRequest.getUsername(), teamId)) {
                 throw new CustomException(ExceptionType.MEMBER_ALREADY_EXISTS);
             }
 
@@ -71,7 +71,7 @@ public class MemberService {
 
         Team team = findTeamById(teamId);
 
-        Member member = findMemberInTeamByUserName(removeMemberRequest.getMemberName(), teamId);
+        Member member = findMemberInTeamByUserName(removeMemberRequest.getMembername(), teamId);
 
         if (member.canUpdate(loginMember)) {
             memberJpaRepository.delete(member);
