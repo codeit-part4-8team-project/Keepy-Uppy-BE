@@ -71,7 +71,7 @@ public class MemberService {
 
         Team team = findTeamById(teamId);
 
-        Member member = findMemberInTeamByUserName(removeMemberRequest.getMembername(), teamId);
+        Member member = findMemberInTeamByUserName(removeMemberRequest.getUsername(), teamId);
 
         if (member.canUpdate(loginMember)) {
             memberJpaRepository.delete(member);
