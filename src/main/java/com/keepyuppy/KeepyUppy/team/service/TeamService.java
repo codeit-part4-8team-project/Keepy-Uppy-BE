@@ -107,7 +107,7 @@ public class TeamService {
     public boolean changeTeamOwner(CustomUserDetails userDetails, Long teamId, ChangeTeamOwnerRequest changeTeamOwnerRequest) {
         Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
         Member beforeOwner = getMemberByUsernameAndTeamId(userDetails.getUsername(), teamId);
-        Member afterOwner = getMemberByUsernameAndTeamId(changeTeamOwnerRequest.getNewOwnerName(), teamId);
+        Member afterOwner = getMemberByUsernameAndTeamId(changeTeamOwnerRequest.getUsername(), teamId);
 
         if (beforeOwner.getGrade().equals(Grade.OWNER)) {
             afterOwner.setGrade(Grade.OWNER);

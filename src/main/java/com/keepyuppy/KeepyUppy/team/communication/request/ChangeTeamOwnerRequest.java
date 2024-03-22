@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Schema(name = "팀 소유자 변경 요청")
 public class ChangeTeamOwnerRequest {
-    private String newOwnerName;
+    private String username;
 }
