@@ -69,6 +69,7 @@ public class TeamService {
         return TeamResponse.of(team);
     }
 
+    @Transactional
     public List<TeamResponse> getTeamByUser(CustomUserDetails userDetails) {
 
         return teamRepository.findTeamByUsersId(userDetails.getUserId()).stream().map(TeamResponse::of).toList();
@@ -132,5 +133,6 @@ public class TeamService {
         return team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND));
     }
 }
+
 
 
