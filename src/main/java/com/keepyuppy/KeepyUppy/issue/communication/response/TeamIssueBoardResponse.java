@@ -13,22 +13,24 @@ import java.util.List;
 @Schema(name = "팀 내 이슈 진행상태별 리스트 응답")
 @AllArgsConstructor
 public class TeamIssueBoardResponse {
+
+    private TeamWithoutMemberResponse team;
     private List<TeamIssueResponse> todoIssues;
     private List<TeamIssueResponse> progressIssues;
     private List<TeamIssueResponse> doneIssues;
-    private TeamWithoutMemberResponse team;
+
 
     public static TeamIssueBoardResponse of(
+            Team team,
             List<Issue> todoIssues,
             List<Issue> progressIssues,
-            List<Issue> doneIssues,
-            Team team
+            List<Issue> doneIssues
     ){
         return new TeamIssueBoardResponse(
+                TeamWithoutMemberResponse.of(team),
                 getResponses(todoIssues),
                 getResponses(progressIssues),
-                getResponses(doneIssues),
-                TeamWithoutMemberResponse.of(team)
+                getResponses(doneIssues)
         );
     }
 
