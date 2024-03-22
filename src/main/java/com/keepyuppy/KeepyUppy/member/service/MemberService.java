@@ -47,7 +47,7 @@ public class MemberService {
 
             Team team = findTeamById(teamId);
 
-            Users user = findUserById(userDetails.getUserId());
+            Users user = findUserByUsername(addMemberRequest.getUserName());
 
             if (alreadyMemberInTeam(addMemberRequest.getUserName(), teamId)) {
                 throw new CustomException(ExceptionType.MEMBER_ALREADY_EXISTS);
@@ -128,8 +128,8 @@ public class MemberService {
         return teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
     }
 
-    private Users findUserById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
+    private Users findUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
     }
 
     private boolean alreadyMemberInTeam(String username,Long teamId) {
@@ -144,6 +144,7 @@ public class MemberService {
         return memberRepository.findPendingByUserId(userId, teamId).orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND));
     }
 }
+
 
 
 

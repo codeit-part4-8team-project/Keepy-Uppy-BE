@@ -22,11 +22,12 @@ public class TeamResponse {
         this.name = team.getName();
         this.description = team.getDescription();
         this.color = team.getColor();
-        this.members = team.getMembers().isEmpty() ? null : team.getMembers().stream().filter(member -> member.getStatus().equals(Status.ACCEPTED)).map(MemberResponse::new).toList();
+        this.members = team.getMembers() == null ? null : team.getMembers().stream().filter(member -> member.getStatus().equals(Status.ACCEPTED)).map(MemberResponse::new).toList();
     }
 
     public static TeamResponse of(Team team) {
         return new TeamResponse(team);
     }
 }
+
 
