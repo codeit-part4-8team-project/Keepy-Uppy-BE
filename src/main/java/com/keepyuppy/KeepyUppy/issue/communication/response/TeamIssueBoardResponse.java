@@ -1,7 +1,7 @@
 package com.keepyuppy.KeepyUppy.issue.communication.response;
 
 import com.keepyuppy.KeepyUppy.issue.domain.entity.Issue;
-import com.keepyuppy.KeepyUppy.team.communication.response.TeamInContentResponse;
+import com.keepyuppy.KeepyUppy.team.communication.response.TeamWithoutMemberResponse;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ public class TeamIssueBoardResponse {
     private List<TeamIssueResponse> todoIssues;
     private List<TeamIssueResponse> progressIssues;
     private List<TeamIssueResponse> doneIssues;
-    private TeamInContentResponse team;
+    private TeamWithoutMemberResponse team;
 
     public static TeamIssueBoardResponse of(
             List<Issue> todoIssues,
@@ -28,7 +28,7 @@ public class TeamIssueBoardResponse {
                 getResponses(todoIssues),
                 getResponses(progressIssues),
                 getResponses(doneIssues),
-                TeamInContentResponse.of(team)
+                TeamWithoutMemberResponse.of(team)
         );
     }
 
