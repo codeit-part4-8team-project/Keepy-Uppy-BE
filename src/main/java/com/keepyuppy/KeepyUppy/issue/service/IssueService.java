@@ -184,7 +184,7 @@ public class IssueService {
         List<Issue> progress = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.INPROGRESS);
         List<Issue> done = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.DONE);
 
-        return TeamIssueBoardResponse.of(todo, progress, done, member.getTeam());
+        return TeamIssueBoardResponse.of(member.getTeam(), todo, progress, done);
     }
 
     public UserIssueBoardResponse getMyIssueBoard(CustomUserDetails userDetails){
