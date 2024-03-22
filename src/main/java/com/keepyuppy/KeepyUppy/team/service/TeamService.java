@@ -53,6 +53,10 @@ public class TeamService {
 
         team.setOwnerId(member.getId());
 
+        teamJpaRepository.save(team);
+
+        memberJpaRepository.save(member);
+
         if (createTeamRequest.getMembers() != null) {
             createTeamRequest.getMembers().forEach(memberName -> {
                 Member addMember = new Member(userRepository.findByUsername(memberName).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND)), team, Grade.TEAM_MEMBER, Status.PENDING);
@@ -60,11 +64,6 @@ public class TeamService {
                 team.addMember(addMember);
             });
         }
-
-
-        teamJpaRepository.save(team);
-
-        memberJpaRepository.save(member);
 
         return TeamResponse.of(team);
     }
@@ -133,6 +132,7 @@ public class TeamService {
         return team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND));
     }
 }
+
 
 
 
