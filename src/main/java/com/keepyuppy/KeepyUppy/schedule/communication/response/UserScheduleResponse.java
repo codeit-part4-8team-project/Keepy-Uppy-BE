@@ -10,9 +10,10 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Schema(name = "유저 스케쥴 응답")
 @Data
-public class UserScheduleResponse extends ScheduleResponse{
+public class UserScheduleResponse extends ScheduleResponse {
 
-    public UserScheduleResponse(String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public UserScheduleResponse(Long id, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        setId(id);
         setTitle(title);
         setContent(content);
         setStartDateTime(startDateTime);
@@ -21,6 +22,7 @@ public class UserScheduleResponse extends ScheduleResponse{
 
     public static UserScheduleResponse of(Schedule schedule) {
         return new UserScheduleResponse(
+                schedule.getId(),
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getStartDateTime(),

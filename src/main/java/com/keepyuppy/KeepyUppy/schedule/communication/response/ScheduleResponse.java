@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Schema(name = "스케쥴 응답")
 public abstract class ScheduleResponse {
+    private Long id;
     private String title;
     private String content;
     private LocalDateTime startDateTime;
