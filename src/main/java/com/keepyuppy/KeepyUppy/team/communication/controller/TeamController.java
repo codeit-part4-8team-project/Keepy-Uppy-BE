@@ -3,7 +3,7 @@ package com.keepyuppy.KeepyUppy.team.communication.controller;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.communication.request.ChangeTeamOwnerRequest;
 import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
-import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeam;
+import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamRequest;
 import com.keepyuppy.KeepyUppy.team.communication.response.TeamResponse;
 import com.keepyuppy.KeepyUppy.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,8 +50,8 @@ public class TeamController {
 
     @Operation(summary = "팀 소유자 일경우 정보 변경")
     @PutMapping("/{teamId}")
-    public ResponseEntity<Boolean> updateLinks(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long teamId, @RequestBody UpdateTeam updateTeam) {
-        return ResponseEntity.ok(teamService.updateTeam(userDetails, teamId, updateTeam));
+    public ResponseEntity<Boolean> updateLinks(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long teamId, @RequestBody UpdateTeamRequest updateTeamRequest) {
+        return ResponseEntity.ok(teamService.updateTeam(userDetails, teamId, updateTeamRequest));
     }
 
     @Operation(summary = "로그인한 유저가 초대받은 응답 대기중인 팀 목록 조회")

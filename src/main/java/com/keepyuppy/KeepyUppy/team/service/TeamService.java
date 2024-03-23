@@ -10,7 +10,7 @@ import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.communication.request.ChangeTeamOwnerRequest;
 import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
-import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeam;
+import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamRequest;
 import com.keepyuppy.KeepyUppy.team.communication.response.TeamResponse;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import com.keepyuppy.KeepyUppy.team.repository.TeamJpaRepository;
@@ -53,6 +53,10 @@ public class TeamService {
 
         team.setOwnerId(member.getId());
 
+        teamJpaRepository.save(team);
+
+        memberJpaRepository.save(member);
+
         if (createTeamRequest.getMembers() != null) {
             createTeamRequest.getMembers().forEach(memberName -> {
                 Member addMember = new Member(userRepository.findByUsername(memberName).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND)), team, Grade.TEAM_MEMBER, Status.PENDING);
@@ -60,11 +64,6 @@ public class TeamService {
                 team.addMember(addMember);
             });
         }
-
-
-        teamJpaRepository.save(team);
-
-        memberJpaRepository.save(member);
 
         return TeamResponse.of(team);
     }
@@ -88,13 +87,13 @@ public class TeamService {
     }
 
     @Transactional
-    public boolean updateTeam(CustomUserDetails userDetails, Long teamId, UpdateTeam updateTeam) {
+    public boolean updateTeam(CustomUserDetails userDetails, Long teamId, UpdateTeamRequest updateTeamRequest) {
         Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
 
         Member teamOwner = getTeamOwner(team);
 
         if (teamOwner.getUser().getId().equals(userDetails.getUserId())) {
-            team.update(updateTeam);
+            team.update(updateTeamRequest);
             return true;
         }
         return false;
@@ -133,6 +132,7 @@ public class TeamService {
         return team.getMembers().stream().filter(member -> member.getGrade().equals(Grade.OWNER)).findFirst().orElseThrow(() -> new CustomException(ExceptionType.MEMBER_NOT_FOUND));
     }
 }
+
 
 
 

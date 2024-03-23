@@ -2,7 +2,7 @@ package com.keepyuppy.KeepyUppy.team.domain.entity;
 
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
 import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
-import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeam;
+import com.keepyuppy.KeepyUppy.team.communication.request.UpdateTeamRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -58,15 +58,15 @@ public class Team extends BaseTimeEntity {
     }
 
 
-    public void update(UpdateTeam updateTeam) {
-        this.name = updateTeam.getName();
-        this.description = updateTeam.getDescription();
-        this.color = updateTeam.getColor();
-        this.startDate = updateTeam.getStartDate();
-        this.endDate = updateTeam.getEndDate();
-        this.figma = updateTeam.getFigma();
-        this.github = updateTeam.getGithub();
-        this.discord = updateTeam.getDiscord();
+    public void update(UpdateTeamRequest updateTeamRequest) {
+        this.name = updateTeamRequest.getName();
+        this.description = updateTeamRequest.getDescription();
+        this.color = updateTeamRequest.getColor();
+        this.startDate = updateTeamRequest.getStartDate();
+        this.endDate = updateTeamRequest.getEndDate();
+        this.figma = updateTeamRequest.getFigma();
+        this.github = updateTeamRequest.getGithub();
+        this.discord = updateTeamRequest.getDiscord();
     }
 
     public void setOwnerId(Long ownerId) {
