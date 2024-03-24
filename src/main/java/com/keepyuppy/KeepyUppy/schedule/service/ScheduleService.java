@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -55,12 +55,12 @@ public class ScheduleService {
         return TeamScheduleResponse.of(schedule);
     }
 
-    public List<UserScheduleResponse> getUserScheduleInWeek(Long userId, LocalDateTime localDateTime) {
-        return scheduleRepository.findUserSchedulesByIdInWeek(userId, localDateTime).stream().map(UserScheduleResponse::of).toList();
+    public List<UserScheduleResponse> getUserScheduleInWeek(Long userId, LocalDate localDate) {
+        return scheduleRepository.findUserSchedulesByIdInWeek(userId, localDate).stream().map(UserScheduleResponse::of).toList();
     }
 
-    public List<UserScheduleResponse> getUserScheduleInMonth(Long userId, LocalDateTime localDateTime) {
-        return scheduleRepository.findUserSchedulesByIdInMonth(userId, localDateTime).stream().map(UserScheduleResponse::of).toList();
+    public List<UserScheduleResponse> getUserScheduleInMonth(Long userId, LocalDate localDate) {
+        return scheduleRepository.findUserSchedulesByIdInMonth(userId, localDate).stream().map(UserScheduleResponse::of).toList();
     }
 
 
@@ -81,15 +81,15 @@ public class ScheduleService {
         }
     }
 
-    public TeamScheduleWithTeamInfoResponse getTeamSchedulesInWeek(Long teamId, LocalDateTime localDateTime) {
+    public TeamScheduleWithTeamInfoResponse getTeamSchedulesInWeek(Long teamId, LocalDate localDate) {
         Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
-        List<TeamScheduleResponse> teamScheduleResponses = scheduleRepository.findTeamSchedulesByTeamIdInWeek(teamId, localDateTime).stream().map(TeamScheduleResponse::of).toList();
+        List<TeamScheduleResponse> teamScheduleResponses = scheduleRepository.findTeamSchedulesByTeamIdInWeek(teamId, localDate).stream().map(TeamScheduleResponse::of).toList();
         return TeamScheduleWithTeamInfoResponse.of(team, teamScheduleResponses);
     }
 
-    public TeamScheduleWithTeamInfoResponse getTeamSchedulesInMonth(Long teamId, LocalDateTime localDateTime) {
+    public TeamScheduleWithTeamInfoResponse getTeamSchedulesInMonth(Long teamId, LocalDate localDate) {
         Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
-        List<TeamScheduleResponse> teamScheduleResponses = scheduleRepository.findTeamSchedulesByTeamIdInMonth(teamId, localDateTime).stream().map(TeamScheduleResponse::of).toList();
+        List<TeamScheduleResponse> teamScheduleResponses = scheduleRepository.findTeamSchedulesByTeamIdInMonth(teamId, localDate).stream().map(TeamScheduleResponse::of).toList();
         return TeamScheduleWithTeamInfoResponse.of(team,teamScheduleResponses);
     }
 

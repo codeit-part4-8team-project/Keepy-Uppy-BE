@@ -7,7 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.temporal.WeekFields;
 import java.util.List;
 
@@ -18,7 +18,7 @@ import static com.keepyuppy.KeepyUppy.schedule.domain.entity.QSchedule.schedule;
 public class ScheduleRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<Schedule> findUserSchedulesByIdInWeek(Long userId,LocalDateTime date) {
+    public List<Schedule> findUserSchedulesByIdInWeek(Long userId, LocalDate date) {
         return jpaQueryFactory.selectFrom(schedule)
                 .join(schedule.user, QUsers.users)
                 .fetchJoin()
@@ -28,7 +28,7 @@ public class ScheduleRepository {
                 .fetch();
     }
 
-    public List<Schedule> findTeamSchedulesByTeamIdInWeek(Long teamId,LocalDateTime date) {
+    public List<Schedule> findTeamSchedulesByTeamIdInWeek(Long teamId,LocalDate date) {
         return jpaQueryFactory.selectFrom(schedule)
                 .join(schedule.team, QTeam.team)
                 .fetchJoin()
@@ -37,7 +37,7 @@ public class ScheduleRepository {
                 .fetch();
     }
 
-    public List<Schedule> findUserSchedulesByIdInMonth(Long userId,LocalDateTime date) {
+    public List<Schedule> findUserSchedulesByIdInMonth(Long userId,LocalDate date) {
         return jpaQueryFactory.selectFrom(schedule)
                 .join(schedule.user, QUsers.users)
                 .fetchJoin()
@@ -47,7 +47,7 @@ public class ScheduleRepository {
                 .fetch();
     }
 
-    public List<Schedule> findTeamSchedulesByTeamIdInMonth(Long teamId,LocalDateTime date) {
+    public List<Schedule> findTeamSchedulesByTeamIdInMonth(Long teamId,LocalDate date) {
         return jpaQueryFactory.selectFrom(schedule)
                 .join(schedule.team, QTeam.team)
                 .fetchJoin()
