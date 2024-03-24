@@ -15,8 +15,9 @@ import java.time.LocalDateTime;
 public class TeamScheduleResponse extends ScheduleResponse {
     private MemberResponse author;
 
-    public TeamScheduleResponse(Member member, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public TeamScheduleResponse(Member member,Long id, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.author = MemberResponse.of(member);
+        setId(id);
         setTitle(title);
         setContent(content);
         setStartDateTime(startDateTime);
@@ -26,6 +27,7 @@ public class TeamScheduleResponse extends ScheduleResponse {
     public static TeamScheduleResponse of(Schedule schedule) {
         return new TeamScheduleResponse(
                 schedule.getMember(),
+                schedule.getId(),
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getStartDateTime(),
