@@ -52,9 +52,9 @@ public class UserTest {
 
         //then
         Assertions.assertEquals(1L, response.getId());
-        Assertions.assertEquals("new name", response.getName());
-        Assertions.assertEquals("new-username", response.getUsername());
-        Assertions.assertEquals("new bio", response.getBio());
+        Assertions.assertEquals(request.getName(), response.getName());
+        Assertions.assertEquals(request.getUsername(), response.getUsername());
+        Assertions.assertEquals(request.getBio(), response.getBio());
         Assertions.assertNotNull(updatedUser);
     }
 
@@ -70,7 +70,7 @@ public class UserTest {
 
         //then
         Assertions.assertEquals(1L, response.getId());
-        Assertions.assertEquals("new name", response.getName());
+        Assertions.assertEquals(request.getName(), response.getName());
         Assertions.assertNotNull(updatedUser);
     }
 
