@@ -18,23 +18,27 @@ public class TeamRepositoryImpl {
 
     public List<Team> findTeamByUsersId(Long id) {
         return jpaQueryFactory.select(QTeam.team)
-                .from(QMember.member)
+                .from(QTeam.team)
+                .join(QTeam.team.members, QMember.member)
+                .fetchJoin()
                 .join(QMember.member.user, QUsers.users)
-                .join(QMember.member.team, QTeam.team)
+                .fetchJoin()
                 .where(QUsers.users.id.eq(id))
                 .where(QMember.member.status.eq(Status.ACCEPTED))
                 .fetch();
     }
 
+
     public List<Team> findInvitedTeamByUsersId(Long id) {
         return jpaQueryFactory.select(QTeam.team)
-                .from(QMember.member)
+                .from(QTeam.team)
+                .join(QTeam.team.members, QMember.member)
+                .fetchJoin()
                 .join(QMember.member.user, QUsers.users)
-                .join(QMember.member.team, QTeam.team)
+                .fetchJoin()
                 .where(QUsers.users.id.eq(id))
                 .where(QMember.member.status.eq(Status.PENDING))
                 .fetch();
     }
-
 }
 
