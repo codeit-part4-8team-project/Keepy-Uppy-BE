@@ -64,9 +64,9 @@ public class Team extends BaseTimeEntity {
         this.color = updateTeamRequest.getColor();
         this.startDate = updateTeamRequest.getStartDate();
         this.endDate = updateTeamRequest.getEndDate();
-        this.figma = updateTeamRequest.getFigma();
-        this.github = updateTeamRequest.getGithub();
-        this.discord = updateTeamRequest.getDiscord();
+        this.figma = updateTeamRequest.getFigmaLink();
+        this.github = updateTeamRequest.getGithubLink();
+        this.discord = updateTeamRequest.getDiscordLink();
     }
 
     public void setOwnerId(Long ownerId) {
