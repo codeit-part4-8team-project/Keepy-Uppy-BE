@@ -17,7 +17,7 @@ public class UpdateTeamRequest {
     private String color;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String figma;
-    private String github;
-    private String discord;
+    private String figmaLink;
+    private String githubLink;
+    private String discordLink;
 }

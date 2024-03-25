@@ -30,6 +30,12 @@ public class TeamController {
         return ResponseEntity.ok(teamService.createTeam(userDetails, createTeamRequest));
     }
 
+    @Operation(summary = "팀 Id 로 팀 조회")
+    @GetMapping("/{teamId}")
+    public ResponseEntity<TeamResponse> getTeamById(@PathVariable Long teamId) {
+        return ResponseEntity.ok(teamService.getTeam(teamId));
+    }
+
     @Operation(summary = "팀 소유자 변경")
     @PutMapping("/owner/{teamId}")
     public ResponseEntity<Boolean> changeOwner(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long teamId, @RequestBody ChangeTeamOwnerRequest changeTeamOwnerRequest) {
@@ -60,3 +66,4 @@ public class TeamController {
         return ResponseEntity.ok(teamService.getPendingTeams(userDetails));
     }
 }
+
