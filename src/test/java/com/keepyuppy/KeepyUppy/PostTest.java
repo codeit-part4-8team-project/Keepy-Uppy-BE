@@ -1,17 +1,10 @@
 package com.keepyuppy.KeepyUppy;
 
 import com.keepyuppy.KeepyUppy.global.exception.CustomException;
-import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
 import com.keepyuppy.KeepyUppy.post.communication.request.PostRequest;
 import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
 import com.keepyuppy.KeepyUppy.post.communication.response.PostResponse;
-import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
-import com.keepyuppy.KeepyUppy.post.repository.AnnouncementJPARepository;
-import com.keepyuppy.KeepyUppy.post.repository.PostJpaRepository;
-import com.keepyuppy.KeepyUppy.post.repository.PostRepositoryImpl;
 import com.keepyuppy.KeepyUppy.post.service.PostService;
-import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequest;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.UserScheduleResponse;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
 import com.keepyuppy.KeepyUppy.team.service.TeamService;
@@ -207,8 +200,8 @@ public class PostTest {
         postService.createPost(userDetails[1], 2L, request);
 
         //when
-        Page<PostResponse> response1 = postService. getPostPaginateByUser(userDetails[0],  1);
-        Page<PostResponse> response2 = postService. getPostPaginateByUser(userDetails[1],  1);
+        Page<PostResponse> response1 = postService.getPostPaginateByUser(userDetails[0],  1);
+        Page<PostResponse> response2 = postService.getPostPaginateByUser(userDetails[1],  1);
 
         //then
         Assertions.assertEquals(3, response1.getTotalElements());

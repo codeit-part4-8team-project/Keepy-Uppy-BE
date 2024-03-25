@@ -81,7 +81,7 @@ public class UserController {
     @GetMapping("/unread")
     @Operation(summary = "읽지 않은 공지글 조회")
     public ResponseEntity<List<AnnouncementResponse>> getUnreadAnnouncements(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(announcementService.getUnreadAnnouncements(userDetails));
+        return ResponseEntity.ok(announcementService.getUnreadAnnouncementsByUser(userDetails));
     }
 
     @PutMapping("/read/{announcementId}")
