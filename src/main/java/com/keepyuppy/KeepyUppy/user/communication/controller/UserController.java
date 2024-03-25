@@ -49,8 +49,7 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody UpdateUserRequest updateUserRequest
     ) {
-        Users user = userService.updateUser(userDetails.getUserId(), updateUserRequest);
-        return ResponseEntity.ok(UserResponse.of(user));
+        return ResponseEntity.ok(userService.updateUser(userDetails.getUserId(), updateUserRequest));
     }
 
     @DeleteMapping("/")
