@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Schema(name = "게시글 정보 응답")
@@ -24,7 +23,8 @@ public class PostResponse {
     private Boolean isAnnouncement;
     private LocalDateTime createdDate;
     private boolean isEdited;
-    private List<MemberResponse> likeMemberResponses;
+    private int likeCount;
+    private boolean isLiked;
 
 
     public static PostResponse of(Post post){
@@ -36,7 +36,8 @@ public class PostResponse {
                 post.getType() == ContentType.ANNOUNCEMENT,
                 post.getCreatedDate(),
                 post.getModifiedDate().isAfter(post.getCreatedDate().plusMinutes(1)),
-                post.getLikes().isEmpty() ? null : post.getLikes().stream().map(PostLike::getMember).toList().stream().map(MemberResponse::of).toList()
+                post.getLikes().size(),
+                post.getLikes().stream().map(PostLike::getMember).toList().contains(post.getAuthor())
         );
     }
 

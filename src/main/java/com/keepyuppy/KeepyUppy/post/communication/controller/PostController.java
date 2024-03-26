@@ -87,7 +87,7 @@ public class PostController {
 
     @Operation(summary = "게시글 좋아요")
     @PostMapping("/like/{postId}")
-    public ResponseEntity<Boolean> likePost(
+    public ResponseEntity<PostResponse> likePost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId,
             @PathVariable Long postId) {
@@ -96,7 +96,7 @@ public class PostController {
 
     @Operation(summary = "게시글 좋아요 취소")
     @PostMapping("/unlike/{postId}")
-    public ResponseEntity<Boolean> nuLikePost(
+    public ResponseEntity<PostResponse> unLikePost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long postId) {
         return ResponseEntity.ok(postService.unlikePost(userDetails, postId));

@@ -151,7 +151,7 @@ public class PostService {
     }
 
     @Transactional
-    public boolean likePost(CustomUserDetails userDetails, Long teamId, Long postId) {
+    public PostResponse likePost(CustomUserDetails userDetails, Long teamId, Long postId) {
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
 
@@ -166,11 +166,11 @@ public class PostService {
 
         post.addLike(postLike);
 
-        return true;
+        return PostResponse.of(post);
     }
 
     @Transactional
-    public boolean unlikePost(CustomUserDetails userDetails, Long postId) {
+    public PostResponse unlikePost(CustomUserDetails userDetails, Long postId) {
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
 
@@ -182,7 +182,7 @@ public class PostService {
         postLikeJpaRepository.delete(postLike);
         post.removeLike(postLike);
 
-        return true;
+        return PostResponse.of(post);
     }
 
 }
