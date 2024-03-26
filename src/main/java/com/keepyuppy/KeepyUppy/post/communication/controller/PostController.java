@@ -84,4 +84,21 @@ public class PostController {
 
         return ResponseEntity.ok(postService.getPostPaginateByTeam(userDetails, teamId, page));
     }
+
+    @Operation(summary = "게시글 좋아요")
+    @PostMapping("/like/{postId}")
+    public ResponseEntity<Boolean> likePost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long teamId,
+            @PathVariable Long postId) {
+        return ResponseEntity.ok(postService.likePost(userDetails, teamId, postId));
+    }
+
+    @Operation(summary = "게시글 좋아요 취소")
+    @PostMapping("/unlike/{postId}")
+    public ResponseEntity<Boolean> nuLikePost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long postId) {
+        return ResponseEntity.ok(postService.unlikePost(userDetails, postId));
+    }
 }

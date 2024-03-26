@@ -40,6 +40,9 @@ public class Post extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ContentType type;
 
+    @OneToMany(mappedBy = "post",orphanRemoval = true)
+    private Set<PostLike> likes = new HashSet<>();
+
     @Builder
     public Post(Team team, String title, Member author, String content, ContentType type) {
         this.team = team;
@@ -47,6 +50,16 @@ public class Post extends BaseTimeEntity {
         this.author = author;
         this.content = content;
         this.type = type;
+    }
+
+    public void addLike(PostLike postLike) {
+        postLike.setPost(this);
+        this.likes.add(postLike);
+    }
+
+    public void removeLike(PostLike postLike) {
+        postLike.setPost(null);
+        this.likes.remove(postLike);
     }
 
     public void setTeam(Team team){

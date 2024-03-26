@@ -1,12 +1,12 @@
 package com.keepyuppy.KeepyUppy.member.domain.entity;
 
-import com.keepyuppy.KeepyUppy.issue.domain.entity.IssueAssignment;
-import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
 import com.keepyuppy.KeepyUppy.global.domain.BaseTimeEntity;
+import com.keepyuppy.KeepyUppy.issue.domain.entity.IssueAssignment;
 import com.keepyuppy.KeepyUppy.member.communication.request.UpdateMemberRequest;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Grade;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Role;
 import com.keepyuppy.KeepyUppy.member.domain.enums.Status;
+import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import jakarta.persistence.*;
@@ -42,7 +42,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
     private Set<IssueAssignment> issueAssignments = new HashSet<>();
 
     @OneToMany(mappedBy = "author")
