@@ -64,7 +64,7 @@ class ScheduleTest {
         createUserAndTeam();
         Users user = userRepository.findById(1L).get();
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
-        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("USER", "스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 1, 1, 12, 0), LocalDateTime.of(2024, 1, 2, 12, 0));
+        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("TEAM", "스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 1, 1, 12, 0), LocalDateTime.of(2024, 1, 2, 12, 0));
 
         //when
         TeamScheduleResponse teamSchedule = scheduleService.createTeamSchedule(customUserDetails, 1L, createScheduleRequest);
