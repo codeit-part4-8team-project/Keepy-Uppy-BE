@@ -22,6 +22,7 @@ import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class IssueService {
 
     private final IssueJpaRepository issueJpaRepository;
@@ -180,9 +182,9 @@ public class IssueService {
     public TeamIssueBoardResponse getTeamIssueBoard(CustomUserDetails userDetails, Long teamId){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
 
-        List<Issue> todo = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.TODO);
-        List<Issue> progress = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.INPROGRESS);
-        List<Issue> done = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.DONE);
+        List<Issue> todo = issueRepository.findByTeamIdAndStatus(teamId, IssueStatus.TODO);
+        List<Issue> progress = issueRepository.findByTeamIdAndStatus(teamId, IssueStatus.INPROGRESS);
+        List<Issue> done = issueRepository.findByTeamIdAndStatus(teamId, IssueStatus.DONE);
 
         return TeamIssueBoardResponse.of(member.getTeam(), todo, progress, done);
     }
@@ -191,6 +193,14 @@ public class IssueService {
         List<Issue> todo = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.TODO);
         List<Issue> progress = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.INPROGRESS);
         List<Issue> done = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.DONE);
+
+        return UserIssueBoardResponse.of(todo, progress, done);
+    }
+
+    public UserIssueBoardResponse getIssueBoardByUserAndTeams(CustomUserDetails userDetails, List<Long> teamIds){
+        List<Issue> todo = issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.TODO);
+        List<Issue> progress = issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.INPROGRESS);
+        List<Issue> done = issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.DONE);
 
         return UserIssueBoardResponse.of(todo, progress, done);
     }

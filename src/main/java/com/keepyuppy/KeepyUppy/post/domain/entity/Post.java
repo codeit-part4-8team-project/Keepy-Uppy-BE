@@ -31,7 +31,7 @@ public class Post extends BaseTimeEntity {
 
     private String title;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private Member author;
 
