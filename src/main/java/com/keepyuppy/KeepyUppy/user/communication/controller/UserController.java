@@ -49,8 +49,7 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody UpdateUserRequest updateUserRequest
     ) {
-        Users user = userService.updateUser(userDetails.getUserId(), updateUserRequest);
-        return ResponseEntity.ok(UserResponse.of(user));
+        return ResponseEntity.ok(userService.updateUser(userDetails.getUserId(), updateUserRequest));
     }
 
     @DeleteMapping("/")
@@ -82,7 +81,7 @@ public class UserController {
     @GetMapping("/unread")
     @Operation(summary = "읽지 않은 공지글 조회")
     public ResponseEntity<List<AnnouncementResponse>> getUnreadAnnouncements(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(announcementService.getUnreadAnnouncements(userDetails));
+        return ResponseEntity.ok(announcementService.getUnreadAnnouncementsByUser(userDetails));
     }
 
     @PutMapping("/read/{announcementId}")
