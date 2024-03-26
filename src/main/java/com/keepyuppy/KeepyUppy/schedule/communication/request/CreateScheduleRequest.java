@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateScheduleRequest {
-    private String type;
     private String title;
     private String content;
     private LocalDateTime startDateTime;
