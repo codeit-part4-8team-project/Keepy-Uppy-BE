@@ -85,6 +85,7 @@ public class MemberService {
     @Transactional
     public void accept(@AuthenticationPrincipal CustomUserDetails userDetails, Long teamId) {
         Member member = findPendingByUserId(userDetails.getUserId(), teamId);
+        member.setJoinTeamDateTime();
         member.setStatus(Status.ACCEPTED);
     }
 
