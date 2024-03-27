@@ -3,10 +3,7 @@ package com.keepyuppy.KeepyUppy;
 import com.keepyuppy.KeepyUppy.global.exception.CustomException;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamSchedulesList;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.UserScheduleResponse;
+import com.keepyuppy.KeepyUppy.schedule.communication.response.*;
 import com.keepyuppy.KeepyUppy.schedule.service.ScheduleService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
@@ -25,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest
@@ -95,10 +93,11 @@ class ScheduleTest {
         }
 
         //when
-        List<UserScheduleResponse> userScheduleInWeek = scheduleService.getUserScheduleInWeek(user.getId(), LocalDate.of(2024, 3, 3));
+        SchedulesList scheduleResponse = scheduleService.getWeeklyScheduleFilter(user.getId(), true, null, LocalDate.of(2024, 3, 3));
         
         //then
-        Assertions.assertEquals(5,userScheduleInWeek.size());
+        Assertions.assertEquals(5,scheduleResponse.getUserSchedulesResponse().size());
+        Assertions.assertTrue(scheduleResponse.getTeamSchedulesResponse().isEmpty());
     }
 
     @Test
@@ -114,10 +113,11 @@ class ScheduleTest {
         }
 
         //when
-        List<UserScheduleResponse> userScheduleInMonth = scheduleService.getUserScheduleInMonth(1L, LocalDate.of(2024, 3, 1));
+        SchedulesList scheduleResponse = scheduleService.getMonthlyScheduleFilter(1L, true, null, LocalDate.of(2024, 3, 1));
 
         //then
-        Assertions.assertEquals(10,userScheduleInMonth.size());
+        Assertions.assertEquals(10,scheduleResponse.getUserSchedulesResponse().size());
+        Assertions.assertTrue(scheduleResponse.getTeamSchedulesResponse().isEmpty());
     }
 
     @Test

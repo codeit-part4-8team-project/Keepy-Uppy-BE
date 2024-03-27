@@ -90,11 +90,7 @@ public class PostController {
             @RequestParam(required = false) List<Long> teamIds,
             @RequestParam(defaultValue = "1") int page
     ){
-        if (teamIds == null || teamIds.isEmpty()) {
-            return ResponseEntity.ok(postService.getPostPaginateByUser(userDetails, page));
-        } else {
-            return ResponseEntity.ok(postService.getPostPaginateFilter(userDetails, teamIds, page));
-        }
+        return ResponseEntity.ok(postService.getPostPaginateFilter(userDetails, teamIds, page));
     }
 
     @Operation(summary = "게시글 좋아요")

@@ -89,10 +89,6 @@ public class IssueController {
     public ResponseEntity<UserIssueBoardResponse> getMyIssues(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(required = false) List<Long> teamIds) {
-        if (teamIds == null || teamIds.isEmpty()) {
-            return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
-        } else {
-            return ResponseEntity.ok(issueService.getIssueBoardByUserAndTeams(userDetails, teamIds));
-        }
+        return ResponseEntity.ok(issueService.getIssueBoardByUserAndTeams(userDetails, teamIds));
     }
 }

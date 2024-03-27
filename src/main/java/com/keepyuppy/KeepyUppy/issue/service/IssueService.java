@@ -23,6 +23,7 @@ import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -189,18 +190,15 @@ public class IssueService {
         return TeamIssueBoardResponse.of(member.getTeam(), todo, progress, done);
     }
 
-    public UserIssueBoardResponse getMyIssueBoard(CustomUserDetails userDetails){
-        List<Issue> todo = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.TODO);
-        List<Issue> progress = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.INPROGRESS);
-        List<Issue> done = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.DONE);
-
-        return UserIssueBoardResponse.of(todo, progress, done);
-    }
-
     public UserIssueBoardResponse getIssueBoardByUserAndTeams(CustomUserDetails userDetails, List<Long> teamIds){
-        List<Issue> todo = issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.TODO);
-        List<Issue> progress = issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.INPROGRESS);
-        List<Issue> done = issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.DONE);
+        boolean filter = teamIds != null && !teamIds.isEmpty();
+
+        List<Issue> todo = filter ? issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.TODO)
+                : issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.TODO);
+        List<Issue> progress = filter ? issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.INPROGRESS)
+                : issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.INPROGRESS);
+        List<Issue> done = filter ? issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.DONE)
+                : issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.DONE);
 
         return UserIssueBoardResponse.of(todo, progress, done);
     }

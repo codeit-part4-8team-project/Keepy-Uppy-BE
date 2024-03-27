@@ -24,8 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -135,24 +138,15 @@ public class PostService {
     }
 
     // sorted by created date (newer posts on top)
-    public Page<PostResponse> getPostPaginateByUser(
-            CustomUserDetails userDetails,
-            int page) {
-
-        Pageable pageable = PageRequest.of(page - 1, 10);
-        Page<Post> posts = postRepository.findByUserId(userDetails.getUserId(), ContentType.POST, pageable);
-
-        return posts.map(PostResponse::of);
-    }
-
-    // sorted by created date (newer posts on top)
     public Page<PostResponse> getPostPaginateFilter(
             CustomUserDetails userDetails,
             List<Long> teamIds,
             int page) {
-
         Pageable pageable = PageRequest.of(page - 1, 10);
-        Page<Post> posts = postRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, ContentType.POST, pageable);
+
+        Page<Post> posts = teamIds == null || teamIds.isEmpty() ?
+                postRepository.findByUserId(userDetails.getUserId(), ContentType.POST, pageable) :
+                postRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, ContentType.POST, pageable);
 
         return posts.map(PostResponse::of);
     }
