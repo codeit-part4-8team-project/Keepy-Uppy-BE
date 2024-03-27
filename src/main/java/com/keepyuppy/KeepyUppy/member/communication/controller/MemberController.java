@@ -26,7 +26,7 @@ public class MemberController {
 
     @Operation(summary = "팀에 멤버 초대")
     @PostMapping("/{teamId}")
-    public ResponseEntity<Boolean> addMember(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long teamId, @RequestBody AddMemberRequest addMemberRequest) {
+    public ResponseEntity<MemberResponse> addMember(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long teamId, @RequestBody AddMemberRequest addMemberRequest) {
         return ResponseEntity.ok(memberService.addMember(userDetails, teamId, addMemberRequest));
     }
 

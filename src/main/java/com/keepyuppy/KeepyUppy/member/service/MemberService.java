@@ -39,7 +39,7 @@ public class MemberService {
     }
 
     @Transactional
-    public boolean addMember(CustomUserDetails userDetails, Long teamId, AddMemberRequest addMemberRequest) {
+    public MemberResponse addMember(CustomUserDetails userDetails, Long teamId, AddMemberRequest addMemberRequest) {
 
         Member loginMember = findMemberInTeamByUserId(userDetails.getUserId(), teamId);
 
@@ -57,8 +57,7 @@ public class MemberService {
 
             team.addMember(member);
             user.addMember(member);
-            memberJpaRepository.save(member);
-            return true;
+            return MemberResponse.of(memberJpaRepository.save(member));
         } else {
             throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
         }
