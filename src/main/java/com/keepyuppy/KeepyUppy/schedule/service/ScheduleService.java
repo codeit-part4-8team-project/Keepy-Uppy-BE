@@ -71,14 +71,14 @@ public class ScheduleService {
     }
     
     public SchedulesList getWeeklyScheduleFilter(Long userId, boolean showUser, List<Long> teamIds, LocalDate localDate) {
-        List<Schedule> userSchedules = showUser ? new ArrayList<>() : scheduleRepository.findUserSchedulesByIdInWeek(userId, localDate);
-        List<Schedule> teamSchedules = teamIds.isEmpty() ? new ArrayList<>() : scheduleRepository.findTeamSchedulesByTeamIdsInWeek(userId, teamIds, localDate);
+        List<Schedule> userSchedules = showUser ? scheduleRepository.findUserSchedulesByIdInWeek(userId, localDate) : new ArrayList<>();
+        List<Schedule> teamSchedules = teamIds == null || teamIds.isEmpty() ? new ArrayList<>() : scheduleRepository.findTeamSchedulesByTeamIdsInWeek(userId, teamIds, localDate);
         return SchedulesList.of(userSchedules, teamSchedules);
     }
 
     public SchedulesList getMonthlyScheduleFilter(Long userId, boolean showUser, List<Long> teamIds, LocalDate localDate) {
-        List<Schedule> userSchedules = showUser ? new ArrayList<>() : scheduleRepository.findUserSchedulesByIdInMonth(userId, localDate);
-        List<Schedule> teamSchedules = teamIds.isEmpty() ? new ArrayList<>() : scheduleRepository.findTeamSchedulesByTeamIdsInMonth(userId, teamIds, localDate);
+        List<Schedule> userSchedules = showUser ? scheduleRepository.findUserSchedulesByIdInMonth(userId, localDate) : new ArrayList<>();
+        List<Schedule> teamSchedules = teamIds == null || teamIds.isEmpty() ? new ArrayList<>() : scheduleRepository.findTeamSchedulesByTeamIdsInMonth(userId, teamIds, localDate);
         return SchedulesList.of(userSchedules, teamSchedules);
     }
 

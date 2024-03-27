@@ -41,7 +41,7 @@ public class ScheduleController {
     @GetMapping("/user/week")
     public ResponseEntity<SchedulesList> getUserSchedulesInWeek(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(required = false, defaultValue = "false") boolean showUser,
+            @RequestParam(required = false, defaultValue = "true") boolean showUser,
             @RequestParam(required = false) List<Long> teamIds,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localDate)
     {
@@ -52,7 +52,7 @@ public class ScheduleController {
     @GetMapping("/user/month")
     public ResponseEntity<SchedulesList> getUserSchedulesInMonth(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(required = false, defaultValue = "false") boolean showUser,
+            @RequestParam(required = false, defaultValue = "true") boolean showUser,
             @RequestParam(required = false) List<Long> teamIds,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localDate)
     {

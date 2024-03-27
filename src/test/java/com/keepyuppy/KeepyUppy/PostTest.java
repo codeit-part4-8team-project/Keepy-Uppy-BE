@@ -210,14 +210,39 @@ public class PostTest {
         postService.createPost(userDetails[1], 2L, request);
 
         //when
-        Page<PostResponse> response1 = postService.getPostPaginateByUser(userDetails[0],  1);
-        Page<PostResponse> response2 = postService.getPostPaginateByUser(userDetails[1],  1);
+        Page<PostResponse> response1 = postService.getPostPaginateFilter(userDetails[0], null, 1);
+        Page<PostResponse> response2 = postService.getPostPaginateFilter(userDetails[1], null, 1);
 
         //then
         Assertions.assertEquals(3, response1.getTotalElements());
         Assertions.assertEquals(3, response1.getContent().size());
         Assertions.assertEquals(4, response2.getTotalElements());
         Assertions.assertEquals(4, response2.getContent().size());
+    }
+
+    @Test
+    @DisplayName("유저 단위 게시글 필터링 및 조회")
+    void getPostPaginateFilter() {
+        //given
+        CreateTeamRequest createTeamRequest = new CreateTeamRequest("team2", "test", "red", LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 1), null, null, null, null);
+        teamService.createTeam(userDetails[1], createTeamRequest);
+        teamService.createTeam(userDetails[1], createTeamRequest);
+        postService.createPost(userDetails[1], 1L, request);
+        postService.createPost(userDetails[1], 1L, request);
+        postService.createPost(userDetails[1], 2L, request);
+        postService.createPost(userDetails[1], 3L, request);
+
+        //when
+        Page<PostResponse> response1 = postService.getPostPaginateFilter(userDetails[0],  List.of(1L, 2L), 1);
+        Page<PostResponse> response2 = postService.getPostPaginateFilter(userDetails[1],  List.of(), 1);
+        Page<PostResponse> response3 = postService.getPostPaginateFilter(userDetails[1],  null, 1);
+        Page<PostResponse> response4 = postService.getPostPaginateFilter(userDetails[1],  List.of(1L, 2L), 1);
+
+        //then
+        Assertions.assertEquals(2, response1.getTotalElements());
+        Assertions.assertEquals(4, response2.getTotalElements());
+        Assertions.assertEquals(4, response3.getTotalElements());
+        Assertions.assertEquals(3, response4.getTotalElements());
     }
 
     @Test

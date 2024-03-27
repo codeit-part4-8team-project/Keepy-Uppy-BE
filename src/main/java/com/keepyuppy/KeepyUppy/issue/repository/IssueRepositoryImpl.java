@@ -31,8 +31,8 @@ public class IssueRepositoryImpl {
 
     public List<Issue> findByTeamIdAndStatus(Long teamId, IssueStatus status){
         return queryFactory.selectFrom(issue)
-                .innerJoin(issue.issueAssignments, issueAssignment).fetchJoin()
-                .innerJoin(issueAssignment.member, member).fetchJoin()
+                .leftJoin(issue.issueAssignments, issueAssignment).fetchJoin()
+                .leftJoin(issueAssignment.member, member).fetchJoin()
                 .innerJoin(issue.team, team).fetchJoin()
                 .where(team.id.eq(teamId).and(issue.status.eq(status)))
                 .orderBy(issue.modifiedDate.asc())
