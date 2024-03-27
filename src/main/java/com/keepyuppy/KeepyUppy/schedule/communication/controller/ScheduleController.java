@@ -2,10 +2,7 @@ package com.keepyuppy.KeepyUppy.schedule.communication.controller;
 
 import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleWithTeamInfoResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.UserScheduleResponse;
+import com.keepyuppy.KeepyUppy.schedule.communication.response.*;
 import com.keepyuppy.KeepyUppy.schedule.service.ScheduleService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,16 +37,26 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.getScheduleById(userDetails, scheduleId));
     }
 
-    @Operation(summary = "userId 로 주단위 스케쥴 리스트 조회")
-    @GetMapping("/user/week/{userId}")
-    public ResponseEntity<List<UserScheduleResponse>> getUserSchedulesInWeek(@PathVariable Long userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localDate) {
-        return ResponseEntity.ok(scheduleService.getUserScheduleInWeek(userId, localDate));
+    @Operation(summary = "유저의 주단위 스케쥴 리스트 조회, 필터링 가능")
+    @GetMapping("/user/week")
+    public ResponseEntity<SchedulesList> getUserSchedulesInWeek(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = false, defaultValue = "false") boolean showUser,
+            @RequestParam(required = false) List<Long> teamIds,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localDate)
+    {
+        return ResponseEntity.ok(scheduleService.getWeeklyScheduleFilter(userDetails.getUserId(), showUser, teamIds, localDate));
     }
 
-    @Operation(summary = "userId 로 월단위 스케쥴 리스트 조회")
-    @GetMapping("/user/month/{userId}")
-    public ResponseEntity<List<UserScheduleResponse>> getUserSchedulesInMonth(@PathVariable Long userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localDate) {
-        return ResponseEntity.ok(scheduleService.getUserScheduleInMonth(userId, localDate));
+    @Operation(summary = "유저의 월단위 스케쥴 리스트 조회, 필터링 가능")
+    @GetMapping("/user/month")
+    public ResponseEntity<SchedulesList> getUserSchedulesInMonth(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = false, defaultValue = "false") boolean showUser,
+            @RequestParam(required = false) List<Long> teamIds,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localDate)
+    {
+        return ResponseEntity.ok(scheduleService.getMonthlyScheduleFilter(userDetails.getUserId(), showUser, teamIds, localDate));
     }
 
     @Operation(summary = "팀 스케쥴 생성")
@@ -60,13 +67,13 @@ public class ScheduleController {
 
     @Operation(summary = "teamId 로 주단위 스케쥴 리스트 조회")
     @GetMapping("/team/week/{teamId}")
-    public ResponseEntity<TeamScheduleWithTeamInfoResponse> getTeamSchedulesInWeek(@PathVariable Long teamId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localDate) {
+    public ResponseEntity<TeamSchedulesList> getTeamSchedulesInWeek(@PathVariable Long teamId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localDate) {
         return ResponseEntity.ok(scheduleService.getTeamSchedulesInWeek(teamId,localDate));
     }
 
     @Operation(summary = "teamId 로 월단위 스케쥴 리스트 조회")
     @GetMapping("/team/month/{teamId}")
-    public ResponseEntity<TeamScheduleWithTeamInfoResponse> getTeamSchedulesInMonth(@PathVariable Long teamId,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localDate) {
+    public ResponseEntity<TeamSchedulesList> getTeamSchedulesInMonth(@PathVariable Long teamId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localDate) {
         return ResponseEntity.ok(scheduleService.getTeamSchedulesInMonth(teamId,localDate));
     }
 

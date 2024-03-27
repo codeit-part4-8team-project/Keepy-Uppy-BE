@@ -5,7 +5,7 @@ import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequ
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleWithTeamInfoResponse;
+import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamSchedulesList;
 import com.keepyuppy.KeepyUppy.schedule.communication.response.UserScheduleResponse;
 import com.keepyuppy.KeepyUppy.schedule.service.ScheduleService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
@@ -152,7 +152,7 @@ class ScheduleTest {
         }
 
         //when
-        TeamScheduleWithTeamInfoResponse teamSchedulesInWeek = scheduleService.getTeamSchedulesInWeek(1L, LocalDate.of(2024, 3, 3));
+        TeamSchedulesList teamSchedulesInWeek = scheduleService.getTeamSchedulesInWeek(1L, LocalDate.of(2024, 3, 3));
         List<TeamScheduleResponse> teamSchedules = teamSchedulesInWeek.getTeamSchedules();
 
         //then
@@ -172,7 +172,7 @@ class ScheduleTest {
         }
 
         //when
-        TeamScheduleWithTeamInfoResponse teamSchedulesInMonth = scheduleService.getTeamSchedulesInMonth(1L, LocalDate.of(2024, 3, 3));
+        TeamSchedulesList teamSchedulesInMonth = scheduleService.getTeamSchedulesInMonth(1L, LocalDate.of(2024, 3, 3));
         List<TeamScheduleResponse> teamSchedules = teamSchedulesInMonth.getTeamSchedules();
 
         //then

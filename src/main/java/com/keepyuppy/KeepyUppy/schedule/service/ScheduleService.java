@@ -6,10 +6,7 @@ import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
 import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleWithTeamInfoResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.UserScheduleResponse;
+import com.keepyuppy.KeepyUppy.schedule.communication.response.*;
 import com.keepyuppy.KeepyUppy.schedule.domain.entity.Schedule;
 import com.keepyuppy.KeepyUppy.schedule.domain.enums.ScheduleType;
 import com.keepyuppy.KeepyUppy.schedule.repository.ScheduleJpaRepository;
@@ -24,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,15 +53,6 @@ public class ScheduleService {
         return TeamScheduleResponse.of(schedule);
     }
 
-    public List<UserScheduleResponse> getUserScheduleInWeek(Long userId, LocalDate localDate) {
-        return scheduleRepository.findUserSchedulesByIdInWeek(userId, localDate).stream().map(UserScheduleResponse::of).toList();
-    }
-
-    public List<UserScheduleResponse> getUserScheduleInMonth(Long userId, LocalDate localDate) {
-        return scheduleRepository.findUserSchedulesByIdInMonth(userId, localDate).stream().map(UserScheduleResponse::of).toList();
-    }
-
-
     public ScheduleResponse getScheduleById(CustomUserDetails userDetails, Long scheduleId) {
         Schedule schedule = scheduleJpaRepository.findById(scheduleId).orElseThrow(() -> new CustomException(ExceptionType.SCHEDULE_NOT_FOUND));
 
@@ -80,17 +69,29 @@ public class ScheduleService {
             throw new CustomException(ExceptionType.SCHEDULE_NOT_FOUND);
         }
     }
-
-    public TeamScheduleWithTeamInfoResponse getTeamSchedulesInWeek(Long teamId, LocalDate localDate) {
-        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
-        List<TeamScheduleResponse> teamScheduleResponses = scheduleRepository.findTeamSchedulesByTeamIdInWeek(teamId, localDate).stream().map(TeamScheduleResponse::of).toList();
-        return TeamScheduleWithTeamInfoResponse.of(team, teamScheduleResponses);
+    
+    public SchedulesList getWeeklyScheduleFilter(Long userId, boolean showUser, List<Long> teamIds, LocalDate localDate) {
+        List<Schedule> userSchedules = showUser ? new ArrayList<>() : scheduleRepository.findUserSchedulesByIdInWeek(userId, localDate);
+        List<Schedule> teamSchedules = teamIds.isEmpty() ? new ArrayList<>() : scheduleRepository.findTeamSchedulesByTeamIdsInWeek(userId, teamIds, localDate);
+        return SchedulesList.of(userSchedules, teamSchedules);
     }
 
-    public TeamScheduleWithTeamInfoResponse getTeamSchedulesInMonth(Long teamId, LocalDate localDate) {
+    public SchedulesList getMonthlyScheduleFilter(Long userId, boolean showUser, List<Long> teamIds, LocalDate localDate) {
+        List<Schedule> userSchedules = showUser ? new ArrayList<>() : scheduleRepository.findUserSchedulesByIdInMonth(userId, localDate);
+        List<Schedule> teamSchedules = teamIds.isEmpty() ? new ArrayList<>() : scheduleRepository.findTeamSchedulesByTeamIdsInMonth(userId, teamIds, localDate);
+        return SchedulesList.of(userSchedules, teamSchedules);
+    }
+
+    public TeamSchedulesList getTeamSchedulesInWeek(Long teamId, LocalDate localDate) {
+        Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
+        List<TeamScheduleResponse> teamScheduleResponses = scheduleRepository.findTeamSchedulesByTeamIdInWeek(teamId, localDate).stream().map(TeamScheduleResponse::of).toList();
+        return TeamSchedulesList.of(team, teamScheduleResponses);
+    }
+
+    public TeamSchedulesList getTeamSchedulesInMonth(Long teamId, LocalDate localDate) {
         Team team = teamJpaRepository.findById(teamId).orElseThrow(() -> new CustomException(ExceptionType.TEAM_NOT_FOUND));
         List<TeamScheduleResponse> teamScheduleResponses = scheduleRepository.findTeamSchedulesByTeamIdInMonth(teamId, localDate).stream().map(TeamScheduleResponse::of).toList();
-        return TeamScheduleWithTeamInfoResponse.of(team,teamScheduleResponses);
+        return TeamSchedulesList.of(team, teamScheduleResponses);
     }
 
     @Transactional
