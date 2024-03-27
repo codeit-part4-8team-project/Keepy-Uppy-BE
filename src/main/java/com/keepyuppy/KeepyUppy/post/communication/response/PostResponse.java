@@ -1,8 +1,9 @@
 package com.keepyuppy.KeepyUppy.post.communication.response;
 
-import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
-import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
 import com.keepyuppy.KeepyUppy.member.communication.response.MemberResponse;
+import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
+import com.keepyuppy.KeepyUppy.post.domain.entity.PostLike;
+import com.keepyuppy.KeepyUppy.post.domain.enums.ContentType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,9 @@ public class PostResponse {
     private Boolean isAnnouncement;
     private LocalDateTime createdDate;
     private boolean isEdited;
+    private int likeCount;
+    private boolean isLiked;
+
 
     public static PostResponse of(Post post){
         return new PostResponse(
@@ -31,7 +35,10 @@ public class PostResponse {
                 post.getContent(),
                 post.getType() == ContentType.ANNOUNCEMENT,
                 post.getCreatedDate(),
-                post.getModifiedDate().isAfter(post.getCreatedDate().plusMinutes(1))
+                post.getModifiedDate().isAfter(post.getCreatedDate().plusMinutes(1)),
+                post.getLikes().size(),
+                post.getLikes().stream().map(PostLike::getMember).toList().contains(post.getAuthor())
         );
     }
+
 }

@@ -43,7 +43,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
     private Set<IssueAssignment> issueAssignments = new HashSet<>();
 
     @OneToMany(mappedBy = "author")
