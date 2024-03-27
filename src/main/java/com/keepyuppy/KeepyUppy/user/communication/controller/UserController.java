@@ -60,36 +60,11 @@ public class UserController {
         userService.updateProfileImage(userDetails, multipartFile);
     }
 
-    @GetMapping("/my-issue")
-    @Operation(summary = "내 이슈 조회, 팀 별 필터링 가능")
-    public ResponseEntity<UserIssueBoardResponse> getMyIssues(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(required = false) List<Long> teamIds) {
-        if (teamIds == null || teamIds.isEmpty()) {
-            return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
-        } else {
-            return ResponseEntity.ok(issueService.getIssueBoardByUserAndTeams(userDetails, teamIds));
-        }
-    }
-
     @Operation(summary = "유저네임이 일치하는 유저 조회")
     @GetMapping("/search")
     public ResponseEntity<UserResponse> findByUsername(@RequestParam String username) {
         return ResponseEntity.ok(userService.findByUsername(username));
     }
 
-    @Operation(summary = "팀 통합 자유게시판 조회, 팀 별 필터링 가능")
-    @GetMapping("/post")
-    public ResponseEntity<Page<PostResponse>> getUserPosts(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(required = false) List<Long> teamIds,
-            @RequestParam(defaultValue = "1") int page
-    ){
-        if (teamIds == null || teamIds.isEmpty()) {
-            return ResponseEntity.ok(postService.getPostPaginateByUser(userDetails, page));
-        } else {
-            return ResponseEntity.ok(postService.getPostPaginateFilter(userDetails, teamIds, page));
-        }
-    }
 }
 

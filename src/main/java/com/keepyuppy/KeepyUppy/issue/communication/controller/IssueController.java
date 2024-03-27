@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/issue")
@@ -83,8 +85,14 @@ public class IssueController {
     }
 
     @GetMapping("/user")
-    @Operation(summary = "내 이슈 조회")
-    public ResponseEntity<UserIssueBoardResponse> getMyIssues(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
+    @Operation(summary = "내 이슈 조회, 팀 별 필터링 가능")
+    public ResponseEntity<UserIssueBoardResponse> getMyIssues(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = false) List<Long> teamIds) {
+        if (teamIds == null || teamIds.isEmpty()) {
+            return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
+        } else {
+            return ResponseEntity.ok(issueService.getIssueBoardByUserAndTeams(userDetails, teamIds));
+        }
     }
 }
