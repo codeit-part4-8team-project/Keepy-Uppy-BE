@@ -39,8 +39,8 @@ public class Schedule extends BaseTimeEntity {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
 
-    public Schedule(String type, Users user, Team team, Member member, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        this.scheduleType = ScheduleType.getInstance(type);
+    public Schedule(ScheduleType scheduleType, Users user, Team team, Member member, String title, String content, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        this.scheduleType = scheduleType;
         this.user = user;
         this.team = team;
         this.member = member;
@@ -70,11 +70,11 @@ public class Schedule extends BaseTimeEntity {
     }
 
     public static Schedule ofUser(CreateScheduleRequest createScheduleRequest, Users user) {
-        return new Schedule(createScheduleRequest.getType(), user, null, null, createScheduleRequest.getTitle(), createScheduleRequest.getContent(), createScheduleRequest.getStartDateTime(), createScheduleRequest.getEndDateTime());
+        return new Schedule(ScheduleType.USER, user, null, null, createScheduleRequest.getTitle(), createScheduleRequest.getContent(), createScheduleRequest.getStartDateTime(), createScheduleRequest.getEndDateTime());
     }
 
     public static Schedule ofTeam(CreateScheduleRequest createScheduleRequest, Users user, Team team,Member member) {
-        return new Schedule(createScheduleRequest.getType(), user, team, member, createScheduleRequest.getTitle(), createScheduleRequest.getContent(), createScheduleRequest.getStartDateTime(), createScheduleRequest.getEndDateTime());
+        return new Schedule(ScheduleType.TEAM, user, team, member, createScheduleRequest.getTitle(), createScheduleRequest.getContent(), createScheduleRequest.getStartDateTime(), createScheduleRequest.getEndDateTime());
     }
 
 }

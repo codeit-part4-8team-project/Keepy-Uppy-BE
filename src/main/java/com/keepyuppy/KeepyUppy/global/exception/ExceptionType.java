@@ -22,9 +22,11 @@ public enum ExceptionType {
     POST_NOT_FOUND(404, "게시글을 찾을 수 없습니다."),
     SCHEDULE_NOT_FOUND(404, "일정을 찾을 수 없습니다."),
     ANNOUNCEMENT_NOT_FOUND(404, "공지글을 찾을 수 없습니다."),
+    LIKE_NOT_FOUND(404,"좋아요를 찾을수 없습니다."),
 
     //409 CONFLICT
     MEMBER_ALREADY_EXISTS(409, "이미 팀에 속해있는 유저입니다."),
+    ALREADY_LIKE_POST(409,"이미 좋아요한 게시글 입니다."),
 
     //500 INTERNAL SERVER ERROR
     PICTURE_UPLOAD_FAIL(500, "사진 업로드에 실패하였습니다."),

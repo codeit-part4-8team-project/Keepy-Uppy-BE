@@ -1,9 +1,14 @@
 package com.keepyuppy.KeepyUppy;
 
 import com.keepyuppy.KeepyUppy.global.exception.CustomException;
+import com.keepyuppy.KeepyUppy.member.domain.entity.Member;
+import com.keepyuppy.KeepyUppy.member.repository.MemberRepositoryImpl;
 import com.keepyuppy.KeepyUppy.post.communication.request.PostRequest;
 import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
 import com.keepyuppy.KeepyUppy.post.communication.response.PostResponse;
+import com.keepyuppy.KeepyUppy.post.domain.entity.Post;
+import com.keepyuppy.KeepyUppy.post.domain.entity.PostLike;
+import com.keepyuppy.KeepyUppy.post.repository.PostJpaRepository;
 import com.keepyuppy.KeepyUppy.post.service.PostService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
@@ -37,6 +42,12 @@ public class PostTest {
 
     @Autowired
     PostService postService;
+
+    @Autowired
+    PostJpaRepository postJpaRepository;
+
+    @Autowired
+    MemberRepositoryImpl memberRepository;
 
     private Users[] users;
     private CustomUserDetails[] userDetails;
@@ -208,6 +219,40 @@ public class PostTest {
         Assertions.assertEquals(3, response1.getContent().size());
         Assertions.assertEquals(4, response2.getTotalElements());
         Assertions.assertEquals(4, response2.getContent().size());
+    }
+
+    @Test
+    @DisplayName("게시글에 좋아요")
+    void postLike() {
+        //given
+        postService.createPost(userDetails[0], 1L, request);
+        Member likeMember = memberRepository.findMemberInTeamByUserId(1L, 1L).get();
+
+        //when
+        postService.likePost(userDetails[0],1L,1L);
+        Post post = postJpaRepository.findById(1L).get();
+
+        //then
+        Assertions.assertEquals(1L, post.getLikes().size());
+        Assertions.assertTrue(post.getLikes().stream().map(PostLike::getMember).toList().contains(likeMember));
+    }
+
+    @Test
+    @DisplayName("게시글 좋아요 취소")
+    void postUnLike() {
+        //given
+        postService.createPost(userDetails[0], 1L, request);
+        Member likeMember = memberRepository.findMemberInTeamByUserId(1L, 1L).get();
+        postService.likePost(userDetails[0],1L,1L);
+        Post post = postJpaRepository.findById(1L).get();
+
+        Assertions.assertEquals(1L,post.getLikes().size());
+
+        //when
+        postService.unlikePost(userDetails[0], post.getId());
+
+        //then
+        Assertions.assertEquals(0,post.getLikes().size());
     }
 
 

@@ -15,6 +15,7 @@ import com.keepyuppy.KeepyUppy.user.domain.entity.Users;
 import com.keepyuppy.KeepyUppy.user.domain.enums.Provider;
 import com.keepyuppy.KeepyUppy.user.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +39,18 @@ class ScheduleTest {
     @Autowired
     ScheduleService scheduleService;
 
+    @BeforeEach
+    void setUp() {
+        createUserAndTeam();
+    }
+
     @Test
     @DisplayName("유저 스케쥴 생성")
     void createUserSchedule() {
         //given
-        createUserAndTeam();
         Users user = userRepository.findById(1L).get();
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
-        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("USER", "스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 1, 1, 12, 0), LocalDateTime.of(2024, 1, 2, 12, 0));
+        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 1, 1, 12, 0), LocalDateTime.of(2024, 1, 2, 12, 0));
 
         //when
         UserScheduleResponse userSchedule = scheduleService.createUserSchedule(customUserDetails, createScheduleRequest);
@@ -61,10 +66,9 @@ class ScheduleTest {
     @DisplayName("팀 스케쥴 생성")
     void createTeamSchedule() {
         //given
-        createUserAndTeam();
         Users user = userRepository.findById(1L).get();
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
-        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("TEAM", "스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 1, 1, 12, 0), LocalDateTime.of(2024, 1, 2, 12, 0));
+        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 1, 1, 12, 0), LocalDateTime.of(2024, 1, 2, 12, 0));
 
         //when
         TeamScheduleResponse teamSchedule = scheduleService.createTeamSchedule(customUserDetails, 1L, createScheduleRequest);
@@ -82,12 +86,11 @@ class ScheduleTest {
     @DisplayName("입력받은 날짜의 주에 속한 유저 스케쥴 조회")
     void getUserScheduleInWeek() {
         //given
-        createUserAndTeam();
         Users user = userRepository.findById(1L).get();
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
         for (int i = 0; i < 5; i++) {
-            CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("USER", "스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 3, 3, 11, 0), LocalDateTime.of(2024, 3, 3+i, 12, 0));
+            CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 3, 3, 11, 0), LocalDateTime.of(2024, 3, 3+i, 12, 0));
             scheduleService.createUserSchedule(customUserDetails, createScheduleRequest);
         }
 
@@ -102,12 +105,11 @@ class ScheduleTest {
     @DisplayName("입력받은 날짜의 월에 속한 유저 스케쥴 조회")
     void getUserScheduleInMonth() {
         //given
-        createUserAndTeam();
         Users user = userRepository.findById(1L).get();
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
         for (int i = 0; i < 10; i++) {
-            CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("USER", "스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 3, 3, 11, 0), LocalDateTime.of(2024, 3, 3+i, 12, 0));
+            CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 3, 3, 11, 0), LocalDateTime.of(2024, 3, 3+i, 12, 0));
             scheduleService.createUserSchedule(customUserDetails, createScheduleRequest);
         }
 
@@ -122,12 +124,11 @@ class ScheduleTest {
     @DisplayName("Id 로 스케쥴 단일 조회")
     void getScheduleById() {
         //given
-        createUserAndTeam();
         Users user = userRepository.findById(1L).get();
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
         for (int i = 0; i < 10; i++) {
-            CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("USER", "스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 3, 3, 11, 0), LocalDateTime.of(2024, 3, 3+i, 12, 0));
+            CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 3, 3, 11, 0), LocalDateTime.of(2024, 3, 3+i, 12, 0));
             scheduleService.createUserSchedule(customUserDetails, createScheduleRequest);
         }
 
@@ -142,12 +143,11 @@ class ScheduleTest {
     @DisplayName("입력받은 날짜의 주에 속한 팀 스케쥴 조회")
     void getTeamScheduleInWeek() {
         //given
-        createUserAndTeam();
         Users user = userRepository.findById(1L).get();
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
         for (int i = 0; i < 3; i++) {
-            CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("TEAM", "테스트코드작성", "테스트코드를작성해야한다", LocalDateTime.of(2024, 3, 3, 10, 10), LocalDateTime.of(2024, 3, 3+i, 12, 10));
+            CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("테스트코드작성", "테스트코드를작성해야한다", LocalDateTime.of(2024, 3, 3, 10, 10), LocalDateTime.of(2024, 3, 3+i, 12, 10));
             scheduleService.createTeamSchedule(customUserDetails, 1L, createScheduleRequest);
         }
 
@@ -163,12 +163,11 @@ class ScheduleTest {
     @DisplayName("입력받은 날짜의 월에 속한 팀 스케쥴 조회")
     void getTeamScheduleInMonth() {
         //given
-        createUserAndTeam();
         Users user = userRepository.findById(1L).get();
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
         for (int i = 0; i < 15; i++) {
-            CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("TEAM", "테스트코드작성", "테스트코드를작성해야한다", LocalDateTime.of(2024, 3, 3, 10, 10), LocalDateTime.of(2024, 3, 3+i, 12, 10));
+            CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("테스트코드작성", "테스트코드를작성해야한다", LocalDateTime.of(2024, 3, 3, 10, 10), LocalDateTime.of(2024, 3, 3+i, 12, 10));
             scheduleService.createTeamSchedule(customUserDetails, 1L, createScheduleRequest);
         }
 
@@ -184,10 +183,9 @@ class ScheduleTest {
     @DisplayName("유저 스케쥴 수정")
     void updateUserSchedule() {
         //given
-        createUserAndTeam();
         Users user = userRepository.findById(1L).get();
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
-        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("USER", "수정전", "수정하기 전입니다", LocalDateTime.of(2024, 3, 1, 11, 11), LocalDateTime.of(2024, 3, 3, 12, 12));
+        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("수정전", "수정하기 전입니다", LocalDateTime.of(2024, 3, 1, 11, 11), LocalDateTime.of(2024, 3, 3, 12, 12));
         scheduleService.createUserSchedule(customUserDetails, createScheduleRequest);
 
         //when
@@ -204,10 +202,10 @@ class ScheduleTest {
     @Test
     @DisplayName("팀 스케쥴 수정")
     void updateTeamSchedule() {
-        createUserAndTeam();
+        //given
         Users user = userRepository.findById(1L).get();
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
-        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("TEAM", "수정전", "수정하기 전입니다", LocalDateTime.of(2024, 3, 1, 11, 11), LocalDateTime.of(2024, 3, 3, 12, 12));
+        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("수정전", "수정하기 전입니다", LocalDateTime.of(2024, 3, 1, 11, 11), LocalDateTime.of(2024, 3, 3, 12, 12));
         scheduleService.createTeamSchedule(customUserDetails, 1L, createScheduleRequest);
 
         //when
@@ -225,10 +223,9 @@ class ScheduleTest {
     @DisplayName("스케쥴 삭제")
     void deleteUserSchedule() {
         //given
-        createUserAndTeam();
         Users user = userRepository.findById(1L).get();
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
-        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("USER", "수정전", "수정하기 전입니다", LocalDateTime.of(2024, 3, 1, 11, 11), LocalDateTime.of(2024, 3, 3, 12, 12));
+        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest("수정전", "수정하기 전입니다", LocalDateTime.of(2024, 3, 1, 11, 11), LocalDateTime.of(2024, 3, 3, 12, 12));
         scheduleService.createUserSchedule(customUserDetails, createScheduleRequest);
 
         //when

@@ -1,0 +1,71 @@
+name: CI/CD
+
+on:
+  release:
+    types: [push] # (1) push시 자동으로 실행됩니다.
+  push:
+    branches: [develop] # (2) main 브랜치에서 동작합니다.
+
+  workflow_dispatch: # (3) 수동으로도 실행이 가능합니다.
+
+env:
+  S3_BUCKET_NAME: keepyuppycicd
+  PROJECT_NAME: Keepy-Uppy-BE
+  CODE_DEPLOY_APP_NAME: keepyuppy-deploy-app
+  DEPLOYMENT_GROUP_NAME: keepyuppy-deploy-group
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read 
+      packages: write
+      
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./gradlew # (7)
+      shell: bash
+
+    - name: Build with Gradle
+      run: ./gradlew clean -x test build # (8)
+      shell: bash
+      
+    - name: Get current time
+      uses: 1466587594/get-current-time@v2 
+      id: current-time
+      with:
+        format: YYYY-MM-DDTHH-mm-ss # (9)
+        utcOffset: "+09:00"
+
+    - name: Show Current Time
+      run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}" # (10)
+      shell: bash
+
+    - name: Make zip file
+      run: zip -r ./$PROJECT_NAME.zip .         # (12)
+      shell: bash
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1      #(13)
+      with:        
+        aws-access-key-id: ${{ inputs.AWS_ACCESS_KEY_ID ||  secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ inputs.AWS_SECRET_ACCESS_KEY ||  secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-2
+        
+    - name: Upload to S3
+      run: aws s3 cp --region ap-northeast-2 ./$PROJECT_NAME.zip s3://$S3_BUCKET_NAME/$PROJECT_NAME/$PROJECT_NAME.zip  #(14)
+
+    - name: Code Deploy
+      run: aws deploy create-deployment --application-name $CODE_DEPLOY_APP_NAME --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name $DEPLOYMENT_GROUP_NAME --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$PROJECT_NAME.zip
+
+
