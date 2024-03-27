@@ -83,8 +83,8 @@ public class AnnouncementTest {
         announcementService.createAnnouncement(userDetails[0], 1L, request);
 
         //when
-        AnnouncementResponse response1 = announcementService.viewAnnouncement(userDetails[0], 1L, 1L);
-        AnnouncementResponse response2 = announcementService.viewAnnouncement(userDetails[1], 1L, 1L);
+        AnnouncementResponse response1 = announcementService.viewAnnouncement(userDetails[0], 1L);
+        AnnouncementResponse response2 = announcementService.viewAnnouncement(userDetails[1], 1L);
 
         //then
         Assertions.assertEquals(request.getTitle(), response1.getTitle());
@@ -100,7 +100,7 @@ public class AnnouncementTest {
 
         //then
         Assertions.assertThrows(CustomException.class, () -> announcementService.createAnnouncement(userDetails[2], 1L, request));
-        Assertions.assertThrows(CustomException.class, () -> announcementService.viewAnnouncement(userDetails[2], 1L, 1L));
+        Assertions.assertThrows(CustomException.class, () -> announcementService.viewAnnouncement(userDetails[2], 1L));
     }
 
     @Test
@@ -111,12 +111,12 @@ public class AnnouncementTest {
         announcementService.createAnnouncement(userDetails[1], 1L, request);
 
         //when
-        announcementService.deleteAnnouncement(userDetails[1], 1L, 1L);
-        announcementService.deleteAnnouncement(userDetails[0], 1L, 2L);
+        announcementService.deleteAnnouncement(userDetails[1], 1L);
+        announcementService.deleteAnnouncement(userDetails[0], 2L);
 
         //then
-        Assertions.assertThrows(CustomException.class, () -> announcementService.viewAnnouncement(userDetails[0], 1L, 1L));
-        Assertions.assertThrows(CustomException.class, () -> announcementService.viewAnnouncement(userDetails[0], 1L, 2L));
+        Assertions.assertThrows(CustomException.class, () -> announcementService.viewAnnouncement(userDetails[0], 1L));
+        Assertions.assertThrows(CustomException.class, () -> announcementService.viewAnnouncement(userDetails[0], 2L));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class AnnouncementTest {
         announcementService.createAnnouncement(userDetails[0], 1L, request);
 
         //then
-        Assertions.assertThrows(CustomException.class, () -> announcementService.deleteAnnouncement(userDetails[1], 1L, 1L));
+        Assertions.assertThrows(CustomException.class, () -> announcementService.deleteAnnouncement(userDetails[1], 1L));
     }
 
     @Test
@@ -137,7 +137,7 @@ public class AnnouncementTest {
         announcementService.createAnnouncement(userDetails[1], 1L, request);
 
         //when
-        AnnouncementResponse response = announcementService.updateAnnouncement(userDetails[1], 1L, 1L, editRequest);
+        AnnouncementResponse response = announcementService.updateAnnouncement(userDetails[1], 1L, editRequest);
 
         //then
         Assertions.assertEquals(editRequest.getTitle(), response.getTitle());
@@ -151,7 +151,7 @@ public class AnnouncementTest {
         announcementService.createAnnouncement(userDetails[1], 1L, request);
 
         //then
-        Assertions.assertThrows(CustomException.class, () -> announcementService.updateAnnouncement(userDetails[0], 1L, 1L, request));
+        Assertions.assertThrows(CustomException.class, () -> announcementService.updateAnnouncement(userDetails[0], 1L, request));
     }
 
     @Test
@@ -162,7 +162,7 @@ public class AnnouncementTest {
         announcementService.createAnnouncement(userDetails[1], 1L, request);
 
         //when
-        PostResponse response = announcementService.convertAsPost(userDetails[1], 1L, 1L, editRequest);
+        PostResponse response = announcementService.convertAsPost(userDetails[1], 1L, editRequest);
 
         //then
         Assertions.assertEquals(editRequest.getTitle(), response.getTitle());
@@ -180,14 +180,14 @@ public class AnnouncementTest {
         announcementService.createAnnouncement(userDetails[0], 1L, request);
 
         //when
-        announcementService.pinAnnouncement(userDetails[0], 1L, 1L, true);
-        announcementService.pinAnnouncement(userDetails[0], 1L, 2L, true);
-        announcementService.pinAnnouncement(userDetails[0], 1L, 3L, true);
+        announcementService.pinAnnouncement(userDetails[0], 1L, true);
+        announcementService.pinAnnouncement(userDetails[0], 2L, true);
+        announcementService.pinAnnouncement(userDetails[0], 3L, true);
 
         //then
-        Assertions.assertThrows(IllegalArgumentException.class, () -> announcementService.pinAnnouncement(userDetails[0], 1L, 4L, true));
-        announcementService.pinAnnouncement(userDetails[0], 1L, 3L, false);
-        Assertions.assertDoesNotThrow(() -> announcementService.pinAnnouncement(userDetails[0], 1L, 4L, true));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> announcementService.pinAnnouncement(userDetails[0], 4L, true));
+        announcementService.pinAnnouncement(userDetails[0], 3L, false);
+        Assertions.assertDoesNotThrow(() -> announcementService.pinAnnouncement(userDetails[0], 4L, true));
 
     }
 
@@ -200,7 +200,7 @@ public class AnnouncementTest {
         announcementService.createAnnouncement(userDetails[0], 1L, request);
 
         //when
-        announcementService.pinAnnouncement(userDetails[0], 1L, 1L, true);
+        announcementService.pinAnnouncement(userDetails[0], 1L, true);
 
         Page<AnnouncementResponse> response = announcementService.getAnnouncementsByTeam(userDetails[0], 1L, 1);
 
@@ -243,7 +243,7 @@ public class AnnouncementTest {
         //when
         announcementService.markAsRead(userDetails[0], 1L);
         announcementService.markAsRead(userDetails[0], 2L);
-        announcementService.pinAnnouncement(userDetails[0], 1L, 2L, true);
+        announcementService.pinAnnouncement(userDetails[0], 2L, true);
         List<AnnouncementResponse> response = announcementService.getUnreadAnnouncementsByTeam(userDetails[0],  1L);
 
         //then

@@ -1,8 +1,5 @@
 package com.keepyuppy.KeepyUppy.user.communication.controller;
 
-import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
-import com.keepyuppy.KeepyUppy.post.service.AnnouncementService;
-import com.keepyuppy.KeepyUppy.post.service.PostService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.user.communication.request.UpdateUserRequest;
 import com.keepyuppy.KeepyUppy.user.communication.response.UserResponse;
@@ -18,8 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
@@ -28,7 +23,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final AnnouncementService announcementService;
 
     @GetMapping("/")
     @Operation(summary = "회원(본인) 프로필 조회")
@@ -64,21 +58,6 @@ public class UserController {
     @Operation(summary = "회원 프로필 이미지 변경")
     public void updateProfileImage(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestPart(value = "image") MultipartFile multipartFile) {
         userService.updateProfileImage(userDetails, multipartFile);
-    }
-
-    @GetMapping("/unread")
-    @Operation(summary = "읽지 않은 공지글 조회")
-    public ResponseEntity<List<AnnouncementResponse>> getUnreadAnnouncements(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(announcementService.getUnreadAnnouncementsByUser(userDetails));
-    }
-
-    @PutMapping("/read/{announcementId}")
-    @Operation(summary = "공지글 읽음 표시")
-    public ResponseEntity<String> readAnnouncement(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long announcementId) {
-        announcementService.markAsRead(userDetails, announcementId);
-        return ResponseEntity.ok("공지 읽음 표시 성공");
     }
 
     @Operation(summary = "유저네임이 일치하는 유저 조회")
