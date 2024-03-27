@@ -19,7 +19,6 @@ public class AnnouncementResponse {
     private String title;
     private MemberResponse author;
     private String content;
-    private Boolean isAnnouncement;
     private LocalDateTime createdDate;
     private boolean isEdited;
     private boolean pinned;
@@ -30,7 +29,6 @@ public class AnnouncementResponse {
                 announcement.getTitle(),
                 MemberResponse.of(announcement.getAuthor()),
                 announcement.getContent(),
-                announcement.getType() == ContentType.ANNOUNCEMENT,
                 announcement.getCreatedDate(),
                 announcement.getModifiedDate().isAfter(announcement.getCreatedDate().plusMinutes(1)),
                 announcement.isPinned()
