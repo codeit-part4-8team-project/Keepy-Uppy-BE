@@ -1,7 +1,5 @@
 package com.keepyuppy.KeepyUppy.user.communication.controller;
 
-import com.keepyuppy.KeepyUppy.issue.communication.response.UserIssueBoardResponse;
-import com.keepyuppy.KeepyUppy.issue.service.IssueService;
 import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
 import com.keepyuppy.KeepyUppy.post.communication.response.PostResponse;
 import com.keepyuppy.KeepyUppy.post.service.AnnouncementService;
@@ -32,7 +30,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final IssueService issueService;
     private final PostService postService;
     private final AnnouncementService announcementService;
 
@@ -70,12 +67,6 @@ public class UserController {
     @Operation(summary = "회원 프로필 이미지 변경")
     public void updateProfileImage(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestPart(value = "image") MultipartFile multipartFile) {
         userService.updateProfileImage(userDetails, multipartFile);
-    }
-
-    @GetMapping("/my-issue")
-    @Operation(summary = "내 이슈 조회")
-    public ResponseEntity<UserIssueBoardResponse> getMyIssues(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(issueService.getMyIssueBoard(userDetails));
     }
 
     @GetMapping("/unread")
