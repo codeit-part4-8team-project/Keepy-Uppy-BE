@@ -47,6 +47,12 @@ public class TeamService {
 
         Users user = userRepository.findById(userDetails.getUserId()).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
 
+        List<String> members = createTeamRequest.getMembers();
+
+        if (members.contains(user.getUsername())) {
+            throw new CustomException(ExceptionType.MEMBER_ALREADY_EXISTS);
+        }
+
         Member member = new Member(user, team, Grade.OWNER, Status.ACCEPTED);
 
         team.addMember(member);
