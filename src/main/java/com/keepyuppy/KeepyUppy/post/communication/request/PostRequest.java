@@ -12,10 +12,8 @@ public class PostRequest {
 
     private String title;
     private String content;
-    @Schema(example = "false")
-    private Boolean isAnnouncement;
 
     public static PostRequest ofIssue(IssueRequest request){
-        return new PostRequest(request.getTitle(), request.getContent(), false);
+        return new PostRequest(request.getTitle(), request.getContent());
     }
 }

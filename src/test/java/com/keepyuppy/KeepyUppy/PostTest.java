@@ -73,7 +73,7 @@ public class PostTest {
         CreateTeamRequest createTeamRequest = new CreateTeamRequest("team", "test", "red", LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 1), List.of("username1"), null, null, null);
         teamService.createTeam(userDetails[0], createTeamRequest);
 
-        request = new PostRequest("title", "content", false);
+        request = new PostRequest("title", "content");
     }
 
     @Test
@@ -143,7 +143,7 @@ public class PostTest {
     @DisplayName("본인 게시글 수정")
     void updatePostByAuthor() {
         //given
-        PostRequest editRequest = new PostRequest("title edit", "content edit", false);
+        PostRequest editRequest = new PostRequest("title edit", "content edit");
         postService.createPost(userDetails[1], 1L, request);
 
         //when
@@ -168,7 +168,7 @@ public class PostTest {
     @DisplayName("게시글 공지글로 변환")
     void convertAsAnnouncement() {
         //given
-        PostRequest editRequest = new PostRequest("title edit", "content edit", true);
+        PostRequest editRequest = new PostRequest("title edit", "content edit");
         postService.createPost(userDetails[1], 1L, request);
 
         //when
