@@ -58,18 +58,18 @@ public class PostService {
         return PostResponse.of(postJpaRepository.save(post));
     }
 
-    public PostResponse viewPost(CustomUserDetails userDetails, Long teamId, Long postId) {
-        getMemberInTeam(userDetails.getUserId(), teamId);
+    public PostResponse viewPost(CustomUserDetails userDetails, Long postId) {
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
+        getMemberInTeam(userDetails.getUserId(), post.getTeam().getId());
         return PostResponse.of(post);
     }
 
     @Transactional
-    public void deletePost(CustomUserDetails userDetails, Long teamId, Long postId) {
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
+    public void deletePost(CustomUserDetails userDetails, Long postId) {
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
+        Member member = getMemberInTeam(userDetails.getUserId(), post.getTeam().getId());
         Member author = post.getAuthor();
 
         if (member.getGrade() == Grade.TEAM_MEMBER && !Objects.equals(member.getId(), author.getId())) {
@@ -81,14 +81,12 @@ public class PostService {
     @Transactional
     public PostResponse updatePost(
             CustomUserDetails userDetails,
-            Long teamId,
             Long postId,
             PostRequest request
     ) {
-
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
+        Member member = getMemberInTeam(userDetails.getUserId(), post.getTeam().getId());
         Member author = post.getAuthor();
 
         if (!Objects.equals(member.getId(), author.getId())) {
@@ -101,13 +99,12 @@ public class PostService {
     @Transactional
     public AnnouncementResponse convertAsAnnouncement(
             CustomUserDetails userDetails,
-            Long teamId,
             Long postId,
             PostRequest request
     ) {
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
+        Member member = getMemberInTeam(userDetails.getUserId(), post.getTeam().getId());
         Member author = post.getAuthor();
 
         if (!Objects.equals(member.getId(), author.getId())) {
@@ -151,17 +148,16 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse likePost(CustomUserDetails userDetails, Long teamId, Long postId) {
+    public PostResponse likePost(CustomUserDetails userDetails, Long postId) {
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
+        Member member = getMemberInTeam(userDetails.getUserId(), post.getTeam().getId());
 
-        Member memberInTeam = getMemberInTeam(userDetails.getUserId(), teamId);
-
-        if (post.getLikes().stream().map(PostLike::getMember).anyMatch(memberInTeam::equals)) {
+        if (post.getLikes().stream().map(PostLike::getMember).anyMatch(member::equals)) {
             throw new CustomException(ExceptionType.ALREADY_LIKE_POST);
         }
 
-        PostLike postLike = new PostLike(memberInTeam, post);
+        PostLike postLike = new PostLike(member, post);
         postLikeJpaRepository.save(postLike);
 
         post.addLike(postLike);
@@ -173,7 +169,6 @@ public class PostService {
     public PostResponse unlikePost(CustomUserDetails userDetails, Long postId) {
         Post post = postJpaRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
-
         Member member = getMemberInTeam(userDetails.getUserId(), post.getTeam().getId());
 
         PostLike postLike = postLikeJpaRepository.findByMemberAndPost(member, post)

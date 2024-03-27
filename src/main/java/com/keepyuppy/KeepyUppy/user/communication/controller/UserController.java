@@ -1,7 +1,6 @@
 package com.keepyuppy.KeepyUppy.user.communication.controller;
 
 import com.keepyuppy.KeepyUppy.post.communication.response.AnnouncementResponse;
-import com.keepyuppy.KeepyUppy.post.communication.response.PostResponse;
 import com.keepyuppy.KeepyUppy.post.service.AnnouncementService;
 import com.keepyuppy.KeepyUppy.post.service.PostService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,7 +28,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final PostService postService;
     private final AnnouncementService announcementService;
 
     @GetMapping("/")
@@ -88,15 +85,6 @@ public class UserController {
     @GetMapping("/search")
     public ResponseEntity<UserResponse> findByUsername(@RequestParam String username) {
         return ResponseEntity.ok(userService.findByUsername(username));
-    }
-
-    @Operation(summary = "팀 통합 자유게시판 조회")
-    @GetMapping("/all-post")
-    public ResponseEntity<Page<PostResponse>> getUserPosts(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(defaultValue = "1") int page
-    ){
-        return ResponseEntity.ok(postService.getPostPaginateByUser(userDetails, page));
     }
 }
 
