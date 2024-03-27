@@ -60,6 +60,18 @@ class TeamTest {
         Assertions.assertEquals(Grade.OWNER.name(),team.getMembers().get(0).getGrade());
     }
 
+    @Test
+    @DisplayName("팀 Id 로 팀 조회")
+    void getTeamById() {
+        //given
+        createUserAndTeam();
+        //when
+        TeamResponse team = teamService.getTeam(1L);
+
+        //then
+        Assertions.assertEquals("A팀",team.getName());
+    }
+
 
     @Test
     @DisplayName("팀 생성시 추가한 회원은 팀 초대 대기중인 멤버가 된다")
@@ -222,5 +234,6 @@ class TeamTest {
         teamService.createTeam(customUserDetails, createTeamRequest);
     }
 }
+
 
 

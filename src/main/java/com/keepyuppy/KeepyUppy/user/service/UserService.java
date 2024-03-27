@@ -27,13 +27,13 @@ public class UserService {
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]+$");
 
     @Transactional
-    public Users updateUser(Long id, UpdateUserRequest request){
+    public UserResponse updateUser(Long id, UpdateUserRequest request){
         String username = request.getUsername();
-
         validateUsername(username);
         Users user = findById(id);
+
         user.update(request);
-        return userRepository.save(user);
+        return UserResponse.of(userRepository.save(user));
     }
 
     public void validateUsername(String username){

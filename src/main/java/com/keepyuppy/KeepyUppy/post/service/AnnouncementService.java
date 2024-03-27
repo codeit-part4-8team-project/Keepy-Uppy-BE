@@ -152,7 +152,7 @@ public class AnnouncementService {
         announcementJPARepository.save(announcement);
     }
 
-    public List<AnnouncementResponse> getUnreadAnnouncements(CustomUserDetails userDetails){
+    public List<AnnouncementResponse> getUnreadAnnouncementsByUser(CustomUserDetails userDetails){
         List<Announcement> announcements = announcementRepository.findUnreadByUserId(userDetails.getUserId());
         return announcements.stream().map(AnnouncementResponse::of).toList();
     }
