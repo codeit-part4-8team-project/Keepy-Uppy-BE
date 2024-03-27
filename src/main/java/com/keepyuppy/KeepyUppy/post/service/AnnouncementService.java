@@ -61,18 +61,18 @@ public class AnnouncementService {
         return AnnouncementResponse.of(announcementJPARepository.save(announcement));
     }
 
-    public AnnouncementResponse viewAnnouncement(CustomUserDetails userDetails, Long teamId, Long announcementId){
-        getMemberInTeam(userDetails.getUserId(), teamId);
+    public AnnouncementResponse viewAnnouncement(CustomUserDetails userDetails, Long announcementId){
         Announcement announcement = announcementJPARepository.findById(announcementId)
                 .orElseThrow(() -> new CustomException(ExceptionType.ANNOUNCEMENT_NOT_FOUND));
+        getMemberInTeam(userDetails.getUserId(), announcement.getTeam().getId());
         return AnnouncementResponse.of(announcement);
     }
 
     @Transactional
-    public void deleteAnnouncement(CustomUserDetails userDetails, Long teamId, Long announcementId){
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
+    public void deleteAnnouncement(CustomUserDetails userDetails, Long announcementId){
         Announcement announcement = announcementJPARepository.findById(announcementId)
                 .orElseThrow(() -> new CustomException(ExceptionType.ANNOUNCEMENT_NOT_FOUND));
+        Member member = getMemberInTeam(userDetails.getUserId(), announcement.getTeam().getId());
         Member author = announcement.getAuthor();
 
         if (member.getGrade() == Grade.TEAM_MEMBER && !Objects.equals(member.getId(), author.getId())){
@@ -84,13 +84,12 @@ public class AnnouncementService {
     @Transactional
     public AnnouncementResponse updateAnnouncement(
             CustomUserDetails userDetails,
-            Long teamId,
             Long announcementId,
             PostRequest request
     ){
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Announcement announcement = announcementJPARepository.findById(announcementId)
                 .orElseThrow(() -> new CustomException(ExceptionType.ANNOUNCEMENT_NOT_FOUND));
+        Member member = getMemberInTeam(userDetails.getUserId(), announcement.getTeam().getId());
         Member author = announcement.getAuthor();
 
         if (!Objects.equals(member.getId(), author.getId())){
@@ -103,13 +102,12 @@ public class AnnouncementService {
     @Transactional
     public PostResponse convertAsPost(
             CustomUserDetails userDetails,
-            Long teamId,
             Long announcementId,
             PostRequest request
     ){
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Announcement announcement = announcementJPARepository.findById(announcementId)
                 .orElseThrow(() -> new CustomException(ExceptionType.ANNOUNCEMENT_NOT_FOUND));
+        Member member = getMemberInTeam(userDetails.getUserId(), announcement.getTeam().getId());
         Member author = announcement.getAuthor();
 
         if (!Objects.equals(member.getId(), author.getId())){
@@ -124,10 +122,10 @@ public class AnnouncementService {
 
 
     @Transactional
-    public void pinAnnouncement(CustomUserDetails userDetails, Long teamId, Long announcementId, boolean pinned){
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
+    public void pinAnnouncement(CustomUserDetails userDetails, Long announcementId, boolean pinned){
         Announcement announcement = announcementJPARepository.findById(announcementId)
                 .orElseThrow(() -> new CustomException(ExceptionType.ANNOUNCEMENT_NOT_FOUND));
+        Member member = getMemberInTeam(userDetails.getUserId(), announcement.getTeam().getId());
 
         if (member.getGrade() == Grade.TEAM_MEMBER){
             throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);

@@ -97,7 +97,7 @@ public class IssueTest {
         //when
         teamService.updateTeam(userDetails[0], 1L, new UpdateTeamRequest("edit", null, null, null, null, null, null, null));
         userService.updateUser(1L, new UpdateUserRequest("new name", null, null));
-        IssueResponse response = issueService.viewIssue(userDetails[0], 1L, 1L);
+        IssueResponse response = issueService.viewIssue(userDetails[0], 1L);
 
 
         //then
@@ -117,12 +117,12 @@ public class IssueTest {
         issueService.createIssue(userDetails[1], 1L, request);
 
         //when
-        issueService.deleteIssue(userDetails[1], 1L, 1L);
-        issueService.deleteIssue(userDetails[0], 1L, 2L);
+        issueService.deleteIssue(userDetails[1], 1L);
+        issueService.deleteIssue(userDetails[0], 2L);
 
         //then
-        Assertions.assertThrows(CustomException.class, () -> issueService.viewIssue(userDetails[0], 1L, 1L));
-        Assertions.assertThrows(CustomException.class, () -> issueService.viewIssue(userDetails[0], 1L, 2L));
+        Assertions.assertThrows(CustomException.class, () -> issueService.viewIssue(userDetails[0], 1L));
+        Assertions.assertThrows(CustomException.class, () -> issueService.viewIssue(userDetails[0], 2L));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class IssueTest {
         issueService.createIssue(userDetails[0], 1L, request);
 
         //then
-        Assertions.assertThrows(CustomException.class, () -> issueService.deleteIssue(userDetails[1], 1L, 1L));
+        Assertions.assertThrows(CustomException.class, () -> issueService.deleteIssue(userDetails[1], 1L));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class IssueTest {
         issueService.createIssue(userDetails[0], 1L, request);
 
         //when
-        IssueResponse response = issueService.updateIssue(userDetails[0], 1L, 1L, editRequest);
+        IssueResponse response = issueService.updateIssue(userDetails[0], 1L, editRequest);
 
         //then
         Assertions.assertEquals(editRequest.getTitle(), response.getTitle());
@@ -158,7 +158,7 @@ public class IssueTest {
         issueService.createIssue(userDetails[1], 1L, request);
 
         //then
-        Assertions.assertThrows(CustomException.class, () -> issueService.updateIssue(userDetails[0], 1L, 1L, request));
+        Assertions.assertThrows(CustomException.class, () -> issueService.updateIssue(userDetails[0], 1L, request));
     }
 
     @Test
@@ -169,7 +169,7 @@ public class IssueTest {
         issueService.createIssue(userDetails[0], 1L, request);
 
         //when
-        IssueResponse response = issueService.updateIssue(userDetails[0], 1L, 1L, editRequest);
+        IssueResponse response = issueService.updateIssue(userDetails[0],  1L, editRequest);
 
         //then
         Assertions.assertEquals(editRequest.getTitle(), response.getTitle());
@@ -186,12 +186,12 @@ public class IssueTest {
         issueService.createIssue(userDetails[0], 1L, request);
 
         //when
-        IssueResponse response = issueService.updateStatus(userDetails[0], 1L, 1L, editRequest);
+        IssueResponse response = issueService.updateStatus(userDetails[0], 1L, editRequest);
 
         //then
         Assertions.assertEquals(request.getTitle(), response.getTitle());
         Assertions.assertEquals(editRequest.getStatus(), response.getStatus());
-        Assertions.assertThrows(CustomException.class, () -> issueService.updateStatus(userDetails[1], 1L, 1L, editRequest));
+        Assertions.assertThrows(CustomException.class, () -> issueService.updateStatus(userDetails[1], 1L, editRequest));
     }
 
     @Test
@@ -203,7 +203,7 @@ public class IssueTest {
         issueService.createIssue(userDetails[0], 1L, newRequest);
 
         //when
-        IssueResponse response = issueService.updateStatus(userDetails[1], 1L, 1L, editRequest);
+        IssueResponse response = issueService.updateStatus(userDetails[1], 1L, editRequest);
 
         //then
         Assertions.assertEquals(newRequest.getTitle(), response.getTitle());

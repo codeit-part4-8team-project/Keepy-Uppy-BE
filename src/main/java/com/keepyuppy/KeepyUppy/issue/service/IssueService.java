@@ -68,18 +68,19 @@ public class IssueService {
         return IssueResponse.of(issue);
     }
 
-    public IssueResponse viewIssue(CustomUserDetails userDetails, Long teamId, Long issueId){
-        getMemberInTeam(userDetails.getUserId(), teamId);
+    public IssueResponse viewIssue(CustomUserDetails userDetails, Long issueId){
         Issue issue = issueJpaRepository.findById(issueId)
                 .orElseThrow(() -> new CustomException(ExceptionType.ISSUE_NOT_FOUND));
+        getMemberInTeam(userDetails.getUserId(), issue.getTeam().getId());
+
         return IssueResponse.of(issue);
     }
 
     @Transactional
-    public void deleteIssue(CustomUserDetails userDetails, Long teamId, Long issueId){
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
+    public void deleteIssue(CustomUserDetails userDetails, Long issueId){
         Issue issue = issueJpaRepository.findById(issueId)
                 .orElseThrow(() -> new CustomException(ExceptionType.ISSUE_NOT_FOUND));
+        Member member = getMemberInTeam(userDetails.getUserId(), issue.getTeam().getId());
         Member author = issue.getAuthor();
 
         if (member.getGrade() == Grade.TEAM_MEMBER && !Objects.equals(member.getId(), author.getId())){
@@ -93,14 +94,14 @@ public class IssueService {
     @Transactional
     public IssueResponse updateIssue(
             CustomUserDetails userDetails,
-            Long teamId,
             Long issueId,
             IssueRequest request
     ){
 
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Issue issue = issueJpaRepository.findById(issueId)
                 .orElseThrow(() -> new CustomException(ExceptionType.ISSUE_NOT_FOUND));
+        Long teamId = issue.getTeam().getId();
+        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
 
         if (!Objects.equals(member.getId(), issue.getAuthor().getId())){
             throw new CustomException(ExceptionType.ACTION_ACCESS_DENIED);
@@ -126,13 +127,12 @@ public class IssueService {
     @Transactional
     public IssueResponse updateStatus(
             CustomUserDetails userDetails,
-            Long teamId,
             Long issueId,
             IssueStatusRequest request
     ){
-        Member member = getMemberInTeam(userDetails.getUserId(), teamId);
         Issue issue = issueJpaRepository.findById(issueId)
                 .orElseThrow(() -> new CustomException(ExceptionType.ISSUE_NOT_FOUND));
+        Member member = getMemberInTeam(userDetails.getUserId(), issue.getTeam().getId());
 
         // check if the member is an author or has the issue assigned
         // also allow update if there were no assignments

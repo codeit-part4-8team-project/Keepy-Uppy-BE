@@ -19,8 +19,6 @@ public class PostResponse {
     private String title;
     private MemberResponse author;
     private String content;
-    @Schema(example = "false")
-    private Boolean isAnnouncement;
     private LocalDateTime createdDate;
     private boolean isEdited;
     private int likeCount;
@@ -33,7 +31,6 @@ public class PostResponse {
                 post.getTitle(),
                 MemberResponse.of(post.getAuthor()),
                 post.getContent(),
-                post.getType() == ContentType.ANNOUNCEMENT,
                 post.getCreatedDate(),
                 post.getModifiedDate().isAfter(post.getCreatedDate().plusMinutes(1)),
                 post.getLikes().size(),

@@ -73,7 +73,7 @@ public class PostTest {
         CreateTeamRequest createTeamRequest = new CreateTeamRequest("team", "test", "red", LocalDate.of(2024, 1, 1), LocalDate.of(2024, 3, 1), List.of("username1"), null, null, null);
         teamService.createTeam(userDetails[0], createTeamRequest);
 
-        request = new PostRequest("title", "content", false);
+        request = new PostRequest("title", "content");
     }
 
     @Test
@@ -93,8 +93,8 @@ public class PostTest {
         postService.createPost(userDetails[0], 1L, request);
 
         //when
-        PostResponse response1 = postService.viewPost(userDetails[0], 1L, 1L);
-        PostResponse response2 = postService.viewPost(userDetails[1], 1L, 1L);
+        PostResponse response1 = postService.viewPost(userDetails[0], 1L);
+        PostResponse response2 = postService.viewPost(userDetails[1], 1L);
 
         //then
         Assertions.assertEquals(request.getTitle(), response1.getTitle());
@@ -110,7 +110,7 @@ public class PostTest {
 
         //then
         Assertions.assertThrows(CustomException.class, () -> postService.createPost(userDetails[2], 1L, request));
-        Assertions.assertThrows(CustomException.class, () -> postService.viewPost(userDetails[2], 1L, 1L));
+        Assertions.assertThrows(CustomException.class, () -> postService.viewPost(userDetails[2], 1L));
     }
 
     @Test
@@ -121,12 +121,12 @@ public class PostTest {
         postService.createPost(userDetails[1], 1L, request);
 
         //when
-        postService.deletePost(userDetails[1], 1L, 1L);
-        postService.deletePost(userDetails[0], 1L, 2L);
+        postService.deletePost(userDetails[1], 1L);
+        postService.deletePost(userDetails[0], 2L);
 
         //then
-        Assertions.assertThrows(CustomException.class, () -> postService.viewPost(userDetails[0], 1L, 1L));
-        Assertions.assertThrows(CustomException.class, () -> postService.viewPost(userDetails[0], 1L, 2L));
+        Assertions.assertThrows(CustomException.class, () -> postService.viewPost(userDetails[0], 1L));
+        Assertions.assertThrows(CustomException.class, () -> postService.viewPost(userDetails[0], 2L));
     }
 
     @Test
@@ -136,18 +136,18 @@ public class PostTest {
         postService.createPost(userDetails[0], 1L, request);
 
         //then
-        Assertions.assertThrows(CustomException.class, () -> postService.deletePost(userDetails[1], 1L, 1L));
+        Assertions.assertThrows(CustomException.class, () -> postService.deletePost(userDetails[1], 1L));
     }
 
     @Test
     @DisplayName("본인 게시글 수정")
     void updatePostByAuthor() {
         //given
-        PostRequest editRequest = new PostRequest("title edit", "content edit", false);
+        PostRequest editRequest = new PostRequest("title edit", "content edit");
         postService.createPost(userDetails[1], 1L, request);
 
         //when
-        PostResponse response = postService.updatePost(userDetails[1], 1L, 1L, editRequest);
+        PostResponse response = postService.updatePost(userDetails[1], 1L, editRequest);
 
         //then
         Assertions.assertEquals(editRequest.getTitle(), response.getTitle());
@@ -161,23 +161,22 @@ public class PostTest {
         postService.createPost(userDetails[1], 1L, request);
 
         //then
-        Assertions.assertThrows(CustomException.class, () -> postService.updatePost(userDetails[0], 1L, 1L, request));
+        Assertions.assertThrows(CustomException.class, () -> postService.updatePost(userDetails[0], 1L, request));
     }
 
     @Test
     @DisplayName("게시글 공지글로 변환")
     void convertAsAnnouncement() {
         //given
-        PostRequest editRequest = new PostRequest("title edit", "content edit", true);
+        PostRequest editRequest = new PostRequest("title edit", "content edit");
         postService.createPost(userDetails[1], 1L, request);
 
         //when
-        AnnouncementResponse response = postService.convertAsAnnouncement(userDetails[1], 1L, 1L, editRequest);
+        AnnouncementResponse response = postService.convertAsAnnouncement(userDetails[1], 1L, editRequest);
 
         //then
         Assertions.assertEquals(editRequest.getTitle(), response.getTitle());
         Assertions.assertEquals(editRequest.getContent(), response.getContent());
-        Assertions.assertEquals(true, response.getIsAnnouncement());
     }
 
     @Test
@@ -229,12 +228,13 @@ public class PostTest {
         Member likeMember = memberRepository.findMemberInTeamByUserId(1L, 1L).get();
 
         //when
-        postService.likePost(userDetails[0],1L,1L);
+        postService.likePost(userDetails[0],1L);
         Post post = postJpaRepository.findById(1L).get();
 
         //then
         Assertions.assertEquals(1L, post.getLikes().size());
         Assertions.assertTrue(post.getLikes().stream().map(PostLike::getMember).toList().contains(likeMember));
+        Assertions.assertThrows(CustomException.class, () -> postService.likePost(userDetails[0],1L));
     }
 
     @Test
@@ -243,7 +243,7 @@ public class PostTest {
         //given
         postService.createPost(userDetails[0], 1L, request);
         Member likeMember = memberRepository.findMemberInTeamByUserId(1L, 1L).get();
-        postService.likePost(userDetails[0],1L,1L);
+        postService.likePost(userDetails[0],1L);
         Post post = postJpaRepository.findById(1L).get();
 
         Assertions.assertEquals(1L,post.getLikes().size());
