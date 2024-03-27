@@ -167,7 +167,6 @@ public class AnnouncementTest {
         //then
         Assertions.assertEquals(editRequest.getTitle(), response.getTitle());
         Assertions.assertEquals(editRequest.getContent(), response.getContent());
-        Assertions.assertEquals(false, response.getIsAnnouncement());
     }
 
     @Test

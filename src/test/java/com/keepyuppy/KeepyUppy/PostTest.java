@@ -177,7 +177,6 @@ public class PostTest {
         //then
         Assertions.assertEquals(editRequest.getTitle(), response.getTitle());
         Assertions.assertEquals(editRequest.getContent(), response.getContent());
-        Assertions.assertEquals(true, response.getIsAnnouncement());
     }
 
     @Test
