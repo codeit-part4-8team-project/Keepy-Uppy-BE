@@ -153,7 +153,7 @@ public class PostService {
                 .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
         Member member = getMemberInTeam(userDetails.getUserId(), post.getTeam().getId());
 
-        if (post.getLikes().stream().map(PostLike::getMember).anyMatch(member::equals)) {
+        if (post.getLikes().stream().map(PostLike::getMember).anyMatch(memberInList -> memberInList.getId().equals(member.getId()))) {
             throw new CustomException(ExceptionType.ALREADY_LIKE_POST);
         }
 
