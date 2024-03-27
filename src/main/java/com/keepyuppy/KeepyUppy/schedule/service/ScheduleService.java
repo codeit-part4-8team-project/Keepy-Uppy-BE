@@ -67,7 +67,7 @@ public class ScheduleService {
     public ScheduleResponse getScheduleById(CustomUserDetails userDetails, Long scheduleId) {
         Schedule schedule = scheduleJpaRepository.findById(scheduleId).orElseThrow(() -> new CustomException(ExceptionType.SCHEDULE_NOT_FOUND));
 
-        if (schedule.getScheduleType().equals(ScheduleType.TEAM)) {
+        if (schedule.getScheduleType().equals(ScheduleType.TEAM) && schedule.getTeam() != null) {
             // return if user is a member of the team
             getMemberInTeam(userDetails.getUserId(), schedule.getTeam().getId());
             return TeamScheduleResponse.of(schedule);
