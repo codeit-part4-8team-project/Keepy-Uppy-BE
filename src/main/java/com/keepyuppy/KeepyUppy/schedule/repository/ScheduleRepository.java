@@ -61,5 +61,27 @@ public class ScheduleRepository {
                 .fetch();
     }
 
+    public List<Schedule> findTeamSchedulesByTeamIdsInWeek(Long userId, List<Long> teamIds, LocalDate date) {
+        LocalDate startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+        return jpaQueryFactory.selectFrom(schedule)
+                .join(schedule.team, QTeam.team)
+                .fetchJoin()
+                .where(schedule.team.members.any().user.id.eq(userId)
+                        .and(schedule.team.id.in(teamIds)))
+                .where(schedule.endDateTime.between(startOfWeek.atStartOfDay(), endOfWeek.atTime(23,59,59)))
+                .fetch();
+    }
+
+    public List<Schedule> findTeamSchedulesByTeamIdsInMonth(Long userId, List<Long> teamIds, LocalDate date) {
+        return jpaQueryFactory.selectFrom(schedule)
+                .join(schedule.team, QTeam.team)
+                .fetchJoin()
+                .where(schedule.team.members.any().user.id.eq(userId)
+                        .and(schedule.team.id.in(teamIds)))
+                .where(schedule.endDateTime.month().eq(date.getMonthValue()))
+                .fetch();
+    }
+
 
 }

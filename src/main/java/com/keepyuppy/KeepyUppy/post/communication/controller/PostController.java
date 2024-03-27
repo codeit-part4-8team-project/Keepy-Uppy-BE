@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/post")
@@ -81,13 +83,14 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostPaginateByTeam(userDetails, teamId, page));
     }
 
-    @Operation(summary = "팀 통합 자유게시판 조회")
+    @Operation(summary = "팀 통합 자유게시판 조회, 팀 별 필터링 가능")
     @GetMapping("/user")
     public ResponseEntity<Page<PostResponse>> getUserPosts(
             @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = false) List<Long> teamIds,
             @RequestParam(defaultValue = "1") int page
     ){
-        return ResponseEntity.ok(postService.getPostPaginateByUser(userDetails, page));
+        return ResponseEntity.ok(postService.getPostPaginateFilter(userDetails, teamIds, page));
     }
 
     @Operation(summary = "게시글 좋아요")

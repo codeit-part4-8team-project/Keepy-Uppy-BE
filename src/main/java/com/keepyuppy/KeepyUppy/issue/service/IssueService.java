@@ -22,6 +22,8 @@ import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class IssueService {
 
     private final IssueJpaRepository issueJpaRepository;
@@ -180,17 +183,22 @@ public class IssueService {
     public TeamIssueBoardResponse getTeamIssueBoard(CustomUserDetails userDetails, Long teamId){
         Member member = getMemberInTeam(userDetails.getUserId(), teamId);
 
-        List<Issue> todo = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.TODO);
-        List<Issue> progress = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.INPROGRESS);
-        List<Issue> done = issueJpaRepository.findByTeamAndStatusOrderByModifiedDateAsc(member.getTeam(), IssueStatus.DONE);
+        List<Issue> todo = issueRepository.findByTeamIdAndStatus(teamId, IssueStatus.TODO);
+        List<Issue> progress = issueRepository.findByTeamIdAndStatus(teamId, IssueStatus.INPROGRESS);
+        List<Issue> done = issueRepository.findByTeamIdAndStatus(teamId, IssueStatus.DONE);
 
         return TeamIssueBoardResponse.of(member.getTeam(), todo, progress, done);
     }
 
-    public UserIssueBoardResponse getMyIssueBoard(CustomUserDetails userDetails){
-        List<Issue> todo = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.TODO);
-        List<Issue> progress = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.INPROGRESS);
-        List<Issue> done = issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.DONE);
+    public UserIssueBoardResponse getIssueBoardByUserAndTeams(CustomUserDetails userDetails, List<Long> teamIds){
+        boolean filter = teamIds != null && !teamIds.isEmpty();
+
+        List<Issue> todo = filter ? issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.TODO)
+                : issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.TODO);
+        List<Issue> progress = filter ? issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.INPROGRESS)
+                : issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.INPROGRESS);
+        List<Issue> done = filter ? issueRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, IssueStatus.DONE)
+                : issueRepository.findByAssignedUserId(userDetails.getUserId(), IssueStatus.DONE);
 
         return UserIssueBoardResponse.of(todo, progress, done);
     }

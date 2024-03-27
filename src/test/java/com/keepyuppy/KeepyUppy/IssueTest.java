@@ -4,6 +4,8 @@ import com.keepyuppy.KeepyUppy.global.exception.CustomException;
 import com.keepyuppy.KeepyUppy.issue.communication.request.IssueRequest;
 import com.keepyuppy.KeepyUppy.issue.communication.request.IssueStatusRequest;
 import com.keepyuppy.KeepyUppy.issue.communication.response.IssueResponse;
+import com.keepyuppy.KeepyUppy.issue.communication.response.TeamIssueBoardResponse;
+import com.keepyuppy.KeepyUppy.issue.communication.response.UserIssueBoardResponse;
 import com.keepyuppy.KeepyUppy.issue.domain.enums.IssueStatus;
 import com.keepyuppy.KeepyUppy.issue.service.IssueService;
 import com.keepyuppy.KeepyUppy.post.communication.request.PostRequest;
@@ -29,6 +31,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -210,7 +213,69 @@ public class IssueTest {
         Assertions.assertEquals(editRequest.getStatus(), response.getStatus());
     }
 
-    // todo add tests for getIssueBoardMethods (method needs discussion)
+    @Test
+    @DisplayName("팀 이슈보드 조회")
+    void getTeamIssueBoard() {
+        //given
+        IssueRequest request2 = new IssueRequest("title", "content", LocalDate.of(2024, 1, 1), IssueStatus.INPROGRESS, null);
+        IssueRequest request3 = new IssueRequest("title", "content", LocalDate.of(2024, 1, 1), IssueStatus.DONE, null);
+        issueService.createIssue(userDetails[0], 1L, request);
+        issueService.createIssue(userDetails[0], 1L, request);
+        issueService.createIssue(userDetails[0], 1L, request2);
+        issueService.createIssue(userDetails[0], 1L, request3);
+        issueService.createIssue(userDetails[0], 1L, request3);
+
+        //when
+        TeamIssueBoardResponse response1 = issueService.getTeamIssueBoard(userDetails[0], 1L);
+        TeamIssueBoardResponse response2 = issueService.getTeamIssueBoard(userDetails[1], 1L);
+
+        //then
+        Assertions.assertEquals(2, response1.getTodoIssues().size());
+        Assertions.assertEquals(1, response1.getProgressIssues().size());
+        Assertions.assertEquals(2, response1.getDoneIssues().size());
+
+        Assertions.assertEquals(2, response2.getTodoIssues().size());
+        Assertions.assertEquals(1, response2.getProgressIssues().size());
+        Assertions.assertEquals(2, response2.getDoneIssues().size());
+    }
+
+    @Test
+    @DisplayName("유저 이슈보드 필터링 및 조회")
+    void getIssueBoardFilter() {
+        //given
+        IssueRequest request2 = new IssueRequest("title", "content", LocalDate.of(2024, 1, 1), IssueStatus.INPROGRESS, List.of(users[0].getUsername()));
+        IssueRequest request3 = new IssueRequest("title", "content", LocalDate.of(2024, 1, 1), IssueStatus.DONE, List.of(users[1].getUsername()));
+        issueService.createIssue(userDetails[0], 1L, request);
+        issueService.createIssue(userDetails[0], 1L, request);
+        issueService.createIssue(userDetails[0], 1L, request2);
+        issueService.createIssue(userDetails[0], 1L, request3);
+        issueService.createIssue(userDetails[0], 1L, request3);
+
+        //when
+        issueService.updateIssue(userDetails[0], 1L, new IssueRequest(null, null, null, null, new ArrayList<>()));
+        issueService.updateIssue(userDetails[0], 4L, new IssueRequest(null, null, null, null, List.of(users[0].getUsername())));
+        UserIssueBoardResponse response1 = issueService.getIssueBoardByUserAndTeams(userDetails[0], List.of(1L));
+        UserIssueBoardResponse response2 = issueService.getIssueBoardByUserAndTeams(userDetails[1], List.of(1L));
+        UserIssueBoardResponse response3 = issueService.getIssueBoardByUserAndTeams(userDetails[0], new ArrayList<>());
+        UserIssueBoardResponse response4 = issueService.getIssueBoardByUserAndTeams(userDetails[0], null);
+
+        //then
+        Assertions.assertEquals(1, response1.getTodoIssues().size());
+        Assertions.assertEquals(1, response1.getProgressIssues().size());
+        Assertions.assertEquals(1, response1.getDoneIssues().size());
+
+        Assertions.assertEquals(0, response2.getTodoIssues().size());
+        Assertions.assertEquals(0, response2.getProgressIssues().size());
+        Assertions.assertEquals(1, response2.getDoneIssues().size());
+
+        Assertions.assertEquals(1, response3.getTodoIssues().size());
+        Assertions.assertEquals(1, response3.getProgressIssues().size());
+        Assertions.assertEquals(1, response3.getDoneIssues().size());
+
+        Assertions.assertEquals(1, response4.getTodoIssues().size());
+        Assertions.assertEquals(1, response4.getProgressIssues().size());
+        Assertions.assertEquals(1, response4.getDoneIssues().size());
+    }
 
 
 }

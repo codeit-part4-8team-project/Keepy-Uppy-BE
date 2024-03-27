@@ -65,5 +65,6 @@ public class UserController {
     public ResponseEntity<UserResponse> findByUsername(@RequestParam String username) {
         return ResponseEntity.ok(userService.findByUsername(username));
     }
+
 }
 

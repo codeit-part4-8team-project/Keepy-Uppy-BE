@@ -3,10 +3,7 @@ package com.keepyuppy.KeepyUppy;
 import com.keepyuppy.KeepyUppy.global.exception.CustomException;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.CreateScheduleRequest;
 import com.keepyuppy.KeepyUppy.schedule.communication.request.UpdateScheduleRequest;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.ScheduleResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.TeamScheduleWithTeamInfoResponse;
-import com.keepyuppy.KeepyUppy.schedule.communication.response.UserScheduleResponse;
+import com.keepyuppy.KeepyUppy.schedule.communication.response.*;
 import com.keepyuppy.KeepyUppy.schedule.service.ScheduleService;
 import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.communication.request.CreateTeamRequest;
@@ -25,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest
@@ -95,10 +93,11 @@ class ScheduleTest {
         }
 
         //when
-        List<UserScheduleResponse> userScheduleInWeek = scheduleService.getUserScheduleInWeek(user.getId(), LocalDate.of(2024, 3, 3));
+        SchedulesList scheduleResponse = scheduleService.getWeeklyScheduleFilter(user.getId(), true, null, LocalDate.of(2024, 3, 3));
         
         //then
-        Assertions.assertEquals(5,userScheduleInWeek.size());
+        Assertions.assertEquals(5,scheduleResponse.getUserSchedulesResponse().size());
+        Assertions.assertTrue(scheduleResponse.getTeamSchedulesResponse().isEmpty());
     }
 
     @Test
@@ -114,10 +113,11 @@ class ScheduleTest {
         }
 
         //when
-        List<UserScheduleResponse> userScheduleInMonth = scheduleService.getUserScheduleInMonth(1L, LocalDate.of(2024, 3, 1));
+        SchedulesList scheduleResponse = scheduleService.getMonthlyScheduleFilter(1L, true, null, LocalDate.of(2024, 3, 1));
 
         //then
-        Assertions.assertEquals(10,userScheduleInMonth.size());
+        Assertions.assertEquals(10,scheduleResponse.getUserSchedulesResponse().size());
+        Assertions.assertTrue(scheduleResponse.getTeamSchedulesResponse().isEmpty());
     }
 
     @Test
@@ -152,7 +152,7 @@ class ScheduleTest {
         }
 
         //when
-        TeamScheduleWithTeamInfoResponse teamSchedulesInWeek = scheduleService.getTeamSchedulesInWeek(1L, LocalDate.of(2024, 3, 3));
+        TeamSchedulesList teamSchedulesInWeek = scheduleService.getTeamSchedulesInWeek(1L, LocalDate.of(2024, 3, 3));
         List<TeamScheduleResponse> teamSchedules = teamSchedulesInWeek.getTeamSchedules();
 
         //then
@@ -172,7 +172,7 @@ class ScheduleTest {
         }
 
         //when
-        TeamScheduleWithTeamInfoResponse teamSchedulesInMonth = scheduleService.getTeamSchedulesInMonth(1L, LocalDate.of(2024, 3, 3));
+        TeamSchedulesList teamSchedulesInMonth = scheduleService.getTeamSchedulesInMonth(1L, LocalDate.of(2024, 3, 3));
         List<TeamScheduleResponse> teamSchedules = teamSchedulesInMonth.getTeamSchedules();
 
         //then
@@ -234,6 +234,50 @@ class ScheduleTest {
         //then
         Assertions.assertThrows(CustomException.class, () -> scheduleService.getScheduleById(customUserDetails, 1L));
 
+    }
+
+    @Test
+    @DisplayName("입력받은 날짜의 주에 속한 스케줄 필터링 및 조회")
+    void getWeeklyScheduleFilter() {
+        //given
+        Users user = userRepository.findById(1L).get();
+        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+
+        for (int i = 0; i < 5; i++) {
+            CreateScheduleRequest createUserScheduleRequest = new CreateScheduleRequest("스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 3, 3, 11, 0), LocalDateTime.of(2024, 3, 3+i, 12, 0));
+            scheduleService.createUserSchedule(customUserDetails, createUserScheduleRequest);
+            CreateScheduleRequest createTeamScheduleRequest = new CreateScheduleRequest("테스트코드작성", "테스트코드를작성해야한다", LocalDateTime.of(2024, 3, 3, 10, 10), LocalDateTime.of(2024, 3, 3+i, 12, 10));
+            scheduleService.createTeamSchedule(customUserDetails, 1L, createTeamScheduleRequest);
+        }
+
+        //when
+        SchedulesList scheduleResponse = scheduleService.getWeeklyScheduleFilter(user.getId(), true, List.of(1L), LocalDate.of(2024, 3, 3));
+
+        //then
+        Assertions.assertEquals(5,scheduleResponse.getUserSchedulesResponse().size());
+        Assertions.assertEquals(5,scheduleResponse.getTeamSchedulesResponse().size());
+    }
+
+    @Test
+    @DisplayName("입력받은 날짜의 월에 속한 스케쥴 필터링 및 조회")
+    void getMonthlyScheduleFilter() {
+        //given
+        Users user = userRepository.findById(1L).get();
+        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+
+        for (int i = 0; i < 5; i++) {
+            CreateScheduleRequest createUserScheduleRequest = new CreateScheduleRequest("스케쥴입니다", "스케쥴테스트중입니다", LocalDateTime.of(2024, 3, 3, 11, 0), LocalDateTime.of(2024, 3, 3+i, 12, 0));
+            scheduleService.createUserSchedule(customUserDetails, createUserScheduleRequest);
+            CreateScheduleRequest createTeamScheduleRequest = new CreateScheduleRequest("테스트코드작성", "테스트코드를작성해야한다", LocalDateTime.of(2024, 3, 3, 10, 10), LocalDateTime.of(2024, 3, 3+i, 12, 10));
+            scheduleService.createTeamSchedule(customUserDetails, 1L, createTeamScheduleRequest);
+        }
+
+        //when
+        SchedulesList scheduleResponse = scheduleService.getMonthlyScheduleFilter(1L, false, List.of(1L), LocalDate.of(2024, 3, 1));
+
+        //then
+        Assertions.assertEquals(0, scheduleResponse.getUserSchedulesResponse().size());
+        Assertions.assertEquals(5,scheduleResponse.getTeamSchedulesResponse().size());
     }
 
     void createUsers(int count) {

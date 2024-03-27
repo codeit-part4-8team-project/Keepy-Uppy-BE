@@ -20,16 +20,22 @@ import com.keepyuppy.KeepyUppy.security.jwt.CustomUserDetails;
 import com.keepyuppy.KeepyUppy.team.domain.entity.Team;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
 
     private final PostJpaRepository postJpaRepository;
@@ -132,12 +138,15 @@ public class PostService {
     }
 
     // sorted by created date (newer posts on top)
-    public Page<PostResponse> getPostPaginateByUser(
+    public Page<PostResponse> getPostPaginateFilter(
             CustomUserDetails userDetails,
+            List<Long> teamIds,
             int page) {
-
         Pageable pageable = PageRequest.of(page - 1, 10);
-        Page<Post> posts = postRepository.findByUserId(userDetails.getUserId(), ContentType.POST, pageable);
+
+        Page<Post> posts = teamIds == null || teamIds.isEmpty() ?
+                postRepository.findByUserId(userDetails.getUserId(), ContentType.POST, pageable) :
+                postRepository.findByUserIdAndTeams(userDetails.getUserId(), teamIds, ContentType.POST, pageable);
 
         return posts.map(PostResponse::of);
     }
