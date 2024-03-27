@@ -19,14 +19,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{teamId}/announcement")
+@RequestMapping("/api/announcement")
 @Tag(name = "AnnouncementController", description = "공지글 관련 컨트롤러 입니다.")
 @SecurityRequirement(name = "Bearer Authentication")
 public class AnnouncementController {
 
     private final AnnouncementService announcementService;
 
-    @PostMapping("/")
+    @PostMapping("/{teamId}")
     @Operation(summary = "공지글 작성")
     public ResponseEntity<AnnouncementResponse> createAnnouncement(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -40,68 +40,62 @@ public class AnnouncementController {
     @Operation(summary = "공지글 조회")
     public ResponseEntity<AnnouncementResponse> viewAnnouncement(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long teamId,
             @PathVariable Long announcementId) {
 
-        return ResponseEntity.ok(announcementService.viewAnnouncement(userDetails, teamId, announcementId));
+        return ResponseEntity.ok(announcementService.viewAnnouncement(userDetails, announcementId));
     }
 
     @PutMapping("/{announcementId}")
     @Operation(summary = "공지글 수정")
     public ResponseEntity<AnnouncementResponse> updateAnnouncement(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long teamId,
             @PathVariable Long announcementId,
             @RequestBody PostRequest postRequest) {
 
-        return ResponseEntity.ok(announcementService.updateAnnouncement(userDetails, teamId, announcementId, postRequest));
+        return ResponseEntity.ok(announcementService.updateAnnouncement(userDetails, announcementId, postRequest));
     }
 
     @PutMapping("/{announcementId}/convert")
     @Operation(summary = "공지글을 게시글로 수정")
     public ResponseEntity<PostResponse> updateAnnouncementAsPost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long teamId,
             @PathVariable Long announcementId,
             @RequestBody PostRequest postRequest) {
 
-        return ResponseEntity.ok(announcementService.convertAsPost(userDetails, teamId, announcementId, postRequest));
+        return ResponseEntity.ok(announcementService.convertAsPost(userDetails, announcementId, postRequest));
     }
 
     @DeleteMapping("/{announcementId}")
     @Operation(summary = "공지글 삭제")
     public ResponseEntity<String> deleteAnnouncement(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long teamId,
             @PathVariable Long announcementId) {
 
-        announcementService.deleteAnnouncement(userDetails, teamId, announcementId);
+        announcementService.deleteAnnouncement(userDetails, announcementId);
         return ResponseEntity.ok("게시글 삭제 성공");
     }
 
-    @PutMapping("/{announcementId}/pin")
+    @PutMapping("/pin/{announcementId}")
     @Operation(summary = "공지글 고정")
     public ResponseEntity<String> pinAnnouncement(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long teamId,
             @PathVariable Long announcementId) {
 
-        announcementService.pinAnnouncement(userDetails, teamId, announcementId, true);
+        announcementService.pinAnnouncement(userDetails, announcementId, true);
         return ResponseEntity.ok("공지글 고정 성공");
     }
 
-    @PutMapping("/{announcementId}/unpin")
+    @PutMapping("/unpin/{announcementId}")
     @Operation(summary = "공지글 고정 해제")
     public ResponseEntity<String> unpinAnnouncement(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long teamId,
             @PathVariable Long announcementId) {
 
-        announcementService.pinAnnouncement(userDetails, teamId, announcementId, false);
+        announcementService.pinAnnouncement(userDetails, announcementId, false);
         return ResponseEntity.ok("공지글 고정 해제 성공");
     }
 
-    @GetMapping("/")
+    @GetMapping("/team/{teamId}")
     @Operation(summary = "팀 공지 게시판 조회")
     public ResponseEntity<Page<AnnouncementResponse>> viewTeamAnnouncements(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -111,13 +105,28 @@ public class AnnouncementController {
         return ResponseEntity.ok(announcementService.getAnnouncementsByTeam(userDetails, teamId, page));
     }
 
-    @GetMapping("/unread")
-    @Operation(summary = "읽지 않은 팀 공지글 조회")
+    @PutMapping("/read/{announcementId}")
+    @Operation(summary = "공지글 읽음 표시")
+    public ResponseEntity<String> readAnnouncement(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long announcementId) {
+        announcementService.markAsRead(userDetails, announcementId);
+        return ResponseEntity.ok("공지 읽음 표시 성공");
+    }
+
+    @GetMapping("/team/unread/{teamId}")
+    @Operation(summary = "유저가 읽지 않은 팀 공지글 조회")
     public ResponseEntity<List<AnnouncementResponse>> viewUnreadTeamAnnouncements(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId) {
 
         return ResponseEntity.ok(announcementService.getUnreadAnnouncementsByTeam(userDetails, teamId));
+    }
+
+    @GetMapping("/user/unread")
+    @Operation(summary = "유저가 읽지 않은 공지글 조회")
+    public ResponseEntity<List<AnnouncementResponse>> getUnreadAnnouncements(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(announcementService.getUnreadAnnouncementsByUser(userDetails));
     }
 
 }

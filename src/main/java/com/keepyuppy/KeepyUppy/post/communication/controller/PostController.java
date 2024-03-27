@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{teamId}/post")
+@RequestMapping("/api/post")
 @Tag(name = "PostController", description = "게시글 관련 컨트롤러 입니다.")
 @SecurityRequirement(name = "Bearer Authentication")
 public class PostController {
 
     private final PostService postService;
 
-    @PostMapping("/")
+    @PostMapping("/{teamId}")
     @Operation(summary = "게시글 작성")
     public ResponseEntity<PostResponse> createPost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -37,45 +37,41 @@ public class PostController {
     @Operation(summary = "게시글 조회")
     public ResponseEntity<PostResponse> viewPost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long teamId,
             @PathVariable Long postId) {
 
-        return ResponseEntity.ok(postService.viewPost(userDetails, teamId, postId));
+        return ResponseEntity.ok(postService.viewPost(userDetails, postId));
     }
 
     @PutMapping("/{postId}")
     @Operation(summary = "게시글 수정")
     public ResponseEntity<PostResponse> updatePost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long teamId,
             @PathVariable Long postId,
             @RequestBody PostRequest postRequest) {
 
-        return ResponseEntity.ok(postService.updatePost(userDetails, teamId, postId, postRequest));
+        return ResponseEntity.ok(postService.updatePost(userDetails, postId, postRequest));
     }
 
     @PutMapping("/{postId}/convert")
     @Operation(summary = "게시글을 공지글로 수정")
     public ResponseEntity<AnnouncementResponse> updatePostAsAnnouncement(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long teamId,
             @PathVariable Long postId,
             @RequestBody PostRequest postRequest) {
-        return ResponseEntity.ok(postService.convertAsAnnouncement(userDetails, teamId, postId, postRequest));
+        return ResponseEntity.ok(postService.convertAsAnnouncement(userDetails, postId, postRequest));
     }
 
     @DeleteMapping("/{postId}")
     @Operation(summary = "게시글 삭제")
     public ResponseEntity<String> deletePost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long teamId,
             @PathVariable Long postId) {
 
-        postService.deletePost(userDetails, teamId, postId);
+        postService.deletePost(userDetails, postId);
         return ResponseEntity.ok("게시글 삭제 성공");
     }
 
-    @GetMapping("/")
+    @GetMapping("team/{teamId}")
     @Operation(summary = "팀 자유 게시판 페이지 조회")
     public ResponseEntity<Page<PostResponse>> getPostsWithPagination(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -85,13 +81,21 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostPaginateByTeam(userDetails, teamId, page));
     }
 
+    @Operation(summary = "팀 통합 자유게시판 조회")
+    @GetMapping("/user")
+    public ResponseEntity<Page<PostResponse>> getUserPosts(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(defaultValue = "1") int page
+    ){
+        return ResponseEntity.ok(postService.getPostPaginateByUser(userDetails, page));
+    }
+
     @Operation(summary = "게시글 좋아요")
     @PostMapping("/like/{postId}")
     public ResponseEntity<PostResponse> likePost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long teamId,
             @PathVariable Long postId) {
-        return ResponseEntity.ok(postService.likePost(userDetails, teamId, postId));
+        return ResponseEntity.ok(postService.likePost(userDetails, postId));
     }
 
     @Operation(summary = "게시글 좋아요 취소")
