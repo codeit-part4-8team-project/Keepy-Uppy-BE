@@ -110,11 +110,11 @@ class MemberTest {
 
         //when
         //Id 2인 팀원 권한인 유저가 testerUsername3 유저를 팀에 초대.
-        boolean addMember = memberService.addMember(customUserDetails, 1L, addMemberRequest);
+        MemberResponse memberResponse = memberService.addMember(customUserDetails, 1L, addMemberRequest);
 
         //then
         //초대성공
-        Assertions.assertTrue(addMember);
+        Assertions.assertEquals("testerUsername3", memberResponse.getUsername());
         Assertions.assertEquals(3,team.getMembers().size());
     }
 
