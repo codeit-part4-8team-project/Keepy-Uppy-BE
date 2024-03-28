@@ -53,11 +53,13 @@ class TeamTest {
 
         //when
         TeamResponse team = teamService.createTeam(customUserDetails, createTeamRequest);
+        Team team1 = teamJpaRepository.findById(1L).get();
 
         //then
         Assertions.assertEquals("A팀",team.getName());
         Assertions.assertEquals(teamOwner.getUsername(),team.getMembers().get(0).getUsername());
         Assertions.assertEquals(Grade.OWNER.name(),team.getMembers().get(0).getGrade());
+        Assertions.assertEquals(1L,team1.getOwnerId());
     }
 
     @Test
