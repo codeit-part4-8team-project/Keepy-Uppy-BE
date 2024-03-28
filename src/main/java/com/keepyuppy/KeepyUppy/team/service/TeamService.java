@@ -49,7 +49,7 @@ public class TeamService {
 
         List<String> members = createTeamRequest.getMembers();
 
-        if (members.contains(user.getUsername())) {
+        if (members != null && members.contains(user.getUsername())) {
             throw new CustomException(ExceptionType.MEMBER_ALREADY_EXISTS);
         }
 
@@ -57,11 +57,11 @@ public class TeamService {
 
         team.addMember(member);
 
-        team.setOwnerId(member.getId());
-
         teamJpaRepository.save(team);
 
         memberJpaRepository.save(member);
+
+        team.setOwnerId(member.getId());
 
         if (createTeamRequest.getMembers() != null) {
             createTeamRequest.getMembers().forEach(memberName -> {
