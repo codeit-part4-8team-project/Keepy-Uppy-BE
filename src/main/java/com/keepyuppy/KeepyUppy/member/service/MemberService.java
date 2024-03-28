@@ -40,16 +40,16 @@ public class MemberService {
 
     @Transactional
     public MemberResponse addMember(CustomUserDetails userDetails, Long teamId, AddMemberRequest addMemberRequest) {
-
+        // 초대하는 사람
         Member loginMember = findMemberInTeamByUserId(userDetails.getUserId(), teamId);
 
         if (isManagerOrOwner(loginMember)) {
-
+            // 초대할 팀
             Team team = findTeamById(teamId);
-
+            // 초대할 유저
             Users user = findUserByUsername(addMemberRequest.getUsername());
-
-            if (alreadyMemberInTeam(addMemberRequest.getUsername(), teamId)) {
+            // 만약 초대할 유저가 존재한다면
+            if (alreadyMemberInTeam(user.getId(), teamId)) {
                 throw new CustomException(ExceptionType.MEMBER_ALREADY_EXISTS);
             }
 
@@ -132,8 +132,8 @@ public class MemberService {
         return userRepository.findByUsername(username).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_FOUND));
     }
 
-    private boolean alreadyMemberInTeam(String username,Long teamId) {
-        return (memberRepository.findMemberInTeamByUsername(username, teamId).isPresent());
+    private boolean alreadyMemberInTeam(Long userId,Long teamId) {
+        return memberRepository.findMemberInTeamByUserId(userId, teamId).isPresent();
     }
 
     private Member findMemberInTeamByUserName(String userName, Long teamId) {
